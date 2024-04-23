@@ -1,12 +1,12 @@
 Metadata-Version: 2.1
 Name: PyCorrCPI
-Version: 0.0.2
+Version: 0.0.3
 Summary: PyCorrCPI - corelation analysis for charged-particle imaging experiments
 Home-page: https://github.com/f-allum/PyCCorrCPI/
 Author: Felix Allum
 Author-email: fallum@stanford.edu
 License: UNKNOWN
-Download-URL: https://github.com/f-allum/PyCorrCPI/archive/refs/tags/v0.0.2.tar.gz
+Download-URL: https://github.com/f-allum/PyCorrCPI/archive/refs/tags/v0.0.3.tar.gz
 Keywords: Coincidence,Covariance,Cumulant,Velocity-map Imaging
 Platform: UNKNOWN
 License-File: LICENSE

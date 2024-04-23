@@ -199,7 +199,7 @@ def output_format_TfAcAc(vec_list, mag_list, mass_list, bin_list, dim_list):
     ABsum_vec = A_vec+B_vec
     ABsum_vec_norm = ABsum_vec/norm3D(ABsum_vec)
     
-    normal = np.cross(A_vec_norm,B_vec_norm)
+    cross3D(A_vec_norm,B_vec_norm,normal)
 
     normal_vec_norm = normal/norm3D(normal)
 
@@ -208,10 +208,10 @@ def output_format_TfAcAc(vec_list, mag_list, mass_list, bin_list, dim_list):
     
     rotation_matrix(ax_rot, -alpha, rot_matrix)
 
-    A_vec_rot = np.dot(A_vec,rot_matrix)
-    B_vec_rot = np.dot(B_vec,rot_matrix)
-    C_vec_rot = np.dot(C_vec,rot_matrix)
-    D_vec_rot = np.dot(D_vec,rot_matrix)
+    A_vec_rot = dot3D(A_vec,rot_matrix)
+    B_vec_rot = dot3D(B_vec,rot_matrix)
+    C_vec_rot = dot3D(C_vec,rot_matrix)
+    D_vec_rot = dot3D(D_vec,rot_matrix)
     
     ABsum_vec_rot = A_vec_rot+B_vec_rot
     
@@ -221,18 +221,18 @@ def output_format_TfAcAc(vec_list, mag_list, mass_list, bin_list, dim_list):
 
     rotation_matrix(z_vec_norm, -beta, rot_matrix)
 
-    A_vec_rot2 = np.dot(A_vec_rot,rot_matrix)
-    B_vec_rot2 = np.dot(B_vec_rot,rot_matrix)
-    C_vec_rot2 = np.dot(C_vec_rot,rot_matrix)
-    D_vec_rot2 = np.dot(D_vec_rot,rot_matrix)
+    A_vec_rot2 = dot3D(A_vec_rot,rot_matrix)
+    B_vec_rot2 = dot3D(B_vec_rot,rot_matrix)
+    C_vec_rot2 = dot3D(C_vec_rot,rot_matrix)
+    D_vec_rot2 = dot3D(D_vec_rot,rot_matrix)
     
     rotation_matrix(np.array([0,1,0], dtype='float64'), -np.pi, rot_matrix)
 
     if C_vec_rot2[0]>0:
-        A_vec_rot2 = np.dot(A_vec_rot2, rot_matrix)
-        B_vec_rot2 = np.dot(B_vec_rot2, rot_matrix)
-        C_vec_rot2 = np.dot(C_vec_rot2, rot_matrix)
-        D_vec_rot2 = np.dot(D_vec_rot2, rot_matrix)
+        A_vec_rot2 = dot3D(A_vec_rot2, rot_matrix)
+        B_vec_rot2 = dot3D(B_vec_rot2, rot_matrix)
+        C_vec_rot2 = dot3D(C_vec_rot2, rot_matrix)
+        D_vec_rot2 = dot3D(D_vec_rot2, rot_matrix)
 
     D_bin_x = int(D_vec_rot2[0]/x_bin+0.5+x_pixels/2)
     D_bin_y = int(D_vec_rot2[1]/y_bin+0.5+y_pixels/2)

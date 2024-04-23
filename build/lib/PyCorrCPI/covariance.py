@@ -826,7 +826,8 @@ class Covariance:
 
     def plot_2DHist(self, proj_list, param_dict=param_dict, term=-1, 
                 label_list = ['p$_x$','p$_y$','p$_z$'],arrow=False,
-                vfac=1,cmap='bwr', axis_centered_on_zero=True):
+                vfac=1,cmap='bwr', axis_centered_on_zero=True,
+                colors_centered_on_zero=True):
         self.label_list = label_list
         for i in proj_list:
             if i==0:
@@ -858,7 +859,13 @@ class Covariance:
                 extent = (-(bin_x*dim_x)/2, (bin_x*dim_x)/2, -(bin_y*dim_y)/2, (bin_y*dim_y)/2)
             else:
                 extent = (0, bin_x*dim_x, 0, bin_y*dim_y)
-            ax.imshow(term_im.T, cmap=cmap, vmax=np.max(term_im)/vfac, vmin=-np.max(term_im)/vfac,
+
+            vmax = np.max(term_im)/vfac
+            if colors_centered_on_zero:
+                vmin=-vmax
+            else:
+                vmin=0
+            ax.imshow(term_im.T, cmap=cmap, vmax=vmax, vmin=vmin,
                      extent = extent, interpolation='none',
                      origin='lower', aspect='auto')
             ax.set_xlabel(label_x)
