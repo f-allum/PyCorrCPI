@@ -1,0 +1,15 @@
+LICENSE
+README.md
+setup.py
+PyCorrCPI/VMI_data.py
+PyCorrCPI/__init__.py
+PyCorrCPI/covariance.py
+PyCorrCPI/data.py
+PyCorrCPI/helpers_numba.py
+PyCorrCPI/imports.py
+PyCorrCPI/output_functions.py
+PyCorrCPI.egg-info/PKG-INFO
+PyCorrCPI.egg-info/SOURCES.txt
+PyCorrCPI.egg-info/dependency_links.txt
+PyCorrCPI.egg-info/requires.txt
+PyCorrCPI.egg-info/top_level.txt
