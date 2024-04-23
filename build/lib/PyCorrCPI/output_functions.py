@@ -28,7 +28,8 @@ def beta_psum_KER(vec_list, mag_list, mass_list, bin_list, dim_list):
 
 @njit
 def output_format_Newton_2fold(vec_list, mag_list, mass_list, bin_list, dim_list):
-
+    """Function for 2fold Newton plot. Ion A is used as reference, and we plot the 3D momentum of 
+    Ion B relative to this"""
     A_vec,B_vec = vec_list
     A_mag,B_mag = mag_list
     x_bin,y_bin,z_bin = bin_list
@@ -58,6 +59,8 @@ def output_format_Newton_2fold(vec_list, mag_list, mass_list, bin_list, dim_list
 
 @njit
 def output_format_Newton_3fold(vec_list, mag_list, mass_list, bin_list, dim_list):
+    """Function for 3fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.
+    Ion C is plotted in this frame."""
 
     z_vec_norm = np.array([0.,0.,1.])
     rot_matrix = np.array([[0.,0.,0.],
@@ -115,6 +118,8 @@ def output_format_Newton_3fold(vec_list, mag_list, mass_list, bin_list, dim_list
 
 @njit
 def output_format_Newton_4fold(vec_list, mag_list, mass_list, bin_list, dim_list):
+    """Function for 4fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.
+    Ion C and D are plotted in this frame."""
 
     z_vec_norm = np.array([0.,0.,1.])
     rot_matrix = np.array([[0.,0.,0.],
@@ -168,3 +173,72 @@ def output_format_Newton_4fold(vec_list, mag_list, mass_list, bin_list, dim_list
     D_bin_z = int(D_vec_rot2[2]/z_bin+0.5+z_pixels/2)
 
     return(([C_bin_x, D_bin_x],[C_bin_y, D_bin_y],[C_bin_z, D_bin_z]))
+
+
+@njit()
+def output_format_TfAcAc(vec_list, mag_list, mass_list, bin_list, dim_list):
+    """Fourfold Newton plot where the sum of A and B make a reference vector and plane.
+    The momentum of C is restricted to have px<0 in this frame.
+    D is plotted"""
+
+    z_vec_norm = np.array([0.,0.,1.])
+    rot_matrix = np.array([[0.,0.,0.],
+      [0.,0.,0.],
+      [0.,0.,0.]], dtype='float64')
+    
+    normal = np.zeros(3, dtype='float64')
+    ax_rot = np.zeros(3, dtype='float64')
+    
+    A_vec,B_vec,C_vec,D_vec = vec_list
+    A_mag, B_mag, C_mag, D_mag= mag_list
+    x_bin,y_bin,z_bin = bin_list
+    x_pixels,y_pixels, z_pixels = dim_list
+    
+    A_vec_norm = A_vec/A_mag
+    B_vec_norm = B_vec/B_mag
+    ABsum_vec = A_vec+B_vec
+    ABsum_vec_norm = ABsum_vec/norm3D(ABsum_vec)
+    
+    normal = np.cross(A_vec_norm,B_vec_norm)
+
+    normal_vec_norm = normal/norm3D(normal)
+
+    alpha = np.arccos(normal_vec_norm[2])
+    ax_rot = np.cross(normal_vec_norm,z_vec_norm)
+    
+    rotation_matrix(ax_rot, -alpha, rot_matrix)
+
+    A_vec_rot = np.dot(A_vec,rot_matrix)
+    B_vec_rot = np.dot(B_vec,rot_matrix)
+    C_vec_rot = np.dot(C_vec,rot_matrix)
+    D_vec_rot = np.dot(D_vec,rot_matrix)
+    
+    ABsum_vec_rot = A_vec_rot+B_vec_rot
+    
+    ABsum_vec_rot_norm = ABsum_vec_rot/norm3D(ABsum_vec_rot)
+    
+    beta = np.arctan2(ABsum_vec_rot_norm[0],ABsum_vec_rot_norm[1])
+
+    rotation_matrix(z_vec_norm, -beta, rot_matrix)
+
+    A_vec_rot2 = np.dot(A_vec_rot,rot_matrix)
+    B_vec_rot2 = np.dot(B_vec_rot,rot_matrix)
+    C_vec_rot2 = np.dot(C_vec_rot,rot_matrix)
+    D_vec_rot2 = np.dot(D_vec_rot,rot_matrix)
+    
+    rotation_matrix(np.array([0,1,0], dtype='float64'), -np.pi, rot_matrix)
+
+    if C_vec_rot2[0]>0:
+        A_vec_rot2 = np.dot(A_vec_rot2, rot_matrix)
+        B_vec_rot2 = np.dot(B_vec_rot2, rot_matrix)
+        C_vec_rot2 = np.dot(C_vec_rot2, rot_matrix)
+        D_vec_rot2 = np.dot(D_vec_rot2, rot_matrix)
+
+    D_bin_x = int(D_vec_rot2[0]/x_bin+0.5+x_pixels/2)
+    D_bin_y = int(D_vec_rot2[1]/y_bin+0.5+y_pixels/2)
+    D_bin_z = int(D_vec_rot2[2]/z_bin+0.5+z_pixels/2)
+
+    return(([D_bin_x],[D_bin_y],[D_bin_z]))
+
+
+

@@ -23,7 +23,8 @@ u_to_amu = 1 / 5.4857990943e-4
 bohr_to_angstrom = 0.529177211
 
 
-output_function_dict = {'beta_psum_KER':beta_psum_KER}
+output_function_dict = {'beta_psum_KER':beta_psum_KER,
+                        'output_format_TfAcAc':output_format_TfAcAc}
 
 param_dict = {'spinewidth':3,
               'linewidth':2,
@@ -491,8 +492,8 @@ def calc_Cabcd(output_array, output_function,
                         if skip_coinc:
                             continue
 
-                        D_vec = D_ion_array[k,:3]
-                        D_mag = D_ion_array[k, 4]
+                        D_vec = D_ion_array[l,:3]
+                        D_mag = D_ion_array[l, 4]
                         D_KE = p_au_KE_eV_fac*(D_mag)**2/(2*D_mass)
 
                         vec_list = [A_vec,B_vec,C_vec,D_vec]
