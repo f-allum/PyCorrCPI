@@ -3,3 +3,8 @@ matplotlib
 scipy
 pandas
 numba
+math
+time
+functools
+IPython
+typing

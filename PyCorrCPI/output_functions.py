@@ -4,6 +4,15 @@ from .data import *
 
 @njit
 def beta_psum_KER(vec_list, mag_list, mass_list, bin_list, dim_list):
+    """Represent covariance as a function of the relative recoil angle between them,
+    the sums of their absolute momentun, and the sums of their KEs. 
+
+    :param vec_list: list of 3D momentum vectors of each ion
+    :param mag_list: list of momentum magnitudes of each ion
+    :param mass_list: list of masses of each ion
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]
+    """
     x_bin,y_bin,z_bin = bin_list
     
     pmag_sum=0
@@ -28,8 +37,14 @@ def beta_psum_KER(vec_list, mag_list, mass_list, bin_list, dim_list):
 
 @njit
 def output_format_Newton_2fold(vec_list, mag_list, mass_list, bin_list, dim_list):
-    """Function for 2fold Newton plot. Ion A is used as reference, and we plot the 3D momentum of 
-    Ion B relative to this"""
+    """Represent covariance as 2fold Newton plot. Ion A is used as reference, and we plot the 3D momentum of 
+    Ion B relative to this. Note, third dimension is not used.
+
+    :param vec_list: list of 3D momentum vectors of each ion
+    :param mag_list: list of momentum magnitudes of each ion
+    :param mass_list: list of masses of each ion
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]"""
     A_vec,B_vec = vec_list
     A_mag,B_mag = mag_list
     x_bin,y_bin,z_bin = bin_list
@@ -59,8 +74,14 @@ def output_format_Newton_2fold(vec_list, mag_list, mass_list, bin_list, dim_list
 
 @njit
 def output_format_Newton_3fold(vec_list, mag_list, mass_list, bin_list, dim_list):
-    """Function for 3fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.
-    Ion C is plotted in this frame."""
+    """Represent covariance as 3fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.
+    Ion C is plotted in this frame.
+
+    :param vec_list: list of 3D momentum vectors of each ion
+    :param mag_list: list of momentum magnitudes of each ion
+    :param mass_list: list of masses of each ion
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]"""
 
     z_vec_norm = np.array([0.,0.,1.])
     rot_matrix = np.array([[0.,0.,0.],
@@ -118,8 +139,15 @@ def output_format_Newton_3fold(vec_list, mag_list, mass_list, bin_list, dim_list
 
 @njit
 def output_format_Newton_4fold(vec_list, mag_list, mass_list, bin_list, dim_list):
-    """Function for 4fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.
-    Ion C and D are plotted in this frame."""
+    """Represent covariance as 4fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.
+    Ion C and D are plotted in this frame.
+
+    :param vec_list: list of 3D momentum vectors of each ion
+    :param mag_list: list of momentum magnitudes of each ion
+    :param mass_list: list of masses of each ion
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]
+    """
 
     z_vec_norm = np.array([0.,0.,1.])
     rot_matrix = np.array([[0.,0.,0.],
@@ -178,8 +206,14 @@ def output_format_Newton_4fold(vec_list, mag_list, mass_list, bin_list, dim_list
 @njit()
 def output_format_TfAcAc(vec_list, mag_list, mass_list, bin_list, dim_list):
     """Fourfold Newton plot where the sum of A and B make a reference vector and plane.
-    The momentum of C is restricted to have px<0 in this frame.
-    D is plotted"""
+    The momentum of C is restricted to have px<0 in this frame. D is plotted.
+
+    :param vec_list: list of 3D momentum vectors of each ion
+    :param mag_list: list of momentum magnitudes of each ion
+    :param mass_list: list of masses of each ion
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]
+    """
 
     z_vec_norm = np.array([0.,0.,1.])
     rot_matrix = np.array([[0.,0.,0.],

@@ -35,6 +35,7 @@ param_dict = {'spinewidth':3,
 
 
 def neaten_plot(ax, param_dict):
+    """Funfction used to neaten up covariance plots"""
     ax.tick_params(labelsize=param_dict['ticklabelsize'],length=param_dict['ticklength'],width=param_dict['tickwidth'])
     ax.xaxis.get_label().set_fontsize(param_dict['axislabelsize'])
     ax.yaxis.get_label().set_fontsize(param_dict['axislabelsize'])
@@ -54,8 +55,32 @@ def calc_covariance(dataset, ion_list, dim_list, bin_list,
                        filter_function=False,
                        filter_max=np.inf,
                        max_shot=None,
-                       only_coincidence=None):
-    """Wrapper function for initializing an instance of the Covariance class
+                       only_coincidence=False):
+    """Function for initializing an instance of the Covariance class
+
+    :param ion_list: list of n ions to be used in the nfold covariance calculation
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]
+    :param store_coincs: NOT USED CURENTLY
+    :param update_dataset: NOT USED CURRENTLY
+    :param verbose: print more details during the calculation, default=False
+    :param remove_autovariance: If True, automatically removes autovariance contributions if two ions
+        the same. Default=True
+    :param custom_function: Custom function for formatting the covariance output. If False,
+        a default function is used. Default=False
+    :param filter_function: Custom function used for filtering coincidences. If False, the default 
+        (absolute magnitude of summed momenta calculation) is used
+    :param filter_max: Max value of the output of the filter function for an acceptable coincidence.
+        Default is np.inf to ignore filtering
+    :param max_shot: Maximum shot used in the calculation. Default=None
+    :param only_coincidence: If True, only calculate the leading term (the true coincidences). Default = False 
+    :param n_EiEj: number of times to calculate the <A><B> term in two-fold covariance
+    :param n_EiEjEk: number of times to calculate the <A><B><C> term in three-fold covariance
+    :param n_EijEk: number of times to calculate the <AB><C> type terms in three-fold covariance
+    :param n_EiEjEkEl: number of times to calculate the <A><B><C><D> term in four-fold covariance
+    :param n_EijEkl: number of times to calculate the <AB><CD> type terms in four-fold covariance
+    :param n_EijkEl: number of times to calculate the <ABC><D> type terms in four-fold covariance
+    :param n_EiEjEkl: number of times to calculate the <A><B><CD> type terms in four-fold covariance
     """
 
 
@@ -86,11 +111,11 @@ def calculate_indexes(A_idx_dict,shot_array_A,shot_array,A_arr):
     multiple times. 
     !This function assumes that the data is sorted by ascending shot number!
 
-    Parameters:
-    A_idx_dict -- the (empty) dictionary which will be filled with (shot, initial_index, final_index)
-    shot_array_A -- array of laser shots used in the covariance calculation, for which ion A is detected
-    shot_array -- array of total laser shots used in the covariance calculation
-    A_arr - the ion A data array ([])
+    
+    :param A_idx_dict:  the (empty) dictionary which will be filled with (shot, initial_index, final_index)
+    :param shot_array_A:  array of laser shots used in the covariance calculation, for which ion A is detected
+    :param shot_array: array of total laser shots used in the covariance calculation
+    :param A_arr: the ion A data array ([])
     """
     
     last_index_A_old=0
@@ -145,6 +170,7 @@ def compute_4fold_covariance_term_iterate(output_arr, dim_list):
 
 
 
+
 @njit
 def calc_Cab(output_array, output_function,
                     shot_array,
@@ -165,23 +191,22 @@ def calc_Cab(output_array, output_function,
     all terms of the covariance expression, with appropriate values for the shot
     shifting index.
     
-    Keyword arguments: 
-    -- ouput_array: the output array for the covariance calculation
-    -- output_function: the function which takes the coincidence and converts into the observables of interest
-    -- shot_array: array of the unique shots in the dataset over which the covariance is calculated
-    -- ion_array_list, data arrays of the three ions, [px,py,pz,shot,pmag] format
-    -- idx_dict_list: the precalculated dictionaries of shot indices for each ion
-    -- mass_list: mass of each ion in amu. Passed to the output function
-    -- dim_list: number of pixels in each dimension of covariance output
-    -- bin_list: bin size in each dimension for outputting covariance histogram
-    -- shift_num_list: list of shift numbers applied to the ions beyond ion A
-    -- n_calc: number of times the term will be recalculated. needed for proper weighting/normalization
-    -- n_shots: number of shots covariance is calculated over. needed for proper weighting/normalization
-    -- term_counter: index of the term in the epression to be calculated.
-    -- autovariance_array: array of pairs of ions which are the same to exclude autovariance/trivial coincidence
-    -- use_filter_function: 1 if filtering on some criteria of coincidences
-    -- filter_function: function used for filtering, takes in (vec_list,mag_list,mass_list)
-    -- filter_max: if output of filter_function is greater than filter_max, coincidence is ignored
+    :param ouput_array: array which stores output of covariance calculation
+    :param output_function: the function which takes the coincidence and converts into the observables of interest
+    :param shot_array: array of the unique shots in the dataset over which the covariance is calculated
+    :param ion_array_list: data arrays of the three ions, [px,py,pz,shot,pmag] format
+    :param idx_dict_list: list of the precalculated dictionaries of shot indices for each ion
+    :param mass_list: mass of each ion in amu. Passed to the output function
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]
+    :param shift_num_list: list of shot shift numbers applied to the ions beyond ion A
+    :param n_calc: number of times the term will be recalculated.
+    :param n_shots: number of shots covariance is calculated over.
+    :param term_counter: index of the term in the epression to be calculated.
+    :param autovariance_array: array of pairs of ions which are the same to exclude autovariance/trivial coincidence
+    :param use_filter_function: 1 if filtering on some criteria of coincidences
+    :param filter_function: function used for filtering, takes in (vec_list,mag_list,mass_list)
+    :param filter_max: if output of filter_function is greater than filter_max, coincidence is ignored
     """
     
     ## as another speedup, we now precalculate the normalization needed to the term
@@ -277,27 +302,27 @@ def calc_Cabc(output_array, output_function,
                     filter_function,
                     filter_max):
     
-    """Find double coincidences, transform into output frame and sum.
+    """Find triple coincidences, transform into output frame and sum.
     Acts in place on the general output array. This function calculates
     all terms of the covariance expression, with appropriate values for the shot
     shifting index.
     
-    Keyword arguments: 
-    -- ouput_array: the output array for the covariance calculation
-    -- output_function: the function which takes the coincidence and converts into the observables of interest
-    -- shot_array: array of the unique shots in the dataset over which the covariance is calculated
-    -- ion_array_list, data arrays of the three ions, [px,py,pz,shot,pmag] format
-    -- idx_dict_list: the precalculated dictionaries of shot indices for each ion
-    -- mass_list: mass of each ion in amu. Passed to the output function
-    -- dim_list: number of pixels in each dimension of covariance output
-    -- bin_list: bin size in each dimension for outputting covariance histogram
-    -- shift_num_list: list of shift numbers applied to the ions beyond ion A
-    -- n_calc: number of times the term will be recalculated. needed for proper weighting/normalization
-    -- n_shots: number of shots covariance is calculated over. needed for proper weighting/normalization
-    -- term_counter: index of the term in the epression to be calculated.
-    -- autovariance_array: array of pairs of ions which are the same to exclude autovariance/trivial coincidence
-    -- filter_function: function used for filtering, takes in (vec_list,mag_list,mass_list)
-    -- filter_max: if output of filter_function is greater than filter_max, coincidence is ignored
+    :param ouput_array: array which stores output of covariance calculation
+    :param output_function: the function which takes the coincidence and converts into the observables of interest
+    :param shot_array: array of the unique shots in the dataset over which the covariance is calculated
+    :param ion_array_list: data arrays of the three ions, [px,py,pz,shot,pmag] format
+    :param idx_dict_list: list of the precalculated dictionaries of shot indices for each ion
+    :param mass_list: mass of each ion in amu. Passed to the output function
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]
+    :param shift_num_list: list of shot shift numbers applied to the ions beyond ion A
+    :param n_calc: number of times the term will be recalculated.
+    :param n_shots: number of shots covariance is calculated over.
+    :param term_counter: index of the term in the epression to be calculated.
+    :param autovariance_array: array of pairs of ions which are the same to exclude autovariance/trivial coincidence
+    :param use_filter_function: 1 if filtering on some criteria of coincidences
+    :param filter_function: function used for filtering, takes in (vec_list,mag_list,mass_list)
+    :param filter_max: if output of filter_function is greater than filter_max, coincidence is ignored
     """
     
     ## as another speedup, we now precalculate the normalization needed to the term
@@ -400,27 +425,27 @@ def calc_Cabcd(output_array, output_function,
                     filter_function,
                     filter_max):
     
-    """Find double coincidences, transform into output frame and sum.
+    """Find quadruple coincidences, transform into output frame and sum.
     Acts in place on the general output array. This function calculates
     all terms of the covariance expression, with appropriate values for the shot
     shifting index.
     
-    Keyword arguments: 
-    -- ouput_array: the output array for the covariance calculation
-    -- output_function: the function which takes the coincidence and converts into the observables of interest
-    -- shot_array: array of the unique shots in the dataset over which the covariance is calculated
-    -- ion_array_list, data arrays of the three ions, [px,py,pz,shot,pmag] format
-    -- idx_dict_list: the precalculated dictionaries of shot indices for each ion
-    -- mass_list: mass of each ion in amu. Passed to the output function
-    -- dim_list: number of pixels in each dimension of covariance output
-    -- bin_list: bin size in each dimension for outputting covariance histogram
-    -- shift_num_list: list of shift numbers applied to the ions beyond ion A
-    -- n_calc: number of times the term will be recalculated. needed for proper weighting/normalization
-    -- n_shots: number of shots covariance is calculated over. needed for proper weighting/normalization
-    -- term_counter: index of the term in the epression to be calculated.
-    -- autovariance_array: array of pairs of ions which are the same to exclude autovariance/trivial coincidence
-    -- filter_function: function used for filtering, takes in (vec_list,mag_list,mass_list)
-    -- filter_max: if output of filter_function is greater than filter_max, coincidence is ignored
+    :param ouput_array: array which stores output of covariance calculation
+    :param output_function: the function which takes the coincidence and converts into the observables of interest
+    :param shot_array: array of the unique shots in the dataset over which the covariance is calculated
+    :param ion_array_list: data arrays of the three ions, [px,py,pz,shot,pmag] format
+    :param idx_dict_list: list of the precalculated dictionaries of shot indices for each ion
+    :param mass_list: mass of each ion in amu. Passed to the output function
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]
+    :param shift_num_list: list of shot shift numbers applied to the ions beyond ion A
+    :param n_calc: number of times the term will be recalculated.
+    :param n_shots: number of shots covariance is calculated over.
+    :param term_counter: index of the term in the epression to be calculated.
+    :param autovariance_array: array of pairs of ions which are the same to exclude autovariance/trivial coincidence
+    :param use_filter_function: 1 if filtering on some criteria of coincidences
+    :param filter_function: function used for filtering, takes in (vec_list,mag_list,mass_list)
+    :param filter_max: if output of filter_function is greater than filter_max, coincidence is ignored
     """
     
     ## as another speedup, we now precalculate the normalization needed to the term
@@ -519,7 +544,34 @@ def calc_Cabcd(output_array, output_function,
 
 
 class Covariance:
-    """Obect for storing covariance outputs and performing covariance calculation"""
+    """Class for storing covariance outputs and performing covariance calculation
+
+    :param ion_list: list of n ions to be used in the nfold covariance calculation
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]
+    :param store_coincs: NOT USED CURENTLY
+    :param update_dataset: NOT USED CURRENTLY
+    :param verbose: print more details during the calculation, default=False
+    :param remove_autovariance: If True, automatically removes autovariance contributions if two ions
+        the same. Default=True
+    :param custom_function: Custom function for formatting the covariance output. If False,
+        a default function is used. Default=False
+    :param filter_function: Custom function used for filtering coincidences. If False, the default 
+        (absolute magnitude of summed momenta calculation) is used
+    :param filter_max: Max value of the output of the filter function for an acceptable coincidence.
+        Default is np.inf to ignore filtering
+    :param max_shot: Maximum shot used in the calculation. Default=None
+    :param only_coincidence: If True, only calculate the leading term (the true coincidences). Default = False 
+    :param n_EiEj: number of times to calculate the <A><B> term in two-fold covariance
+    :param n_EiEjEk: number of times to calculate the <A><B><C> term in three-fold covariance
+    :param n_EijEk: number of times to calculate the <AB><C> type terms in three-fold covariance
+    :param n_EiEjEkEl: number of times to calculate the <A><B><C><D> term in four-fold covariance
+    :param n_EijEkl: number of times to calculate the <AB><CD> type terms in four-fold covariance
+    :param n_EijkEl: number of times to calculate the <ABC><D> type terms in four-fold covariance
+    :param n_EiEjEkl: number of times to calculate the <A><B><CD> type terms in four-fold covariance
+    
+    """
+
     def __init__(self, dataset, ion_list, dim_list, bin_list,
                        store_coincs=False,
                        update_dataset=True,
@@ -575,6 +627,7 @@ class Covariance:
             raise ValueError('Output with greater than 4 dimensions is not supported')
 
     def setup_output(self):
+        """Create the output array which stores results of covariance calculation"""
         pixels_x,pixels_y,pixels_z = self.dim_list
         ## determine how many ions to be correlated, and their identity
         if self.nfold>4:
@@ -598,6 +651,7 @@ class Covariance:
     
     
     def setup_terms(self):
+        """Setup the number of times each term is to be calculated, and the shot-shifting which must be used."""
 
         ## setup shift_val_list, term_name_list, ncalc_list
         
@@ -660,6 +714,7 @@ class Covariance:
                              self.n_EiEjEkEl]
 
     def get_from_ions(self):
+        """Get the idx_dict, ion_array and ion_mass from each ion used in calculation"""
         self.idx_dict_list=[]
         self.ion_array_list=[]
         self.ion_mass_list=[]
@@ -681,7 +736,7 @@ class Covariance:
         self.ion_mass_list = nb.typed.List(self.ion_mass_list)
 
     def setup_autovariance_correction(self):
-        ## identify any autovariance issues
+        """Identify potential autovariance issues to be corrected for."""
         autovariance_counter=0
         self.autovariance_array = np.zeros((30,2), dtype='int64')
         if self.remove_autovariance:
@@ -698,7 +753,7 @@ class Covariance:
         print(self.autovariance_array)
 
     def setup_filter(self):
-
+        """Assign the filter function used in the covariance calculation."""
         if self.filter_function:
             self.use_filter_function=1
             if self.filter_function=='psum':
@@ -708,6 +763,7 @@ class Covariance:
             self.filter_function=calc_psum_abs
 
     def setup_output_function(self):
+        """Assign the output function used in the covariance calculation."""
         if self.custom_function:
             ## see if string is key in dictionary first
             try:
@@ -727,11 +783,13 @@ class Covariance:
 
 
     def clip_max_shot(self):
+        """Cut data based on max_shot."""
         if self.max_shot:
             self.shot_array=self.shot_array[self.shot_array<self.max_shot]
 
         
     def compute_covariance_term(self):
+        """Calculate the 2/3/4fold covariance fromthe individual terms."""
         if self.nfold==2:
             self.output_array=compute_2fold_covariance_term_iterate(self.output_array, self.dim_list)
         elif self.nfold==3:
@@ -740,7 +798,7 @@ class Covariance:
             self.output_array=compute_4fold_covariance_term_iterate(self.output_array, self.dim_list)
 
     def calc_2fold_coinc(self):
-        ### call numba fn
+        """Call the numba function for twofold coincidences"""
 
         calc_Cab(self.output_array, self.output_function,
                 self.shot_array,self.ion_array_list,self.idx_dict_list,
@@ -751,7 +809,7 @@ class Covariance:
                 self.use_filter_function, self.filter_function, self.filter_max)
 
     def calc_3fold_coinc(self):
-        ### call numba fn
+        """Call the numba function for twofold coincidences"""
 
         calc_Cabc(self.output_array, self.output_function,
                 self.shot_array,self.ion_array_list,self.idx_dict_list,
@@ -762,7 +820,7 @@ class Covariance:
                 self.use_filter_function,self.filter_function, self.filter_max)
 
     def calc_4fold_coinc(self):
-        ### call numba fn
+        """Call the numba function for twofold coincidences"""
 
         calc_Cabcd(self.output_array, self.output_function,
                 self.shot_array,self.ion_array_list,self.idx_dict_list,
@@ -772,15 +830,22 @@ class Covariance:
                 self.autovariance_array, 
                 self.use_filter_function, self.filter_function, self.filter_max)
 
+    def check_data_array(self):
+        """Check that each ion has a data_array, if not then create it."""
+        for ion in self.ion_list:
+            if not hasattr(ion, 'data_array'):
+                ion.dataframe_to_arr()
 
     def calc_covariance(self):
-
+        """General function which calls all the necessary setup/checks before covariance calculation,
+        and then proceeds with the general logic."""
         self.start_time = time.time()
         self.check()
         self.setup_output()
         self.setup_output_function()
         self.setup_terms()
         self.setup_filter()
+        self.check_data_array()
         self.get_from_ions()
         self.setup_autovariance_correction()
         self.clip_max_shot()
@@ -791,6 +856,10 @@ class Covariance:
         
         self.calc_shiftnum_array = np.zeros(self.nfold-1, dtype='int64')
         self.use_shiftnum_array = np.zeros(self.nfold-1,dtype='int64')
+
+        ## check that the ions have data_arrays, force them to be made if not
+
+
 
         for term_name, shift_vals, ncalc in zip(self.term_name_list,self.shift_val_list, self.ncalc_list):
             self.ncalc=ncalc
@@ -828,6 +897,20 @@ class Covariance:
                 label_list = ['p$_x$','p$_y$','p$_z$'],arrow=False,
                 vfac=1,cmap='bwr', axis_centered_on_zero=True,
                 colors_centered_on_zero=True):
+        """Plot 2D histogram of calculated covariance
+
+        :param proj_list: list of axes to project over in teh plotting
+        :param param_dict: param_dict used to neaten the plot
+        :param term: which term of output array to plot. Default is -1 (covariance)
+        :param label_list: list of labels of each axes of output array. Default is ['p$_x$','p$_y$','p$_z$']
+        :param arrow: If True, plot an arrow for the reference label
+        :param vfac: Used to choose max for colourscale. Default=1
+        :param cmap: Colormap for plotting. Default='bwr'
+        :param axis_centered_on_zero: Are the axes symmetric about zero (as in Newton plot)? 
+            If False, axis start at zero. then Default=True
+        :param colors_centered_on_zero: Do you want to plot with a colormap that is symmetric about zero?
+            If False, then vmin=0. Default=True
+        """
         self.label_list = label_list
         for i in proj_list:
             if i==0:

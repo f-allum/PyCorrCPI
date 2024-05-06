@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyCorrCPI.covariance &mdash; PyCorrCPI 0.0.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=8c5712d9"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            PyCorrCPI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">PyCorrCPI</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyCorrCPI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PyCorrCPI.covariance</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PyCorrCPI.covariance</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.imports</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.helpers_numba</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.output_functions</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+<span class="c1">## Constants</span>
+
+<span class="n">u</span> <span class="o">=</span> <span class="mf">1.660538921e-27</span>
+<span class="n">e</span> <span class="o">=</span> <span class="mf">1.60217663e-19</span>
+<span class="n">k</span> <span class="o">=</span> <span class="mf">8.9875517923e9</span>
+<span class="n">hbar</span> <span class="o">=</span> <span class="mf">1.0546e-34</span>
+<span class="n">kb</span> <span class="o">=</span> <span class="mf">1.380649e-23</span>
+<span class="n">cm_to_J</span> <span class="o">=</span> <span class="mf">1.986e-23</span>
+<span class="n">c_cm_s</span> <span class="o">=</span> <span class="mf">2.997e10</span>
+<span class="n">hbar</span> <span class="o">=</span> <span class="mf">1.054571817e-34</span>
+<span class="n">bohr_radius</span> <span class="o">=</span> <span class="mf">5.29177210903e-11</span>
+<span class="n">p_au_fac</span> <span class="o">=</span> <span class="n">hbar</span><span class="o">/</span><span class="n">bohr_radius</span> <span class="c1"># factor for atomic units of momentum</span>
+<span class="n">p_au_KE_eV_fac</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_au_fac</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="n">u</span><span class="o">*</span><span class="n">e</span><span class="p">)</span> <span class="c1"># factor for converting from atomic units of momentum to KE in eV</span>
+<span class="n">cm_to_hartree</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mf">219474.6</span> 
+<span class="n">hartree_to_eV</span> <span class="o">=</span> <span class="mf">27.211396132</span>
+<span class="n">u_to_amu</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mf">5.4857990943e-4</span>
+<span class="n">bohr_to_angstrom</span> <span class="o">=</span> <span class="mf">0.529177211</span>
+
+
+<span class="n">output_function_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;beta_psum_KER&#39;</span><span class="p">:</span><span class="n">beta_psum_KER</span><span class="p">,</span>
+                        <span class="s1">&#39;output_format_TfAcAc&#39;</span><span class="p">:</span><span class="n">output_format_TfAcAc</span><span class="p">}</span>
+
+<span class="n">param_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;spinewidth&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
+              <span class="s1">&#39;linewidth&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span>
+              <span class="s1">&#39;ticklength&#39;</span><span class="p">:</span><span class="mi">6</span><span class="p">,</span>
+              <span class="s1">&#39;tickwidth&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span>
+              <span class="s1">&#39;ticklabelsize&#39;</span><span class="p">:</span><span class="mi">16</span><span class="p">,</span>
+              <span class="s1">&#39;axislabelsize&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="neaten_plot">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.neaten_plot">[docs]</a>
+<span class="k">def</span> <span class="nf">neaten_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Funfction used to neaten up covariance plots&quot;&quot;&quot;</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;ticklabelsize&#39;</span><span class="p">],</span><span class="n">length</span><span class="o">=</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;ticklength&#39;</span><span class="p">],</span><span class="n">width</span><span class="o">=</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;tickwidth&#39;</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;axislabelsize&#39;</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;axislabelsize&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">,</span><span class="s1">&#39;bottom&#39;</span><span class="p">,</span><span class="s1">&#39;left&#39;</span><span class="p">,</span><span class="s1">&#39;right&#39;</span><span class="p">]:</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;spinewidth&#39;</span><span class="p">])</span></div>
+
+
+
+<div class="viewcode-block" id="calc_covariance">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_covariance">[docs]</a>
+<span class="k">def</span> <span class="nf">calc_covariance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ion_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span>
+                       <span class="n">store_coincs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">update_dataset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">remove_autovariance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">custom_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">n_EiEj</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                       <span class="n">n_EiEjEk</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_EijEk</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                       <span class="n">n_EiEjEkEl</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_EijEkl</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_EijkEl</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_EiEjEkl</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                       <span class="n">filter_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">filter_max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                       <span class="n">max_shot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">only_coincidence</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function for initializing an instance of the Covariance class</span>
+
+<span class="sd">    :param ion_list: list of n ions to be used in the nfold covariance calculation</span>
+<span class="sd">    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]</span>
+<span class="sd">    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]</span>
+<span class="sd">    :param store_coincs: NOT USED CURENTLY</span>
+<span class="sd">    :param update_dataset: NOT USED CURRENTLY</span>
+<span class="sd">    :param verbose: print more details during the calculation, default=False</span>
+<span class="sd">    :param remove_autovariance: If True, automatically removes autovariance contributions if two ions</span>
+<span class="sd">        the same. Default=True</span>
+<span class="sd">    :param custom_function: Custom function for formatting the covariance output. If False,</span>
+<span class="sd">        a default function is used. Default=False</span>
+<span class="sd">    :param filter_function: Custom function used for filtering coincidences. If False, the default </span>
+<span class="sd">        (absolute magnitude of summed momenta calculation) is used</span>
+<span class="sd">    :param filter_max: Max value of the output of the filter function for an acceptable coincidence.</span>
+<span class="sd">        Default is np.inf to ignore filtering</span>
+<span class="sd">    :param max_shot: Maximum shot used in the calculation. Default=None</span>
+<span class="sd">    :param only_coincidence: If True, only calculate the leading term (the true coincidences). Default = False </span>
+<span class="sd">    :param n_EiEj: number of times to calculate the &lt;A&gt;&lt;B&gt; term in two-fold covariance</span>
+<span class="sd">    :param n_EiEjEk: number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;C&gt; term in three-fold covariance</span>
+<span class="sd">    :param n_EijEk: number of times to calculate the &lt;AB&gt;&lt;C&gt; type terms in three-fold covariance</span>
+<span class="sd">    :param n_EiEjEkEl: number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;C&gt;&lt;D&gt; term in four-fold covariance</span>
+<span class="sd">    :param n_EijEkl: number of times to calculate the &lt;AB&gt;&lt;CD&gt; type terms in four-fold covariance</span>
+<span class="sd">    :param n_EijkEl: number of times to calculate the &lt;ABC&gt;&lt;D&gt; type terms in four-fold covariance</span>
+<span class="sd">    :param n_EiEjEkl: number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;CD&gt; type terms in four-fold covariance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="n">covariance_output</span> <span class="o">=</span> <span class="n">Covariance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ion_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span>
+                       <span class="n">store_coincs</span><span class="o">=</span><span class="n">store_coincs</span><span class="p">,</span>
+                       <span class="n">update_dataset</span><span class="o">=</span><span class="n">update_dataset</span><span class="p">,</span>
+                       <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+                       <span class="n">remove_autovariance</span><span class="o">=</span><span class="n">remove_autovariance</span><span class="p">,</span>
+                       <span class="n">custom_function</span><span class="o">=</span><span class="n">custom_function</span><span class="p">,</span>
+                       <span class="n">n_EiEj</span><span class="o">=</span><span class="n">n_EiEj</span><span class="p">,</span>
+                       <span class="n">n_EiEjEk</span><span class="o">=</span><span class="n">n_EiEjEk</span><span class="p">,</span> <span class="n">n_EijEk</span><span class="o">=</span><span class="n">n_EijEk</span><span class="p">,</span>
+                       <span class="n">n_EiEjEkEl</span><span class="o">=</span><span class="n">n_EiEjEkEl</span><span class="p">,</span> <span class="n">n_EijEkl</span><span class="o">=</span><span class="n">n_EijEkl</span><span class="p">,</span> <span class="n">n_EijkEl</span><span class="o">=</span><span class="n">n_EijkEl</span><span class="p">,</span> <span class="n">n_EiEjEkl</span><span class="o">=</span><span class="n">n_EiEjEkl</span><span class="p">,</span>
+                       <span class="n">filter_function</span><span class="o">=</span><span class="n">filter_function</span><span class="p">,</span>
+                       <span class="n">filter_max</span><span class="o">=</span><span class="n">filter_max</span><span class="p">,</span>
+                       <span class="n">max_shot</span><span class="o">=</span><span class="n">max_shot</span><span class="p">,</span>
+                       <span class="n">only_coincidence</span><span class="o">=</span><span class="n">only_coincidence</span><span class="p">)</span>
+
+    <span class="n">covariance_output</span><span class="o">.</span><span class="n">calc_covariance</span><span class="p">()</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">covariance_output</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="calculate_indexes">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calculate_indexes">[docs]</a>
+<span class="nd">@njit</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">calculate_indexes</span><span class="p">(</span><span class="n">A_idx_dict</span><span class="p">,</span><span class="n">shot_array_A</span><span class="p">,</span><span class="n">shot_array</span><span class="p">,</span><span class="n">A_arr</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds the first and last index in an ion data array corresponding to each laser shot</span>
+<span class="sd">    that will be used in the covariance calculation. Precalculating this dictionary speeds up</span>
+<span class="sd">    the calculation, particularly for higher fold covariances and/or if recalculating terms</span>
+<span class="sd">    multiple times. </span>
+<span class="sd">    !This function assumes that the data is sorted by ascending shot number!</span>
+
+<span class="sd">    </span>
+<span class="sd">    :param A_idx_dict:  the (empty) dictionary which will be filled with (shot, initial_index, final_index)</span>
+<span class="sd">    :param shot_array_A:  array of laser shots used in the covariance calculation, for which ion A is detected</span>
+<span class="sd">    :param shot_array: array of total laser shots used in the covariance calculation</span>
+<span class="sd">    :param A_arr: the ion A data array ([])</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">last_index_A_old</span><span class="o">=</span><span class="mi">0</span>
+    <span class="n">A_shots</span> <span class="o">=</span> <span class="n">A_arr</span><span class="p">[:,</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">found</span><span class="o">=</span><span class="kc">False</span>
+    <span class="k">for</span> <span class="n">shot</span> <span class="ow">in</span> <span class="n">shot_array</span><span class="p">:</span>
+        <span class="n">found</span><span class="p">,</span> <span class="n">first_index_A</span> <span class="o">=</span> <span class="n">find_first</span><span class="p">(</span><span class="n">shot</span><span class="p">,</span><span class="n">A_shots</span><span class="p">[</span><span class="n">last_index_A_old</span><span class="p">:])</span>
+        <span class="k">if</span> <span class="n">found</span><span class="p">:</span>
+            <span class="n">last_index_A</span> <span class="o">=</span> <span class="n">find_last</span><span class="p">(</span><span class="n">shot</span><span class="p">,</span><span class="n">A_shots</span><span class="p">[</span><span class="n">first_index_A</span><span class="o">+</span><span class="n">last_index_A_old</span><span class="p">:])</span>
+            <span class="n">abs_first_index_A</span> <span class="o">=</span> <span class="n">last_index_A_old</span><span class="o">+</span><span class="n">first_index_A</span>
+            <span class="n">abs_last_index_A</span> <span class="o">=</span> <span class="n">last_index_A_old</span><span class="o">+</span><span class="n">first_index_A</span><span class="o">+</span><span class="n">last_index_A</span>
+            <span class="n">dict_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">abs_first_index_A</span><span class="p">,</span><span class="n">abs_last_index_A</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+            <span class="n">A_idx_dict</span><span class="p">[</span><span class="n">shot</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="n">abs_first_index_A</span><span class="p">,</span><span class="n">abs_last_index_A</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+            <span class="n">last_index_A_old</span> <span class="o">+=</span> <span class="n">first_index_A</span><span class="o">+</span><span class="n">last_index_A</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No ion A in this shot</span>
+            <span class="n">A_idx_dict</span><span class="p">[</span><span class="n">shot</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span></div>
+
+            
+
+<div class="viewcode-block" id="compute_2fold_covariance_term_iterate">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.compute_2fold_covariance_term_iterate">[docs]</a>
+<span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">compute_2fold_covariance_term_iterate</span><span class="p">(</span><span class="n">output_arr</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;calculate 2fold covariance from its consistuent terms&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+                <span class="n">output_arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">-</span> <span class="n">output_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">output_arr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="compute_3fold_covariance_term_iterate">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.compute_3fold_covariance_term_iterate">[docs]</a>
+<span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">compute_3fold_covariance_term_iterate</span><span class="p">(</span><span class="n">output_arr</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;calculate 3fold covariance from its consistuent terms&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+                <span class="n">output_arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">-</span> \
+                <span class="n">output_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">-</span> <span class="n">output_arr</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">-</span> <span class="n">output_arr</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">+</span> \
+                <span class="mi">2</span><span class="o">*</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">output_arr</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="compute_4fold_covariance_term_iterate">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.compute_4fold_covariance_term_iterate">[docs]</a>
+<span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">compute_4fold_covariance_term_iterate</span><span class="p">(</span><span class="n">output_arr</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;calculate 4fold covariance from its consistuent terms&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">z</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+                <span class="n">output_arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">-</span> \
+                <span class="p">(</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span> <span class="o">-</span> \
+                <span class="p">(</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">5</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span><span class="o">+</span>\
+                <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">8</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">11</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">12</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span><span class="o">+</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">13</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span> <span class="o">-</span> \
+                <span class="mi">6</span><span class="o">*</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">14</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">output_arr</span><span class="p">)</span></div>
+
+
+
+
+
+<div class="viewcode-block" id="calc_Cab">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_Cab">[docs]</a>
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">calc_Cab</span><span class="p">(</span><span class="n">output_array</span><span class="p">,</span> <span class="n">output_function</span><span class="p">,</span>
+                    <span class="n">shot_array</span><span class="p">,</span>
+                    <span class="n">ion_array_list</span><span class="p">,</span> 
+                    <span class="n">idx_dict_list</span><span class="p">,</span>
+                    <span class="n">mass_list</span><span class="p">,</span> 
+                    <span class="n">dim_list</span><span class="p">,</span> 
+                    <span class="n">bin_list</span><span class="p">,</span>
+                    <span class="n">shift_num_list</span><span class="p">,</span>
+                    <span class="n">n_calc</span><span class="p">,</span> <span class="n">n_shots</span><span class="p">,</span> <span class="n">term_counter</span><span class="p">,</span>
+                    <span class="n">autovariance_array</span><span class="p">,</span>
+                    <span class="n">use_filter_function</span><span class="p">,</span>
+                    <span class="n">filter_function</span><span class="p">,</span>
+                    <span class="n">filter_max</span><span class="p">):</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find double coincidences, transform into output frame and sum.</span>
+<span class="sd">    Acts in place on the general output array. This function calculates</span>
+<span class="sd">    all terms of the covariance expression, with appropriate values for the shot</span>
+<span class="sd">    shifting index.</span>
+<span class="sd">    </span>
+<span class="sd">    :param ouput_array: array which stores output of covariance calculation</span>
+<span class="sd">    :param output_function: the function which takes the coincidence and converts into the observables of interest</span>
+<span class="sd">    :param shot_array: array of the unique shots in the dataset over which the covariance is calculated</span>
+<span class="sd">    :param ion_array_list: data arrays of the three ions, [px,py,pz,shot,pmag] format</span>
+<span class="sd">    :param idx_dict_list: list of the precalculated dictionaries of shot indices for each ion</span>
+<span class="sd">    :param mass_list: mass of each ion in amu. Passed to the output function</span>
+<span class="sd">    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]</span>
+<span class="sd">    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]</span>
+<span class="sd">    :param shift_num_list: list of shot shift numbers applied to the ions beyond ion A</span>
+<span class="sd">    :param n_calc: number of times the term will be recalculated.</span>
+<span class="sd">    :param n_shots: number of shots covariance is calculated over.</span>
+<span class="sd">    :param term_counter: index of the term in the epression to be calculated.</span>
+<span class="sd">    :param autovariance_array: array of pairs of ions which are the same to exclude autovariance/trivial coincidence</span>
+<span class="sd">    :param use_filter_function: 1 if filtering on some criteria of coincidences</span>
+<span class="sd">    :param filter_function: function used for filtering, takes in (vec_list,mag_list,mass_list)</span>
+<span class="sd">    :param filter_max: if output of filter_function is greater than filter_max, coincidence is ignored</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">## as another speedup, we now precalculate the normalization needed to the term</span>
+    <span class="c1">## to save on doing extra operations on the entire array later</span>
+    <span class="n">addval</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">n_shots</span><span class="o">*</span><span class="n">n_calc</span><span class="p">)</span>
+    
+    <span class="c1">## do the shot shifting</span>
+    <span class="n">A_shot_array</span> <span class="o">=</span> <span class="n">shot_array</span>
+    <span class="n">B_shot_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">shot_array</span><span class="p">,</span><span class="o">-</span><span class="n">shift_num_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">A_ion_array</span><span class="p">,</span><span class="n">B_ion_array</span><span class="o">=</span><span class="n">ion_array_list</span>
+    <span class="n">A_idx_dict</span><span class="p">,</span><span class="n">B_idx_dict</span> <span class="o">=</span> <span class="n">idx_dict_list</span>
+    <span class="n">A_mass</span><span class="p">,</span><span class="n">B_mass</span> <span class="o">=</span> <span class="n">mass_list</span>
+
+    <span class="n">x_pixels</span><span class="p">,</span><span class="n">y_pixels</span><span class="p">,</span><span class="n">z_pixels</span><span class="o">=</span><span class="n">dim_list</span>
+
+    <span class="n">coinc_counter</span><span class="o">=</span><span class="mi">0</span>
+
+    <span class="n">len_autovariance_array</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">autovariance_array</span><span class="p">)</span>
+
+    <span class="c1">## now thanks to the shot dictionaries we can easily iterate over all sets of events in a laser shot</span>
+    <span class="k">for</span> <span class="n">A_shot</span><span class="p">,</span><span class="n">B_shot</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">A_shot_array</span><span class="p">,</span><span class="n">B_shot_array</span><span class="p">):</span>
+        
+        <span class="n">A_idx_i</span><span class="p">,</span> <span class="n">A_idx_f</span> <span class="o">=</span> <span class="n">A_idx_dict</span><span class="p">[</span><span class="n">A_shot</span><span class="p">]</span>
+        <span class="n">B_idx_i</span><span class="p">,</span> <span class="n">B_idx_f</span> <span class="o">=</span> <span class="n">B_idx_dict</span><span class="p">[</span><span class="n">B_shot</span><span class="p">]</span>
+
+        <span class="c1"># For each &#39;A&#39; ion in the &#39;shot&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">A_idx_i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">A_idx_f</span><span class="p">)):</span>
+
+            <span class="c1">## n.b. now that we&#39;re using our own implementation of .dot,</span>
+            <span class="c1">## don&#39;t need to convert these arrays to contigious for speedup</span>
+            <span class="n">A_vec</span> <span class="o">=</span> <span class="n">A_ion_array</span><span class="p">[</span><span class="n">i</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">A_mag</span> <span class="o">=</span> <span class="n">A_ion_array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+            <span class="n">A_KE</span> <span class="o">=</span> <span class="n">p_au_KE_eV_fac</span><span class="o">*</span><span class="p">(</span><span class="n">A_mag</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">A_mass</span><span class="p">)</span>
+
+            <span class="c1"># For each &#39;B&#39; ion in the &#39;shot&#39;</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">B_idx_i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">B_idx_f</span><span class="p">)):</span>
+                <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">0</span>
+                <span class="k">if</span> <span class="n">len_autovariance_array</span><span class="p">:</span>
+                    <span class="n">iter_index_array</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">])</span>
+                    <span class="c1"># check if any indices match</span>
+                    <span class="n">iter_index_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">iter_index_array</span><span class="p">)</span>
+                    <span class="c1"># print(len(iter_index_set), len(iter_index_array))</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">iter_index_set</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="n">iter_index_array</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">autovariance_pair</span> <span class="ow">in</span> <span class="n">autovariance_array</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">iter_index_array</span><span class="p">[</span><span class="n">autovariance_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">==</span><span class="n">iter_index_array</span><span class="p">[</span><span class="n">autovariance_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span>
+                                <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">1</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">0</span>
+                <span class="k">if</span> <span class="n">skip_coinc</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">B_vec</span> <span class="o">=</span> <span class="n">B_ion_array</span><span class="p">[</span><span class="n">j</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span>
+                <span class="n">B_mag</span> <span class="o">=</span> <span class="n">B_ion_array</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+                <span class="n">B_KE</span> <span class="o">=</span> <span class="n">p_au_KE_eV_fac</span><span class="o">*</span><span class="p">(</span><span class="n">B_mag</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">B_mass</span><span class="p">)</span>
+
+                <span class="n">vec_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">A_vec</span><span class="p">,</span><span class="n">B_vec</span><span class="p">]</span>
+                <span class="n">mag_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">A_mag</span><span class="p">,</span><span class="n">B_mag</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">use_filter_function</span><span class="p">:</span>
+                    <span class="n">filter_val</span> <span class="o">=</span> <span class="n">filter_function</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span><span class="n">mag_list</span><span class="p">,</span><span class="n">mass_list</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">filter_val</span><span class="o">&gt;</span><span class="n">filter_max</span><span class="p">:</span>
+                        <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="k">if</span> <span class="n">skip_coinc</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+
+                <span class="c1">## calculate the output from the set of 3 ion momenta vectors</span>
+                <span class="n">x_out_list</span><span class="p">,</span><span class="n">y_out_list</span><span class="p">,</span><span class="n">z_out_list</span> <span class="o">=</span> <span class="n">output_function</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span><span class="n">mag_list</span><span class="p">,</span><span class="n">mass_list</span><span class="p">,</span><span class="n">bin_list</span><span class="p">,</span><span class="n">dim_list</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">x_out</span><span class="p">,</span><span class="n">y_out</span><span class="p">,</span><span class="n">z_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_out_list</span><span class="p">,</span><span class="n">y_out_list</span><span class="p">,</span><span class="n">z_out_list</span><span class="p">):</span>
+                    <span class="c1">## if in bounds add to array</span>
+                    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">z_out</span> <span class="o">&lt;</span> <span class="n">x_pixels</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">y_out</span> <span class="o">&lt;</span> <span class="n">y_pixels</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">z_out</span> <span class="o">&lt;</span> <span class="n">z_pixels</span><span class="p">:</span>
+                                <span class="n">coinc_counter</span><span class="o">+=</span><span class="mi">1</span>
+                                <span class="n">output_array</span><span class="p">[</span><span class="n">term_counter</span><span class="p">,</span><span class="n">x_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">z_out</span><span class="p">]</span> <span class="o">+=</span> <span class="n">addval</span></div>
+
+
+    <span class="c1"># print(coinc_counter)</span>
+
+<div class="viewcode-block" id="calc_Cabc">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_Cabc">[docs]</a>
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">calc_Cabc</span><span class="p">(</span><span class="n">output_array</span><span class="p">,</span> <span class="n">output_function</span><span class="p">,</span>
+                    <span class="n">shot_array</span><span class="p">,</span>
+                    <span class="n">ion_array_list</span><span class="p">,</span> 
+                    <span class="n">idx_dict_list</span><span class="p">,</span>
+                    <span class="n">mass_list</span><span class="p">,</span> 
+                    <span class="n">dim_list</span><span class="p">,</span> 
+                    <span class="n">bin_list</span><span class="p">,</span>
+                    <span class="n">shift_num_list</span><span class="p">,</span>
+                    <span class="n">n_calc</span><span class="p">,</span> <span class="n">n_shots</span><span class="p">,</span> <span class="n">term_counter</span><span class="p">,</span>
+                    <span class="n">autovariance_array</span><span class="p">,</span>
+                    <span class="n">use_filter_function</span><span class="p">,</span>
+                    <span class="n">filter_function</span><span class="p">,</span>
+                    <span class="n">filter_max</span><span class="p">):</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find triple coincidences, transform into output frame and sum.</span>
+<span class="sd">    Acts in place on the general output array. This function calculates</span>
+<span class="sd">    all terms of the covariance expression, with appropriate values for the shot</span>
+<span class="sd">    shifting index.</span>
+<span class="sd">    </span>
+<span class="sd">    :param ouput_array: array which stores output of covariance calculation</span>
+<span class="sd">    :param output_function: the function which takes the coincidence and converts into the observables of interest</span>
+<span class="sd">    :param shot_array: array of the unique shots in the dataset over which the covariance is calculated</span>
+<span class="sd">    :param ion_array_list: data arrays of the three ions, [px,py,pz,shot,pmag] format</span>
+<span class="sd">    :param idx_dict_list: list of the precalculated dictionaries of shot indices for each ion</span>
+<span class="sd">    :param mass_list: mass of each ion in amu. Passed to the output function</span>
+<span class="sd">    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]</span>
+<span class="sd">    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]</span>
+<span class="sd">    :param shift_num_list: list of shot shift numbers applied to the ions beyond ion A</span>
+<span class="sd">    :param n_calc: number of times the term will be recalculated.</span>
+<span class="sd">    :param n_shots: number of shots covariance is calculated over.</span>
+<span class="sd">    :param term_counter: index of the term in the epression to be calculated.</span>
+<span class="sd">    :param autovariance_array: array of pairs of ions which are the same to exclude autovariance/trivial coincidence</span>
+<span class="sd">    :param use_filter_function: 1 if filtering on some criteria of coincidences</span>
+<span class="sd">    :param filter_function: function used for filtering, takes in (vec_list,mag_list,mass_list)</span>
+<span class="sd">    :param filter_max: if output of filter_function is greater than filter_max, coincidence is ignored</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">## as another speedup, we now precalculate the normalization needed to the term</span>
+    <span class="c1">## to save on doing extra operations on the entire array later</span>
+    <span class="n">addval</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">n_shots</span><span class="o">*</span><span class="n">n_calc</span><span class="p">)</span>
+    
+    <span class="c1">## do the shot shifting</span>
+    <span class="n">A_shot_array</span> <span class="o">=</span> <span class="n">shot_array</span>
+    <span class="n">B_shot_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">shot_array</span><span class="p">,</span><span class="o">-</span><span class="n">shift_num_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">C_shot_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">shot_array</span><span class="p">,</span><span class="o">-</span><span class="n">shift_num_list</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="n">A_ion_array</span><span class="p">,</span><span class="n">B_ion_array</span><span class="p">,</span><span class="n">C_ion_array</span><span class="o">=</span><span class="n">ion_array_list</span>
+    <span class="n">A_idx_dict</span><span class="p">,</span><span class="n">B_idx_dict</span><span class="p">,</span><span class="n">C_idx_dict</span> <span class="o">=</span> <span class="n">idx_dict_list</span>
+    <span class="n">A_mass</span><span class="p">,</span><span class="n">B_mass</span><span class="p">,</span><span class="n">C_mass</span> <span class="o">=</span> <span class="n">mass_list</span>
+
+    <span class="n">x_pixels</span><span class="p">,</span><span class="n">y_pixels</span><span class="p">,</span><span class="n">z_pixels</span><span class="o">=</span><span class="n">dim_list</span>
+
+    <span class="n">coinc_counter</span><span class="o">=</span><span class="mi">0</span>
+
+    <span class="n">len_autovariance_array</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">autovariance_array</span><span class="p">)</span>
+
+    <span class="c1">## now thanks to the shot dictionaries we can easily iterate over all sets of events in a laser shot</span>
+    <span class="k">for</span> <span class="n">A_shot</span><span class="p">,</span><span class="n">B_shot</span><span class="p">,</span><span class="n">C_shot</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">A_shot_array</span><span class="p">,</span><span class="n">B_shot_array</span><span class="p">,</span><span class="n">C_shot_array</span><span class="p">):</span>
+        
+        <span class="n">A_idx_i</span><span class="p">,</span> <span class="n">A_idx_f</span> <span class="o">=</span> <span class="n">A_idx_dict</span><span class="p">[</span><span class="n">A_shot</span><span class="p">]</span>
+        <span class="n">B_idx_i</span><span class="p">,</span> <span class="n">B_idx_f</span> <span class="o">=</span> <span class="n">B_idx_dict</span><span class="p">[</span><span class="n">B_shot</span><span class="p">]</span>
+        <span class="n">C_idx_i</span><span class="p">,</span> <span class="n">C_idx_f</span> <span class="o">=</span> <span class="n">C_idx_dict</span><span class="p">[</span><span class="n">C_shot</span><span class="p">]</span>
+
+        <span class="c1"># For each &#39;A&#39; ion in the &#39;shot&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">A_idx_i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">A_idx_f</span><span class="p">)):</span>
+
+            <span class="c1">## n.b. now that we&#39;re using our own implementation of .dot,</span>
+            <span class="c1">## don&#39;t need to convert these arrays to contigious for speedup</span>
+            <span class="n">A_vec</span> <span class="o">=</span> <span class="n">A_ion_array</span><span class="p">[</span><span class="n">i</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">A_mag</span> <span class="o">=</span> <span class="n">A_ion_array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+            <span class="n">A_KE</span> <span class="o">=</span> <span class="n">p_au_KE_eV_fac</span><span class="o">*</span><span class="p">(</span><span class="n">A_mag</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">A_mass</span><span class="p">)</span>
+
+            <span class="c1"># For each &#39;B&#39; ion in the &#39;shot&#39;</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">B_idx_i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">B_idx_f</span><span class="p">)):</span>
+
+                <span class="n">B_vec</span> <span class="o">=</span> <span class="n">B_ion_array</span><span class="p">[</span><span class="n">j</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span>
+                <span class="n">B_mag</span> <span class="o">=</span> <span class="n">B_ion_array</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+                <span class="n">B_KE</span> <span class="o">=</span> <span class="n">p_au_KE_eV_fac</span><span class="o">*</span><span class="p">(</span><span class="n">B_mag</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">B_mass</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">C_idx_i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">C_idx_f</span><span class="p">)):</span>
+                    <span class="c1"># # print(len(autovariance_list))</span>
+                    <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">0</span>
+                    <span class="k">if</span> <span class="n">len_autovariance_array</span><span class="p">:</span>
+                        <span class="n">iter_index_array</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">])</span>
+                        <span class="c1"># check if any indices match</span>
+                        <span class="n">iter_index_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">iter_index_array</span><span class="p">)</span>
+                        <span class="c1"># print(len(iter_index_set), len(iter_index_array))</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">iter_index_set</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="n">iter_index_array</span><span class="p">):</span>
+                            <span class="k">for</span> <span class="n">autovariance_pair</span> <span class="ow">in</span> <span class="n">autovariance_array</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">iter_index_array</span><span class="p">[</span><span class="n">autovariance_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">==</span><span class="n">iter_index_array</span><span class="p">[</span><span class="n">autovariance_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span>
+                                    <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">1</span>
+                                <span class="k">else</span><span class="p">:</span>
+                                    <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">0</span>
+                    <span class="k">if</span> <span class="n">skip_coinc</span><span class="p">:</span>
+                        <span class="k">continue</span>
+
+                    <span class="n">C_vec</span> <span class="o">=</span> <span class="n">C_ion_array</span><span class="p">[</span><span class="n">k</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span>
+                    <span class="n">C_mag</span> <span class="o">=</span> <span class="n">C_ion_array</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+                    <span class="n">C_KE</span> <span class="o">=</span> <span class="n">p_au_KE_eV_fac</span><span class="o">*</span><span class="p">(</span><span class="n">C_mag</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">C_mass</span><span class="p">)</span>
+
+                    <span class="n">vec_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">A_vec</span><span class="p">,</span><span class="n">B_vec</span><span class="p">,</span><span class="n">C_vec</span><span class="p">]</span>
+                    <span class="n">mag_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">A_mag</span><span class="p">,</span><span class="n">B_mag</span><span class="p">,</span><span class="n">C_mag</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="n">use_filter_function</span><span class="p">:</span>
+                        <span class="n">filter_val</span> <span class="o">=</span> <span class="n">filter_function</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span><span class="n">mag_list</span><span class="p">,</span><span class="n">mass_list</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">filter_val</span><span class="o">&gt;</span><span class="n">filter_max</span><span class="p">:</span>
+                            <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">skip_coinc</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+
+                    <span class="c1">## calculate the output from the set of 3 ion momenta vectors</span>
+                    <span class="n">x_out_list</span><span class="p">,</span><span class="n">y_out_list</span><span class="p">,</span><span class="n">z_out_list</span> <span class="o">=</span> <span class="n">output_function</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span><span class="n">mag_list</span><span class="p">,</span><span class="n">mass_list</span><span class="p">,</span><span class="n">bin_list</span><span class="p">,</span><span class="n">dim_list</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">x_out</span><span class="p">,</span><span class="n">y_out</span><span class="p">,</span><span class="n">z_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_out_list</span><span class="p">,</span><span class="n">y_out_list</span><span class="p">,</span><span class="n">z_out_list</span><span class="p">):</span>
+                        <span class="c1">## if in bounds add to array</span>
+                        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">x_out</span> <span class="o">&lt;</span> <span class="n">x_pixels</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">y_out</span> <span class="o">&lt;</span> <span class="n">y_pixels</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">z_out</span> <span class="o">&lt;</span> <span class="n">z_pixels</span><span class="p">:</span>
+                                    <span class="n">coinc_counter</span><span class="o">+=</span><span class="mi">1</span>
+                                    <span class="n">output_array</span><span class="p">[</span><span class="n">term_counter</span><span class="p">,</span><span class="n">x_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">z_out</span><span class="p">]</span> <span class="o">+=</span> <span class="n">addval</span></div>
+
+
+<div class="viewcode-block" id="calc_Cabcd">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_Cabcd">[docs]</a>
+<span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">calc_Cabcd</span><span class="p">(</span><span class="n">output_array</span><span class="p">,</span> <span class="n">output_function</span><span class="p">,</span>
+                    <span class="n">shot_array</span><span class="p">,</span>
+                    <span class="n">ion_array_list</span><span class="p">,</span> 
+                    <span class="n">idx_dict_list</span><span class="p">,</span>
+                    <span class="n">mass_list</span><span class="p">,</span> 
+                    <span class="n">dim_list</span><span class="p">,</span> 
+                    <span class="n">bin_list</span><span class="p">,</span>
+                    <span class="n">shift_num_list</span><span class="p">,</span>
+                    <span class="n">n_calc</span><span class="p">,</span> <span class="n">n_shots</span><span class="p">,</span> <span class="n">term_counter</span><span class="p">,</span>
+                    <span class="n">autovariance_array</span><span class="p">,</span>
+                    <span class="n">use_filter_function</span><span class="p">,</span>
+                    <span class="n">filter_function</span><span class="p">,</span>
+                    <span class="n">filter_max</span><span class="p">):</span>
+<span class="w">    </span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find quadruple coincidences, transform into output frame and sum.</span>
+<span class="sd">    Acts in place on the general output array. This function calculates</span>
+<span class="sd">    all terms of the covariance expression, with appropriate values for the shot</span>
+<span class="sd">    shifting index.</span>
+<span class="sd">    </span>
+<span class="sd">    :param ouput_array: array which stores output of covariance calculation</span>
+<span class="sd">    :param output_function: the function which takes the coincidence and converts into the observables of interest</span>
+<span class="sd">    :param shot_array: array of the unique shots in the dataset over which the covariance is calculated</span>
+<span class="sd">    :param ion_array_list: data arrays of the three ions, [px,py,pz,shot,pmag] format</span>
+<span class="sd">    :param idx_dict_list: list of the precalculated dictionaries of shot indices for each ion</span>
+<span class="sd">    :param mass_list: mass of each ion in amu. Passed to the output function</span>
+<span class="sd">    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]</span>
+<span class="sd">    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]</span>
+<span class="sd">    :param shift_num_list: list of shot shift numbers applied to the ions beyond ion A</span>
+<span class="sd">    :param n_calc: number of times the term will be recalculated.</span>
+<span class="sd">    :param n_shots: number of shots covariance is calculated over.</span>
+<span class="sd">    :param term_counter: index of the term in the epression to be calculated.</span>
+<span class="sd">    :param autovariance_array: array of pairs of ions which are the same to exclude autovariance/trivial coincidence</span>
+<span class="sd">    :param use_filter_function: 1 if filtering on some criteria of coincidences</span>
+<span class="sd">    :param filter_function: function used for filtering, takes in (vec_list,mag_list,mass_list)</span>
+<span class="sd">    :param filter_max: if output of filter_function is greater than filter_max, coincidence is ignored</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">## as another speedup, we now precalculate the normalization needed to the term</span>
+    <span class="c1">## to save on doing extra operations on the entire array later</span>
+    <span class="n">addval</span> <span class="o">=</span> <span class="mf">1.</span><span class="o">/</span><span class="p">(</span><span class="n">n_shots</span><span class="o">*</span><span class="n">n_calc</span><span class="p">)</span>
+    
+    <span class="c1">## do the shot shifting</span>
+    <span class="n">A_shot_array</span> <span class="o">=</span> <span class="n">shot_array</span>
+    <span class="n">B_shot_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">shot_array</span><span class="p">,</span><span class="o">-</span><span class="n">shift_num_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">C_shot_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">shot_array</span><span class="p">,</span><span class="o">-</span><span class="n">shift_num_list</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">D_shot_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">roll</span><span class="p">(</span><span class="n">shot_array</span><span class="p">,</span><span class="o">-</span><span class="n">shift_num_list</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">A_ion_array</span><span class="p">,</span><span class="n">B_ion_array</span><span class="p">,</span><span class="n">C_ion_array</span><span class="p">,</span><span class="n">D_ion_array</span><span class="o">=</span><span class="n">ion_array_list</span>
+    <span class="n">A_idx_dict</span><span class="p">,</span><span class="n">B_idx_dict</span><span class="p">,</span><span class="n">C_idx_dict</span><span class="p">,</span><span class="n">D_idx_dict</span> <span class="o">=</span> <span class="n">idx_dict_list</span>
+    <span class="n">A_mass</span><span class="p">,</span><span class="n">B_mass</span><span class="p">,</span><span class="n">C_mass</span><span class="p">,</span><span class="n">D_mass</span> <span class="o">=</span> <span class="n">mass_list</span>
+
+    <span class="n">x_pixels</span><span class="p">,</span><span class="n">y_pixels</span><span class="p">,</span><span class="n">z_pixels</span><span class="o">=</span><span class="n">dim_list</span>
+
+    <span class="n">coinc_counter</span><span class="o">=</span><span class="mi">0</span>
+
+    <span class="n">len_autovariance_array</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">autovariance_array</span><span class="p">)</span>
+
+    <span class="c1">## now thanks to the shot dictionaries we can easily iterate over all sets of events in a laser shot</span>
+    <span class="k">for</span> <span class="n">A_shot</span><span class="p">,</span><span class="n">B_shot</span><span class="p">,</span><span class="n">C_shot</span><span class="p">,</span><span class="n">D_shot</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">A_shot_array</span><span class="p">,</span><span class="n">B_shot_array</span><span class="p">,</span><span class="n">C_shot_array</span><span class="p">,</span><span class="n">D_shot_array</span><span class="p">):</span>
+        
+        <span class="n">A_idx_i</span><span class="p">,</span> <span class="n">A_idx_f</span> <span class="o">=</span> <span class="n">A_idx_dict</span><span class="p">[</span><span class="n">A_shot</span><span class="p">]</span>
+        <span class="n">B_idx_i</span><span class="p">,</span> <span class="n">B_idx_f</span> <span class="o">=</span> <span class="n">B_idx_dict</span><span class="p">[</span><span class="n">B_shot</span><span class="p">]</span>
+        <span class="n">C_idx_i</span><span class="p">,</span> <span class="n">C_idx_f</span> <span class="o">=</span> <span class="n">C_idx_dict</span><span class="p">[</span><span class="n">C_shot</span><span class="p">]</span>
+        <span class="n">D_idx_i</span><span class="p">,</span> <span class="n">D_idx_f</span> <span class="o">=</span> <span class="n">D_idx_dict</span><span class="p">[</span><span class="n">D_shot</span><span class="p">]</span>
+
+        <span class="c1"># For each &#39;A&#39; ion in the &#39;shot&#39;</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">A_idx_i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">A_idx_f</span><span class="p">)):</span>
+
+            <span class="c1">## n.b. now that we&#39;re using our own implementation of .dot,</span>
+            <span class="c1">## don&#39;t need to convert these arrays to contigious for speedup</span>
+            <span class="n">A_vec</span> <span class="o">=</span> <span class="n">A_ion_array</span><span class="p">[</span><span class="n">i</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span>
+            <span class="n">A_mag</span> <span class="o">=</span> <span class="n">A_ion_array</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+            <span class="n">A_KE</span> <span class="o">=</span> <span class="n">p_au_KE_eV_fac</span><span class="o">*</span><span class="p">(</span><span class="n">A_mag</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">A_mass</span><span class="p">)</span>
+
+            <span class="c1"># For each &#39;B&#39; ion in the &#39;shot&#39;</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">B_idx_i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">B_idx_f</span><span class="p">)):</span>
+
+                <span class="n">B_vec</span> <span class="o">=</span> <span class="n">B_ion_array</span><span class="p">[</span><span class="n">j</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span>
+                <span class="n">B_mag</span> <span class="o">=</span> <span class="n">B_ion_array</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+                <span class="n">B_KE</span> <span class="o">=</span> <span class="n">p_au_KE_eV_fac</span><span class="o">*</span><span class="p">(</span><span class="n">B_mag</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">B_mass</span><span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">C_idx_i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">C_idx_f</span><span class="p">)):</span>
+
+                    <span class="n">C_vec</span> <span class="o">=</span> <span class="n">C_ion_array</span><span class="p">[</span><span class="n">k</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span>
+                    <span class="n">C_mag</span> <span class="o">=</span> <span class="n">C_ion_array</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+                    <span class="n">C_KE</span> <span class="o">=</span> <span class="n">p_au_KE_eV_fac</span><span class="o">*</span><span class="p">(</span><span class="n">C_mag</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">C_mass</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">D_idx_i</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">D_idx_f</span><span class="p">)):</span>
+                        <span class="c1"># # print(len(autovariance_list))</span>
+                        <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">0</span>
+                        <span class="k">if</span> <span class="n">len_autovariance_array</span><span class="p">:</span>
+                            <span class="n">iter_index_array</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">l</span><span class="p">])</span>
+                            <span class="c1"># check if any indices match</span>
+                            <span class="n">iter_index_set</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">iter_index_array</span><span class="p">)</span>
+                            <span class="c1"># print(len(iter_index_set), len(iter_index_array))</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">iter_index_set</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="n">iter_index_array</span><span class="p">):</span>
+                                <span class="k">for</span> <span class="n">autovariance_pair</span> <span class="ow">in</span> <span class="n">autovariance_array</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="n">iter_index_array</span><span class="p">[</span><span class="n">autovariance_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span><span class="o">==</span><span class="n">iter_index_array</span><span class="p">[</span><span class="n">autovariance_pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]]:</span>
+                                        <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">1</span>
+                                    <span class="k">else</span><span class="p">:</span>
+                                        <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">0</span>
+
+
+                        <span class="k">if</span> <span class="n">skip_coinc</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+                        <span class="n">D_vec</span> <span class="o">=</span> <span class="n">D_ion_array</span><span class="p">[</span><span class="n">l</span><span class="p">,:</span><span class="mi">3</span><span class="p">]</span>
+                        <span class="n">D_mag</span> <span class="o">=</span> <span class="n">D_ion_array</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="mi">4</span><span class="p">]</span>
+                        <span class="n">D_KE</span> <span class="o">=</span> <span class="n">p_au_KE_eV_fac</span><span class="o">*</span><span class="p">(</span><span class="n">D_mag</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">D_mass</span><span class="p">)</span>
+
+                        <span class="n">vec_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">A_vec</span><span class="p">,</span><span class="n">B_vec</span><span class="p">,</span><span class="n">C_vec</span><span class="p">,</span><span class="n">D_vec</span><span class="p">]</span>
+                        <span class="n">mag_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">A_mag</span><span class="p">,</span><span class="n">B_mag</span><span class="p">,</span><span class="n">C_mag</span><span class="p">,</span><span class="n">D_mag</span><span class="p">]</span>
+
+                        <span class="k">if</span> <span class="n">use_filter_function</span><span class="p">:</span>
+                            <span class="n">filter_val</span> <span class="o">=</span> <span class="n">filter_function</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span><span class="n">mag_list</span><span class="p">,</span><span class="n">mass_list</span><span class="p">)</span>
+                            <span class="k">if</span> <span class="n">filter_val</span><span class="o">&gt;</span><span class="n">filter_max</span><span class="p">:</span>
+                                <span class="n">skip_coinc</span><span class="o">=</span><span class="mi">1</span>
+                            <span class="k">if</span> <span class="n">skip_coinc</span><span class="p">:</span>
+                                <span class="k">continue</span>
+
+                        <span class="c1">## calculate the output from the set of 3 ion momenta vectors</span>
+                        <span class="n">x_out_list</span><span class="p">,</span><span class="n">y_out_list</span><span class="p">,</span><span class="n">z_out_list</span> <span class="o">=</span> <span class="n">output_function</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span><span class="n">mag_list</span><span class="p">,</span><span class="n">mass_list</span><span class="p">,</span><span class="n">bin_list</span><span class="p">,</span><span class="n">dim_list</span><span class="p">)</span>
+
+                        <span class="k">for</span> <span class="n">x_out</span><span class="p">,</span><span class="n">y_out</span><span class="p">,</span><span class="n">z_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_out_list</span><span class="p">,</span><span class="n">y_out_list</span><span class="p">,</span><span class="n">z_out_list</span><span class="p">):</span>
+                            <span class="c1">## if in bounds add to array</span>
+                            <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">x_out</span> <span class="o">&lt;</span> <span class="n">x_pixels</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">y_out</span> <span class="o">&lt;</span> <span class="n">y_pixels</span><span class="p">:</span>
+                                    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">z_out</span> <span class="o">&lt;</span> <span class="n">z_pixels</span><span class="p">:</span>
+                                        <span class="n">coinc_counter</span><span class="o">+=</span><span class="mi">1</span>
+                                        <span class="n">output_array</span><span class="p">[</span><span class="n">term_counter</span><span class="p">,</span><span class="n">x_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">z_out</span><span class="p">]</span> <span class="o">+=</span> <span class="n">addval</span></div>
+
+
+
+<div class="viewcode-block" id="Covariance">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance">[docs]</a>
+<span class="k">class</span> <span class="nc">Covariance</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for storing covariance outputs and performing covariance calculation</span>
+
+<span class="sd">    :param ion_list: list of n ions to be used in the nfold covariance calculation</span>
+<span class="sd">    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]</span>
+<span class="sd">    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]</span>
+<span class="sd">    :param store_coincs: NOT USED CURENTLY</span>
+<span class="sd">    :param update_dataset: NOT USED CURRENTLY</span>
+<span class="sd">    :param verbose: print more details during the calculation, default=False</span>
+<span class="sd">    :param remove_autovariance: If True, automatically removes autovariance contributions if two ions</span>
+<span class="sd">        the same. Default=True</span>
+<span class="sd">    :param custom_function: Custom function for formatting the covariance output. If False,</span>
+<span class="sd">        a default function is used. Default=False</span>
+<span class="sd">    :param filter_function: Custom function used for filtering coincidences. If False, the default </span>
+<span class="sd">        (absolute magnitude of summed momenta calculation) is used</span>
+<span class="sd">    :param filter_max: Max value of the output of the filter function for an acceptable coincidence.</span>
+<span class="sd">        Default is np.inf to ignore filtering</span>
+<span class="sd">    :param max_shot: Maximum shot used in the calculation. Default=None</span>
+<span class="sd">    :param only_coincidence: If True, only calculate the leading term (the true coincidences). Default = False </span>
+<span class="sd">    :param n_EiEj: number of times to calculate the &lt;A&gt;&lt;B&gt; term in two-fold covariance</span>
+<span class="sd">    :param n_EiEjEk: number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;C&gt; term in three-fold covariance</span>
+<span class="sd">    :param n_EijEk: number of times to calculate the &lt;AB&gt;&lt;C&gt; type terms in three-fold covariance</span>
+<span class="sd">    :param n_EiEjEkEl: number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;C&gt;&lt;D&gt; term in four-fold covariance</span>
+<span class="sd">    :param n_EijEkl: number of times to calculate the &lt;AB&gt;&lt;CD&gt; type terms in four-fold covariance</span>
+<span class="sd">    :param n_EijkEl: number of times to calculate the &lt;ABC&gt;&lt;D&gt; type terms in four-fold covariance</span>
+<span class="sd">    :param n_EiEjEkl: number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;CD&gt; type terms in four-fold covariance</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ion_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span>
+                       <span class="n">store_coincs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">update_dataset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">remove_autovariance</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                       <span class="n">custom_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">max_shot</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">n_EiEj</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                       <span class="n">n_EiEjEk</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_EijEk</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                       <span class="n">n_EiEjEkEl</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_EijEkl</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_EijkEl</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_EiEjEkl</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                       <span class="n">filter_function</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                       <span class="n">filter_max</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+                       <span class="n">only_coincidence</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">shot_array</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_shots</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="o">=</span><span class="n">ion_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">ion_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="o">=</span><span class="n">nb</span><span class="o">.</span><span class="n">typed</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="n">dim_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="o">=</span><span class="n">nb</span><span class="o">.</span><span class="n">typed</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="n">bin_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">store_coincs</span><span class="o">=</span><span class="n">store_coincs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_dataset</span><span class="o">=</span><span class="n">update_dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_autovariance</span><span class="o">=</span><span class="n">remove_autovariance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">custom_function</span><span class="o">=</span><span class="n">custom_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_EiEj</span><span class="o">=</span><span class="n">n_EiEj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEk</span><span class="o">=</span><span class="n">n_EiEjEk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_EijEk</span><span class="o">=</span><span class="n">n_EijEk</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkEl</span><span class="o">=</span><span class="n">n_EiEjEkEl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_EijEkl</span><span class="o">=</span><span class="n">n_EijEkl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_EijkEl</span><span class="o">=</span><span class="n">n_EijkEl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="o">=</span><span class="n">n_EiEjEkl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_shot</span><span class="o">=</span><span class="n">max_shot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="o">=</span><span class="n">filter_function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_max</span><span class="o">=</span><span class="n">filter_max</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">only_coincidence</span><span class="o">=</span><span class="n">only_coincidence</span>
+
+
+<div class="viewcode-block" id="Covariance.check">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.check">[docs]</a>
+    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run various checks before moving onto covariance calculation&quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">shot_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">shot_array</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Shot array not in dataset&#39;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">)</span><span class="o">!=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;dim_list and bin_list must be same length&#39;</span><span class="p">)</span>
+            
+        <span class="n">ndims</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ndims</span><span class="o">&gt;</span><span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Output with greater than 4 dimensions is not supported&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Covariance.setup_output">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_output">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the output array which stores results of covariance calculation&quot;&quot;&quot;</span>
+        <span class="n">pixels_x</span><span class="p">,</span><span class="n">pixels_y</span><span class="p">,</span><span class="n">pixels_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span>
+        <span class="c1">## determine how many ions to be correlated, and their identity</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">&gt;</span><span class="mi">4</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Correlations above 4fold are not implemented yet!&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Need more than 1 ion to correlate!&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ion_A</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_B</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span>
+            <span class="n">output_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span><span class="n">pixels_x</span><span class="p">,</span><span class="n">pixels_y</span><span class="p">,</span><span class="n">pixels_z</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
+            <span class="n">output_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">6</span><span class="p">,</span><span class="n">pixels_x</span><span class="p">,</span><span class="n">pixels_y</span><span class="p">,</span><span class="n">pixels_z</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ion_A</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_B</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_C</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+            <span class="n">output_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">16</span><span class="p">,</span><span class="n">pixels_x</span><span class="p">,</span><span class="n">pixels_y</span><span class="p">,</span><span class="n">pixels_z</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ion_A</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_B</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_C</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_D</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="o">=</span><span class="n">output_array</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Correlating </span><span class="si">%s</span><span class="s2"> ions&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ions to correlate: &quot;</span> <span class="o">+</span> <span class="s2">&quot; ,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">label</span><span class="p">,)</span> <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">]))</span></div>
+
+    
+    
+<div class="viewcode-block" id="Covariance.setup_terms">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_terms">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the number of times each term is to be calculated, and the shot-shifting which must be used.&quot;&quot;&quot;</span>
+
+        <span class="c1">## setup shift_val_list, term_name_list, ncalc_list</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shift_val_list</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">],</span>
+                      <span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">term_name_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&lt;AB&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;AB&gt;&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_coincidence</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncalc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncalc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEj</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shift_val_list</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">term_name_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&lt;ABC&gt;&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;&lt;AB&gt;&lt;C&gt;&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;&lt;AC&gt;&lt;B&gt;&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;&lt;BC&gt;&lt;A&gt;&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;&lt;A&gt;&lt;B&gt;&lt;C&gt;&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_coincidence</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncalc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncalc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_EijEk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_EijEk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_EijEk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEk</span><span class="p">]</span>
+            
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>     
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">shift_val_list</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+                              <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">term_name_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&lt;ABCD&gt;&#39;</span><span class="p">,</span> 
+                              <span class="s1">&#39;&lt;A&gt;&lt;BCD&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;B&gt;&lt;ACD&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;C&gt;&lt;ABD&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;D&gt;&lt;ABC&gt;&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;&lt;AB&gt;&lt;CD&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;AC&gt;&lt;BD&gt;&#39;</span><span class="p">,</span><span class="s1">&#39;&lt;AD&gt;&lt;BC&gt;&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;&lt;AB&gt;&lt;C&gt;&lt;D&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;AC&gt;&lt;B&gt;&lt;D&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;AD&gt;&lt;B&gt;&lt;C&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;BC&gt;&lt;A&gt;&lt;D&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;BD&gt;&lt;A&gt;&lt;C&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;CD&gt;&lt;A&gt;&lt;B&gt;&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;&lt;A&gt;&lt;B&gt;&lt;C&gt;&lt;D&gt;&#39;</span><span class="p">]</span>
+            
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_coincidence</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncalc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncalc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">n_EijkEl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EijkEl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EijkEl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EijkEl</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">n_EijEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EijEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EijEkl</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkEl</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="Covariance.get_from_ions">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.get_from_ions">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_from_ions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the idx_dict, ion_array and ion_mass from each ion used in calculation&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_dict_list</span><span class="o">=</span><span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ion_array_list</span><span class="o">=</span><span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ion_mass_list</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx_dict_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">idx_dict</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> dict already present&quot;</span> <span class="o">%</span> <span class="n">ion</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> dict not present, generating...&quot;</span> <span class="o">%</span> <span class="n">ion</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+                <span class="n">ion</span><span class="o">.</span><span class="n">get_idx_dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">shot_array</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">idx_dict_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">idx_dict</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ion_array_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">data_array</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ion_mass_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">mass</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_dict_list</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">typed</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_dict_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ion_array_list</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">typed</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_array_list</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ion_mass_list</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">typed</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_mass_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Covariance.setup_autovariance_correction">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_autovariance_correction">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup_autovariance_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Identify potential autovariance issues to be corrected for.&quot;&quot;&quot;</span>
+        <span class="n">autovariance_counter</span><span class="o">=</span><span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">30</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">remove_autovariance</span><span class="p">:</span>
+            <span class="c1">## identify identical ions</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ion1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">ion2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">i</span><span class="o">!=</span><span class="n">j</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">ion1</span><span class="o">==</span><span class="n">ion2</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Found duplicate ion to correct for&#39;</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span><span class="p">[</span><span class="n">autovariance_counter</span><span class="p">,:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+                            <span class="n">autovariance_counter</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">autovariance_counter</span><span class="p">,:]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Covariance.setup_filter">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_filter">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign the filter function used in the covariance calculation.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_filter_function</span><span class="o">=</span><span class="mi">1</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="o">==</span><span class="s1">&#39;psum&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="o">=</span><span class="n">calc_psum_abs</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">use_filter_function</span><span class="o">=</span><span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="o">=</span><span class="n">calc_psum_abs</span></div>
+
+
+<div class="viewcode-block" id="Covariance.setup_output_function">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_output_function">[docs]</a>
+    <span class="k">def</span> <span class="nf">setup_output_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign the output function used in the covariance calculation.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_function</span><span class="p">:</span>
+            <span class="c1">## see if string is key in dictionary first</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="o">=</span><span class="n">output_function_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_function</span><span class="p">]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_function</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1">## if no specified output, select default based on number of ions to correlated</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">)</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="o">=</span><span class="n">output_format_Newton_2fold</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">)</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="o">=</span><span class="n">output_format_Newton_3fold</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">)</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="o">=</span><span class="n">output_format_Newton_4fold</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid output function&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Covariance.clip_max_shot">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.clip_max_shot">[docs]</a>
+    <span class="k">def</span> <span class="nf">clip_max_shot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Cut data based on max_shot.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_shot</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">max_shot</span><span class="p">]</span></div>
+
+
+        
+<div class="viewcode-block" id="Covariance.compute_covariance_term">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.compute_covariance_term">[docs]</a>
+    <span class="k">def</span> <span class="nf">compute_covariance_term</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the 2/3/4fold covariance fromthe individual terms.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="o">=</span><span class="n">compute_2fold_covariance_term_iterate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="o">=</span><span class="n">compute_3fold_covariance_term_iterate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="o">=</span><span class="n">compute_4fold_covariance_term_iterate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Covariance.calc_2fold_coinc">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_2fold_coinc">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_2fold_coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the numba function for twofold coincidences&quot;&quot;&quot;</span>
+
+        <span class="n">calc_Cab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_array_list</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_dict_list</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ion_mass_list</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">use_shiftnum_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncalc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_shots</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">term_counter</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">use_filter_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_max</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Covariance.calc_3fold_coinc">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_3fold_coinc">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_3fold_coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the numba function for twofold coincidences&quot;&quot;&quot;</span>
+
+        <span class="n">calc_Cabc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_array_list</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_dict_list</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ion_mass_list</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">use_shiftnum_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncalc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_shots</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">term_counter</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">use_filter_function</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_max</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Covariance.calc_4fold_coinc">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_4fold_coinc">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_4fold_coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the numba function for twofold coincidences&quot;&quot;&quot;</span>
+
+        <span class="n">calc_Cabcd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_array_list</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">idx_dict_list</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ion_mass_list</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">use_shiftnum_array</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ncalc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_shots</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">term_counter</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span><span class="p">,</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">use_filter_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_max</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Covariance.check_data_array">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.check_data_array">[docs]</a>
+    <span class="k">def</span> <span class="nf">check_data_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that each ion has a data_array, if not then create it.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ion</span><span class="p">,</span> <span class="s1">&#39;data_array&#39;</span><span class="p">):</span>
+                <span class="n">ion</span><span class="o">.</span><span class="n">dataframe_to_arr</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Covariance.calc_covariance">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_covariance">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;General function which calls all the necessary setup/checks before covariance calculation,</span>
+<span class="sd">        and then proceeds with the general logic.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_output</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_output_function</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_terms</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_filter</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">check_data_array</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_from_ions</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_autovariance_correction</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clip_max_shot</span><span class="p">()</span>
+
+
+        <span class="c1">## calculate each term of covariance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">term_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">calc_shiftnum_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_shiftnum_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
+
+        <span class="c1">## check that the ions have data_arrays, force them to be made if not</span>
+
+
+
+        <span class="k">for</span> <span class="n">term_name</span><span class="p">,</span> <span class="n">shift_vals</span><span class="p">,</span> <span class="n">ncalc</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">term_name_list</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">shift_val_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ncalc_list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ncalc</span><span class="o">=</span><span class="n">ncalc</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Calculating &#39;</span> <span class="o">+</span> <span class="n">term_name</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Calculating </span><span class="si">%s</span><span class="s1"> times&#39;</span> <span class="o">%</span> <span class="n">ncalc</span><span class="p">)</span>  
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Current time: </span><span class="si">%s</span><span class="s1"> s&#39;</span> <span class="o">%</span> <span class="nb">round</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">),</span><span class="mi">1</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ncalc</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">cs</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">shiftnum</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">calc_shiftnum_array</span><span class="p">[</span><span class="n">cs</span><span class="p">]</span><span class="o">=</span><span class="n">shiftnum</span>
+                
+                <span class="c1">### todo here, catch the edge case of repeated shift numbers</span>
+                <span class="k">for</span> <span class="n">cs</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                    <span class="n">shiftnum</span> <span class="o">=</span> <span class="n">shift_vals</span><span class="p">[</span><span class="n">cs</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">shiftnum</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">use_shiftnum_array</span><span class="p">[</span><span class="n">cs</span><span class="p">]</span><span class="o">=</span><span class="mi">0</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">use_shiftnum_array</span><span class="p">[</span><span class="n">cs</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">calc_shiftnum_array</span><span class="p">[</span><span class="n">shiftnum</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>                    
+                    <span class="bp">self</span><span class="o">.</span><span class="n">calc_2fold_coinc</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">3</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">calc_3fold_coinc</span><span class="p">()</span>
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">calc_4fold_coinc</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">term_counter</span><span class="o">+=</span><span class="mi">1</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">compute_covariance_term</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Return at </span><span class="si">%s</span><span class="s2"> seconds&quot;</span> <span class="o">%</span> <span class="nb">round</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span></div>
+
+
+
+<div class="viewcode-block" id="Covariance.plot_2DHist">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.plot_2DHist">[docs]</a>
+    <span class="k">def</span> <span class="nf">plot_2DHist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proj_list</span><span class="p">,</span> <span class="n">param_dict</span><span class="o">=</span><span class="n">param_dict</span><span class="p">,</span> <span class="n">term</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> 
+                <span class="n">label_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;p$_x$&#39;</span><span class="p">,</span><span class="s1">&#39;p$_y$&#39;</span><span class="p">,</span><span class="s1">&#39;p$_z$&#39;</span><span class="p">],</span><span class="n">arrow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">vfac</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;bwr&#39;</span><span class="p">,</span> <span class="n">axis_centered_on_zero</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">colors_centered_on_zero</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Plot 2D histogram of calculated covariance</span>
+
+<span class="sd">        :param proj_list: list of axes to project over in teh plotting</span>
+<span class="sd">        :param param_dict: param_dict used to neaten the plot</span>
+<span class="sd">        :param term: which term of output array to plot. Default is -1 (covariance)</span>
+<span class="sd">        :param label_list: list of labels of each axes of output array. Default is [&#39;p$_x$&#39;,&#39;p$_y$&#39;,&#39;p$_z$&#39;]</span>
+<span class="sd">        :param arrow: If True, plot an arrow for the reference label</span>
+<span class="sd">        :param vfac: Used to choose max for colourscale. Default=1</span>
+<span class="sd">        :param cmap: Colormap for plotting. Default=&#39;bwr&#39;</span>
+<span class="sd">        :param axis_centered_on_zero: Are the axes symmetric about zero (as in Newton plot)? </span>
+<span class="sd">            If False, axis start at zero. then Default=True</span>
+<span class="sd">        :param colors_centered_on_zero: Do you want to plot with a colormap that is symmetric about zero?</span>
+<span class="sd">            If False, then vmin=0. Default=True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_list</span> <span class="o">=</span> <span class="n">label_list</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">proj_list</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                <span class="n">bin_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">dim_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">label_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">bin_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">dim_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">label_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">bin_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">dim_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">label_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">bin_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">dim_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">label_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+                <span class="n">bin_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">dim_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">label_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">bin_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">dim_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">label_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">covar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">[</span><span class="n">term</span><span class="p">,:,:,:]</span>
+            <span class="n">term_im</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">covar</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+            
+            <span class="n">fig</span><span class="p">,</span><span class="n">ax</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">axis_centered_on_zero</span><span class="p">:</span>
+                <span class="n">extent</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">bin_x</span><span class="o">*</span><span class="n">dim_x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">bin_x</span><span class="o">*</span><span class="n">dim_x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="n">bin_y</span><span class="o">*</span><span class="n">dim_y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="n">bin_y</span><span class="o">*</span><span class="n">dim_y</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">extent</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">bin_x</span><span class="o">*</span><span class="n">dim_x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">bin_y</span><span class="o">*</span><span class="n">dim_y</span><span class="p">)</span>
+
+            <span class="n">vmax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">term_im</span><span class="p">)</span><span class="o">/</span><span class="n">vfac</span>
+            <span class="k">if</span> <span class="n">colors_centered_on_zero</span><span class="p">:</span>
+                <span class="n">vmin</span><span class="o">=-</span><span class="n">vmax</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">term_im</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="n">vmax</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="n">vmin</span><span class="p">,</span>
+                     <span class="n">extent</span> <span class="o">=</span> <span class="n">extent</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
+                     <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">aspect</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="n">label_x</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="n">label_y</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">arrow</span><span class="p">:</span>
+                <span class="n">ref_label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">label</span>
+                <span class="c1">### add the reference arrow</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">arrow</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="n">head_width</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.85</span><span class="p">,</span><span class="n">ref_label</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span><span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">arrow</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">head_width</span><span class="o">=</span><span class="mf">0.04</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">)</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="n">ref_label</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">&#39;center&#39;</span><span class="p">,</span><span class="n">transform</span><span class="o">=</span><span class="n">ax</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+                <span class="c1">### add the reference arrow</span>
+
+            <span class="n">title_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">label</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">ion</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title_string</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
+            <span class="n">neaten_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">param_dict</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+</div>
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Felix Allum.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

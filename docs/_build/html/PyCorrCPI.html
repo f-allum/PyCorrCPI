@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyCorrCPI package &mdash; PyCorrCPI 0.0.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=8c5712d9"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="PyCorrCPI" href="modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            PyCorrCPI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">PyCorrCPI</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">PyCorrCPI package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-PyCorrCPI.covariance">PyCorrCPI.covariance module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.Covariance"><code class="docutils literal notranslate"><span class="pre">Covariance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calc_Cab"><code class="docutils literal notranslate"><span class="pre">calc_Cab()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calc_Cabc"><code class="docutils literal notranslate"><span class="pre">calc_Cabc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calc_Cabcd"><code class="docutils literal notranslate"><span class="pre">calc_Cabcd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calc_covariance"><code class="docutils literal notranslate"><span class="pre">calc_covariance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calculate_indexes"><code class="docutils literal notranslate"><span class="pre">calculate_indexes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.compute_2fold_covariance_term_iterate"><code class="docutils literal notranslate"><span class="pre">compute_2fold_covariance_term_iterate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.compute_3fold_covariance_term_iterate"><code class="docutils literal notranslate"><span class="pre">compute_3fold_covariance_term_iterate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.compute_4fold_covariance_term_iterate"><code class="docutils literal notranslate"><span class="pre">compute_4fold_covariance_term_iterate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.neaten_plot"><code class="docutils literal notranslate"><span class="pre">neaten_plot()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-PyCorrCPI.data">PyCorrCPI.data module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.data.Dataset"><code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.data.Ion"><code class="docutils literal notranslate"><span class="pre">Ion</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.data.IonCollection"><code class="docutils literal notranslate"><span class="pre">IonCollection</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-PyCorrCPI.helpers_numba">PyCorrCPI.helpers_numba module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.helpers_numba.calc_psum_abs"><code class="docutils literal notranslate"><span class="pre">calc_psum_abs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.helpers_numba.cross3D"><code class="docutils literal notranslate"><span class="pre">cross3D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.helpers_numba.dot2D"><code class="docutils literal notranslate"><span class="pre">dot2D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.helpers_numba.dot3D"><code class="docutils literal notranslate"><span class="pre">dot3D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.helpers_numba.find_first"><code class="docutils literal notranslate"><span class="pre">find_first()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.helpers_numba.find_last"><code class="docutils literal notranslate"><span class="pre">find_last()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.helpers_numba.norm2D"><code class="docutils literal notranslate"><span class="pre">norm2D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.helpers_numba.norm3D"><code class="docutils literal notranslate"><span class="pre">norm3D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.helpers_numba.rotation_matrix"><code class="docutils literal notranslate"><span class="pre">rotation_matrix()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-PyCorrCPI.imports">PyCorrCPI.imports module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-PyCorrCPI.output_functions">PyCorrCPI.output_functions module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.output_functions.beta_psum_KER"><code class="docutils literal notranslate"><span class="pre">beta_psum_KER()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.output_functions.output_format_Newton_2fold"><code class="docutils literal notranslate"><span class="pre">output_format_Newton_2fold()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.output_functions.output_format_Newton_3fold"><code class="docutils literal notranslate"><span class="pre">output_format_Newton_3fold()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.output_functions.output_format_Newton_4fold"><code class="docutils literal notranslate"><span class="pre">output_format_Newton_4fold()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.output_functions.output_format_TfAcAc"><code class="docutils literal notranslate"><span class="pre">output_format_TfAcAc()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#module-PyCorrCPI">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PyCorrCPI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">PyCorrCPI</a></li>
+      <li class="breadcrumb-item active">PyCorrCPI package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/PyCorrCPI.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pycorrcpi-package">
+<h1>PyCorrCPI package<a class="headerlink" href="#pycorrcpi-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-PyCorrCPI.covariance">
+<span id="pycorrcpi-covariance-module"></span><h2>PyCorrCPI.covariance module<a class="headerlink" href="#module-PyCorrCPI.covariance" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">Covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ion_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_coincs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_autovariance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_shot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEjEk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EijEk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEjEkEl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EijEkl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EijkEl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEjEkl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_coincidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for storing covariance outputs and performing covariance calculation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ion_list</strong> – list of n ions to be used in the nfold covariance calculation</p></li>
+<li><p><strong>dim_list</strong> – list of the size of the output covariance dimensions [n_x,n_y,n_z]</p></li>
+<li><p><strong>bin_list</strong> – binning factor used for computing the covariance histograms [b_x,b_y,b_z]</p></li>
+<li><p><strong>store_coincs</strong> – NOT USED CURENTLY</p></li>
+<li><p><strong>update_dataset</strong> – NOT USED CURRENTLY</p></li>
+<li><p><strong>verbose</strong> – print more details during the calculation, default=False</p></li>
+<li><p><strong>remove_autovariance</strong> – If True, automatically removes autovariance contributions if two ions
+the same. Default=True</p></li>
+<li><p><strong>custom_function</strong> – Custom function for formatting the covariance output. If False,
+a default function is used. Default=False</p></li>
+<li><p><strong>filter_function</strong> – Custom function used for filtering coincidences. If False, the default
+(absolute magnitude of summed momenta calculation) is used</p></li>
+<li><p><strong>filter_max</strong> – Max value of the output of the filter function for an acceptable coincidence.
+Default is np.inf to ignore filtering</p></li>
+<li><p><strong>max_shot</strong> – Maximum shot used in the calculation. Default=None</p></li>
+<li><p><strong>only_coincidence</strong> – If True, only calculate the leading term (the true coincidences). Default = False</p></li>
+<li><p><strong>n_EiEj</strong> – number of times to calculate the &lt;A&gt;&lt;B&gt; term in two-fold covariance</p></li>
+<li><p><strong>n_EiEjEk</strong> – number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;C&gt; term in three-fold covariance</p></li>
+<li><p><strong>n_EijEk</strong> – number of times to calculate the &lt;AB&gt;&lt;C&gt; type terms in three-fold covariance</p></li>
+<li><p><strong>n_EiEjEkEl</strong> – number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;C&gt;&lt;D&gt; term in four-fold covariance</p></li>
+<li><p><strong>n_EijEkl</strong> – number of times to calculate the &lt;AB&gt;&lt;CD&gt; type terms in four-fold covariance</p></li>
+<li><p><strong>n_EijkEl</strong> – number of times to calculate the &lt;ABC&gt;&lt;D&gt; type terms in four-fold covariance</p></li>
+<li><p><strong>n_EiEjEkl</strong> – number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;CD&gt; type terms in four-fold covariance</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.calc_2fold_coinc">
+<span class="sig-name descname"><span class="pre">calc_2fold_coinc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.calc_2fold_coinc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.calc_2fold_coinc" title="Link to this definition"></a></dt>
+<dd><p>Call the numba function for twofold coincidences</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.calc_3fold_coinc">
+<span class="sig-name descname"><span class="pre">calc_3fold_coinc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.calc_3fold_coinc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.calc_3fold_coinc" title="Link to this definition"></a></dt>
+<dd><p>Call the numba function for twofold coincidences</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.calc_4fold_coinc">
+<span class="sig-name descname"><span class="pre">calc_4fold_coinc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.calc_4fold_coinc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.calc_4fold_coinc" title="Link to this definition"></a></dt>
+<dd><p>Call the numba function for twofold coincidences</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.calc_covariance">
+<span class="sig-name descname"><span class="pre">calc_covariance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.calc_covariance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.calc_covariance" title="Link to this definition"></a></dt>
+<dd><p>General function which calls all the necessary setup/checks before covariance calculation,
+and then proceeds with the general logic.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.check">
+<span class="sig-name descname"><span class="pre">check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.check" title="Link to this definition"></a></dt>
+<dd><p>Run various checks before moving onto covariance calculation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.check_data_array">
+<span class="sig-name descname"><span class="pre">check_data_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.check_data_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.check_data_array" title="Link to this definition"></a></dt>
+<dd><p>Check that each ion has a data_array, if not then create it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.clip_max_shot">
+<span class="sig-name descname"><span class="pre">clip_max_shot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.clip_max_shot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.clip_max_shot" title="Link to this definition"></a></dt>
+<dd><p>Cut data based on max_shot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.compute_covariance_term">
+<span class="sig-name descname"><span class="pre">compute_covariance_term</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.compute_covariance_term"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.compute_covariance_term" title="Link to this definition"></a></dt>
+<dd><p>Calculate the 2/3/4fold covariance fromthe individual terms.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.get_from_ions">
+<span class="sig-name descname"><span class="pre">get_from_ions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.get_from_ions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.get_from_ions" title="Link to this definition"></a></dt>
+<dd><p>Get the idx_dict, ion_array and ion_mass from each ion used in calculation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.plot_2DHist">
+<span class="sig-name descname"><span class="pre">plot_2DHist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proj_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'axislabelsize':</span> <span class="pre">20,</span> <span class="pre">'linewidth':</span> <span class="pre">2,</span> <span class="pre">'spinewidth':</span> <span class="pre">3,</span> <span class="pre">'ticklabelsize':</span> <span class="pre">16,</span> <span class="pre">'ticklength':</span> <span class="pre">6,</span> <span class="pre">'tickwidth':</span> <span class="pre">3}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['p$_x$',</span> <span class="pre">'p$_y$',</span> <span class="pre">'p$_z$']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vfac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bwr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis_centered_on_zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_centered_on_zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.plot_2DHist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.plot_2DHist" title="Link to this definition"></a></dt>
+<dd><p>Plot 2D histogram of calculated covariance</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>proj_list</strong> – list of axes to project over in teh plotting</p></li>
+<li><p><strong>param_dict</strong> – param_dict used to neaten the plot</p></li>
+<li><p><strong>term</strong> – which term of output array to plot. Default is -1 (covariance)</p></li>
+<li><p><strong>label_list</strong> – list of labels of each axes of output array. Default is [‘p$_x$’,’p$_y$’,’p$_z$’]</p></li>
+<li><p><strong>arrow</strong> – If True, plot an arrow for the reference label</p></li>
+<li><p><strong>vfac</strong> – Used to choose max for colourscale. Default=1</p></li>
+<li><p><strong>cmap</strong> – Colormap for plotting. Default=’bwr’</p></li>
+<li><p><strong>axis_centered_on_zero</strong> – Are the axes symmetric about zero (as in Newton plot)?
+If False, axis start at zero. then Default=True</p></li>
+<li><p><strong>colors_centered_on_zero</strong> – Do you want to plot with a colormap that is symmetric about zero?
+If False, then vmin=0. Default=True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.setup_autovariance_correction">
+<span class="sig-name descname"><span class="pre">setup_autovariance_correction</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.setup_autovariance_correction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.setup_autovariance_correction" title="Link to this definition"></a></dt>
+<dd><p>Identify potential autovariance issues to be corrected for.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.setup_filter">
+<span class="sig-name descname"><span class="pre">setup_filter</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.setup_filter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.setup_filter" title="Link to this definition"></a></dt>
+<dd><p>Assign the filter function used in the covariance calculation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.setup_output">
+<span class="sig-name descname"><span class="pre">setup_output</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.setup_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.setup_output" title="Link to this definition"></a></dt>
+<dd><p>Create the output array which stores results of covariance calculation</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.setup_output_function">
+<span class="sig-name descname"><span class="pre">setup_output_function</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.setup_output_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.setup_output_function" title="Link to this definition"></a></dt>
+<dd><p>Assign the output function used in the covariance calculation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.setup_terms">
+<span class="sig-name descname"><span class="pre">setup_terms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.setup_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.setup_terms" title="Link to this definition"></a></dt>
+<dd><p>Setup the number of times each term is to be calculated, and the shot-shifting which must be used.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.calc_Cab">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">calc_Cab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ion_array_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx_dict_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift_num_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_calc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_shots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_counter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autovariance_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_filter_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_max</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#calc_Cab"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.calc_Cab" title="Link to this definition"></a></dt>
+<dd><p>Find double coincidences, transform into output frame and sum.
+Acts in place on the general output array. This function calculates
+all terms of the covariance expression, with appropriate values for the shot
+shifting index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ouput_array</strong> – array which stores output of covariance calculation</p></li>
+<li><p><strong>output_function</strong> – the function which takes the coincidence and converts into the observables of interest</p></li>
+<li><p><strong>shot_array</strong> – array of the unique shots in the dataset over which the covariance is calculated</p></li>
+<li><p><strong>ion_array_list</strong> – data arrays of the three ions, [px,py,pz,shot,pmag] format</p></li>
+<li><p><strong>idx_dict_list</strong> – list of the precalculated dictionaries of shot indices for each ion</p></li>
+<li><p><strong>mass_list</strong> – mass of each ion in amu. Passed to the output function</p></li>
+<li><p><strong>dim_list</strong> – list of the size of the output covariance dimensions [n_x,n_y,n_z]</p></li>
+<li><p><strong>bin_list</strong> – binning factor used for computing the covariance histograms [b_x,b_y,b_z]</p></li>
+<li><p><strong>shift_num_list</strong> – list of shot shift numbers applied to the ions beyond ion A</p></li>
+<li><p><strong>n_calc</strong> – number of times the term will be recalculated.</p></li>
+<li><p><strong>n_shots</strong> – number of shots covariance is calculated over.</p></li>
+<li><p><strong>term_counter</strong> – index of the term in the epression to be calculated.</p></li>
+<li><p><strong>autovariance_array</strong> – array of pairs of ions which are the same to exclude autovariance/trivial coincidence</p></li>
+<li><p><strong>use_filter_function</strong> – 1 if filtering on some criteria of coincidences</p></li>
+<li><p><strong>filter_function</strong> – function used for filtering, takes in (vec_list,mag_list,mass_list)</p></li>
+<li><p><strong>filter_max</strong> – if output of filter_function is greater than filter_max, coincidence is ignored</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.calc_Cabc">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">calc_Cabc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ion_array_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx_dict_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift_num_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_calc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_shots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_counter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autovariance_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_filter_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_max</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#calc_Cabc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.calc_Cabc" title="Link to this definition"></a></dt>
+<dd><p>Find triple coincidences, transform into output frame and sum.
+Acts in place on the general output array. This function calculates
+all terms of the covariance expression, with appropriate values for the shot
+shifting index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ouput_array</strong> – array which stores output of covariance calculation</p></li>
+<li><p><strong>output_function</strong> – the function which takes the coincidence and converts into the observables of interest</p></li>
+<li><p><strong>shot_array</strong> – array of the unique shots in the dataset over which the covariance is calculated</p></li>
+<li><p><strong>ion_array_list</strong> – data arrays of the three ions, [px,py,pz,shot,pmag] format</p></li>
+<li><p><strong>idx_dict_list</strong> – list of the precalculated dictionaries of shot indices for each ion</p></li>
+<li><p><strong>mass_list</strong> – mass of each ion in amu. Passed to the output function</p></li>
+<li><p><strong>dim_list</strong> – list of the size of the output covariance dimensions [n_x,n_y,n_z]</p></li>
+<li><p><strong>bin_list</strong> – binning factor used for computing the covariance histograms [b_x,b_y,b_z]</p></li>
+<li><p><strong>shift_num_list</strong> – list of shot shift numbers applied to the ions beyond ion A</p></li>
+<li><p><strong>n_calc</strong> – number of times the term will be recalculated.</p></li>
+<li><p><strong>n_shots</strong> – number of shots covariance is calculated over.</p></li>
+<li><p><strong>term_counter</strong> – index of the term in the epression to be calculated.</p></li>
+<li><p><strong>autovariance_array</strong> – array of pairs of ions which are the same to exclude autovariance/trivial coincidence</p></li>
+<li><p><strong>use_filter_function</strong> – 1 if filtering on some criteria of coincidences</p></li>
+<li><p><strong>filter_function</strong> – function used for filtering, takes in (vec_list,mag_list,mass_list)</p></li>
+<li><p><strong>filter_max</strong> – if output of filter_function is greater than filter_max, coincidence is ignored</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.calc_Cabcd">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">calc_Cabcd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ion_array_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx_dict_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shift_num_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_calc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_shots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term_counter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autovariance_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_filter_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_max</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#calc_Cabcd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.calc_Cabcd" title="Link to this definition"></a></dt>
+<dd><p>Find quadruple coincidences, transform into output frame and sum.
+Acts in place on the general output array. This function calculates
+all terms of the covariance expression, with appropriate values for the shot
+shifting index.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ouput_array</strong> – array which stores output of covariance calculation</p></li>
+<li><p><strong>output_function</strong> – the function which takes the coincidence and converts into the observables of interest</p></li>
+<li><p><strong>shot_array</strong> – array of the unique shots in the dataset over which the covariance is calculated</p></li>
+<li><p><strong>ion_array_list</strong> – data arrays of the three ions, [px,py,pz,shot,pmag] format</p></li>
+<li><p><strong>idx_dict_list</strong> – list of the precalculated dictionaries of shot indices for each ion</p></li>
+<li><p><strong>mass_list</strong> – mass of each ion in amu. Passed to the output function</p></li>
+<li><p><strong>dim_list</strong> – list of the size of the output covariance dimensions [n_x,n_y,n_z]</p></li>
+<li><p><strong>bin_list</strong> – binning factor used for computing the covariance histograms [b_x,b_y,b_z]</p></li>
+<li><p><strong>shift_num_list</strong> – list of shot shift numbers applied to the ions beyond ion A</p></li>
+<li><p><strong>n_calc</strong> – number of times the term will be recalculated.</p></li>
+<li><p><strong>n_shots</strong> – number of shots covariance is calculated over.</p></li>
+<li><p><strong>term_counter</strong> – index of the term in the epression to be calculated.</p></li>
+<li><p><strong>autovariance_array</strong> – array of pairs of ions which are the same to exclude autovariance/trivial coincidence</p></li>
+<li><p><strong>use_filter_function</strong> – 1 if filtering on some criteria of coincidences</p></li>
+<li><p><strong>filter_function</strong> – function used for filtering, takes in (vec_list,mag_list,mass_list)</p></li>
+<li><p><strong>filter_max</strong> – if output of filter_function is greater than filter_max, coincidence is ignored</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.calc_covariance">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">calc_covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ion_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_coincs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_autovariance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEjEk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EijEk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEjEkEl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EijEkl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EijkEl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEjEkl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_shot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_coincidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#calc_covariance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.calc_covariance" title="Link to this definition"></a></dt>
+<dd><p>Function for initializing an instance of the Covariance class</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ion_list</strong> – list of n ions to be used in the nfold covariance calculation</p></li>
+<li><p><strong>dim_list</strong> – list of the size of the output covariance dimensions [n_x,n_y,n_z]</p></li>
+<li><p><strong>bin_list</strong> – binning factor used for computing the covariance histograms [b_x,b_y,b_z]</p></li>
+<li><p><strong>store_coincs</strong> – NOT USED CURENTLY</p></li>
+<li><p><strong>update_dataset</strong> – NOT USED CURRENTLY</p></li>
+<li><p><strong>verbose</strong> – print more details during the calculation, default=False</p></li>
+<li><p><strong>remove_autovariance</strong> – If True, automatically removes autovariance contributions if two ions
+the same. Default=True</p></li>
+<li><p><strong>custom_function</strong> – Custom function for formatting the covariance output. If False,
+a default function is used. Default=False</p></li>
+<li><p><strong>filter_function</strong> – Custom function used for filtering coincidences. If False, the default
+(absolute magnitude of summed momenta calculation) is used</p></li>
+<li><p><strong>filter_max</strong> – Max value of the output of the filter function for an acceptable coincidence.
+Default is np.inf to ignore filtering</p></li>
+<li><p><strong>max_shot</strong> – Maximum shot used in the calculation. Default=None</p></li>
+<li><p><strong>only_coincidence</strong> – If True, only calculate the leading term (the true coincidences). Default = False</p></li>
+<li><p><strong>n_EiEj</strong> – number of times to calculate the &lt;A&gt;&lt;B&gt; term in two-fold covariance</p></li>
+<li><p><strong>n_EiEjEk</strong> – number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;C&gt; term in three-fold covariance</p></li>
+<li><p><strong>n_EijEk</strong> – number of times to calculate the &lt;AB&gt;&lt;C&gt; type terms in three-fold covariance</p></li>
+<li><p><strong>n_EiEjEkEl</strong> – number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;C&gt;&lt;D&gt; term in four-fold covariance</p></li>
+<li><p><strong>n_EijEkl</strong> – number of times to calculate the &lt;AB&gt;&lt;CD&gt; type terms in four-fold covariance</p></li>
+<li><p><strong>n_EijkEl</strong> – number of times to calculate the &lt;ABC&gt;&lt;D&gt; type terms in four-fold covariance</p></li>
+<li><p><strong>n_EiEjEkl</strong> – number of times to calculate the &lt;A&gt;&lt;B&gt;&lt;CD&gt; type terms in four-fold covariance</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.calculate_indexes">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">calculate_indexes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A_idx_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_array_A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A_arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#calculate_indexes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.calculate_indexes" title="Link to this definition"></a></dt>
+<dd><p>Finds the first and last index in an ion data array corresponding to each laser shot
+that will be used in the covariance calculation. Precalculating this dictionary speeds up
+the calculation, particularly for higher fold covariances and/or if recalculating terms
+multiple times.
+!This function assumes that the data is sorted by ascending shot number!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A_idx_dict</strong> – the (empty) dictionary which will be filled with (shot, initial_index, final_index)</p></li>
+<li><p><strong>shot_array_A</strong> – array of laser shots used in the covariance calculation, for which ion A is detected</p></li>
+<li><p><strong>shot_array</strong> – array of total laser shots used in the covariance calculation</p></li>
+<li><p><strong>A_arr</strong> – the ion A data array ([])</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.compute_2fold_covariance_term_iterate">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">compute_2fold_covariance_term_iterate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#compute_2fold_covariance_term_iterate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.compute_2fold_covariance_term_iterate" title="Link to this definition"></a></dt>
+<dd><p>calculate 2fold covariance from its consistuent terms</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.compute_3fold_covariance_term_iterate">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">compute_3fold_covariance_term_iterate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#compute_3fold_covariance_term_iterate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.compute_3fold_covariance_term_iterate" title="Link to this definition"></a></dt>
+<dd><p>calculate 3fold covariance from its consistuent terms</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.compute_4fold_covariance_term_iterate">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">compute_4fold_covariance_term_iterate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_arr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#compute_4fold_covariance_term_iterate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.compute_4fold_covariance_term_iterate" title="Link to this definition"></a></dt>
+<dd><p>calculate 4fold covariance from its consistuent terms</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.neaten_plot">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">neaten_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#neaten_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.neaten_plot" title="Link to this definition"></a></dt>
+<dd><p>Funfction used to neaten up covariance plots</p>
+</dd></dl>
+
+</section>
+<section id="module-PyCorrCPI.data">
+<span id="pycorrcpi-data-module"></span><h2>PyCorrCPI.data module<a class="headerlink" href="#module-PyCorrCPI.data" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Dataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PyCorrCPI.data.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_array_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'range'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Dataset" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class used for handling datasets of charged particle imaging data, based around a single
+Pandas Dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_df</strong> – the Pandas dataframe</p></li>
+<li><p><strong>shot_array_method</strong> – method used for calculating total array of shots in the dataset</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Dataset.apply_mz_calibration">
+<span class="sig-name descname"><span class="pre">apply_mz_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coeffs_tof_sqmz</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Dataset.apply_mz_calibration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Dataset.apply_mz_calibration" title="Link to this definition"></a></dt>
+<dd><p>Apply m/z calibration for all data in data_df.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coeffs_tof_sqmz</strong> – calibration coefficients from t to sqrt(m/z)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Dataset.get_shot_array">
+<span class="sig-name descname"><span class="pre">get_shot_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Dataset.get_shot_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Dataset.get_shot_array" title="Link to this definition"></a></dt>
+<dd><p>Get array of shots within the dataset, and store in self.shot_array</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Dataset.sep_by_custom">
+<span class="sig-name descname"><span class="pre">sep_by_custom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lim1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lim2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Dataset.sep_by_custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Dataset.sep_by_custom" title="Link to this definition"></a></dt>
+<dd><p>Separate data_df by some parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lim1</strong> – lower limit to filter on</p></li>
+<li><p><strong>lim2</strong> – upper limit to filter on</p></li>
+<li><p><strong>param</strong> – data_df column name to filter on</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>filtered dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Dataset.sep_by_tof">
+<span class="sig-name descname"><span class="pre">sep_by_tof</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ti</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Dataset.sep_by_tof"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Dataset.sep_by_tof" title="Link to this definition"></a></dt>
+<dd><p>Separate data_df by t between Ti and Tf.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>filtered_dataframe</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PyCorrCPI.data.</span></span><span class="sig-name descname"><span class="pre">Ion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_array_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'range'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_for_mass_calib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class used to define the parameters to extract data from different ions from a dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> – (str) name used to label the ion</p></li>
+<li><p><strong>filter_i</strong> – lower bound of the filter used to select ion data from Dataset</p></li>
+<li><p><strong>filter_f</strong> – upper bound of the filter used to select ion data from Dataset</p></li>
+<li><p><strong>dataset</strong> – Dataset object associated with the ion</p></li>
+<li><p><strong>filter_param</strong> – column of the Dataset’s dataframe to filter on to select ion’s data</p></li>
+<li><p><strong>center</strong> – ion’s (x,y) center</p></li>
+<li><p><strong>center_t</strong> – ion’s t center</p></li>
+<li><p><strong>mass</strong> – ion’s mass</p></li>
+<li><p><strong>charge</strong> – ion’s charge</p></li>
+<li><p><strong>shot_array_method</strong> – method for determining and ion’s array of shots for the
+covariance calculation. Default is ‘range’. Options: ‘range’, ‘unique’. ‘Range’
+should work unless the dataset is missing certain laser shots between the first and last.</p></li>
+<li><p><strong>use_for_mass_cal</strong> – If True, this ion can be used to do a m/z calibration
+in an IonCollection. Default = True</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.adjust_jet_correction">
+<span class="sig-name descname"><span class="pre">adjust_jet_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jet_adjust</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.adjust_jet_correction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.adjust_jet_correction" title="Link to this definition"></a></dt>
+<dd><p>Take centers produced from the jet correction and further adjust these manually</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.apply_jet_correction">
+<span class="sig-name descname"><span class="pre">apply_jet_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jet_offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jet_velocity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.apply_jet_correction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.apply_jet_correction" title="Link to this definition"></a></dt>
+<dd><p>Center data using jet offsets and velocity in x and y. If this isn’t working, it may be a sign error</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.apply_momentum_calibration">
+<span class="sig-name descname"><span class="pre">apply_momentum_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">C_xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">C_total</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'manual'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.apply_momentum_calibration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.apply_momentum_calibration" title="Link to this definition"></a></dt>
+<dd><p>Convert (centered data to 3D momenta). For now this assumes that images are round
+(i.e. that scaling parameter in x and y are the same). This function automatically
+converts the ion’s dataframe to array for future covariance calculation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>C_xy</strong> – linear scaling factor from x/t or y/t to velocity</p></li>
+<li><p><strong>C_z</strong> – linear scaling factor from (t-tcenter)*charge/mass to velocity</p></li>
+<li><p><strong>center_method</strong> – method used to adjust x/y centers prior to calibration. See
+correct_centers</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.assign_dataset">
+<span class="sig-name descname"><span class="pre">assign_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.assign_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.assign_dataset" title="Link to this definition"></a></dt>
+<dd><p>Assign Dataset object to the ion</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.calc_mz_cal">
+<span class="sig-name descname"><span class="pre">calc_mz_cal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coeffs_tof_sqmz</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.calc_mz_cal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.calc_mz_cal" title="Link to this definition"></a></dt>
+<dd><p>Calculated expected m/z of central ToF from calibration toefficients</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.calc_t_absolute">
+<span class="sig-name descname"><span class="pre">calc_t_absolute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.calc_t_absolute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.calc_t_absolute" title="Link to this definition"></a></dt>
+<dd><p>Calculate absolute t by subtracting t0 (start of mass spectrum)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.calc_t_centered">
+<span class="sig-name descname"><span class="pre">calc_t_centered</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.calc_t_centered"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.calc_t_centered" title="Link to this definition"></a></dt>
+<dd><p>Calculate t relative to t_center. Used in converting to 3D momentum.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.correct_centers">
+<span class="sig-name descname"><span class="pre">correct_centers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.correct_centers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.correct_centers" title="Link to this definition"></a></dt>
+<dd><p>Re-center data in x and y.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>method</strong> – Options: [‘jet’, ‘manual’,’jet_adjust’]
+‘jet’ - center by subtracting jet offsets/velocities obtained by previous calibration
+‘manual’ - center by subtracting manual user defined centers
+‘jet_adjust’ - center by subtracting jet offsets/velicocities, and then further adjust
+by user-defined parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.dataframe_to_arr">
+<span class="sig-name descname"><span class="pre">dataframe_to_arr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.dataframe_to_arr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.dataframe_to_arr" title="Link to this definition"></a></dt>
+<dd><p>Converts necessary dataframe columns for covariance calculation to an array</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.get_idx_dict">
+<span class="sig-name descname"><span class="pre">get_idx_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shot_array_total</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.get_idx_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.get_idx_dict" title="Link to this definition"></a></dt>
+<dd><p>Create dictionary of indices of rows in dataset corresponding to this ion. Needed for covariance</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.get_shot_array">
+<span class="sig-name descname"><span class="pre">get_shot_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.get_shot_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.get_shot_array" title="Link to this definition"></a></dt>
+<dd><p>Find array of shots in dataset which contain this ion</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.grab_data">
+<span class="sig-name descname"><span class="pre">grab_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.grab_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.grab_data" title="Link to this definition"></a></dt>
+<dd><p>Gets data corresponding to ion from dataset based on the inputted filter</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.manual_center">
+<span class="sig-name descname"><span class="pre">manual_center</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.manual_center"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.manual_center" title="Link to this definition"></a></dt>
+<dd><p>Manually center data in x,y using a user-given center.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Ion.print_details">
+<span class="sig-name descname"><span class="pre">print_details</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Ion.print_details"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Ion.print_details" title="Link to this definition"></a></dt>
+<dd><p>Print out attributes of the object excluding large arrays/dataframes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PyCorrCPI.data.IonCollection">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PyCorrCPI.data.</span></span><span class="sig-name descname"><span class="pre">IonCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_auto_mass_charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_array_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#IonCollection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.IonCollection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for groups of Ions, which can be used for mass calibrations, jet calibrations etc.
+Can iterate over the Ion objects in an IonCollection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filter_param</strong> – filter_param used for defining Ions in the group</p></li>
+<li><p><strong>allow_auto_mass_charge</strong> – not implemented currently</p></li>
+<li><p><strong>shot_array_method</strong> – shot_array_method used for defining Ions in the group</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.IonCollection.add_ion">
+<span class="sig-name descname"><span class="pre">add_ion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filter_i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_param</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'t'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">center_t</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">charge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_array_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'range'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_for_mass_calib</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#IonCollection.add_ion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.IonCollection.add_ion" title="Link to this definition"></a></dt>
+<dd><p>Class used to define the parameters to extract data from different ions from a dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>label</strong> – (str) name used to label the ion</p></li>
+<li><p><strong>filter_i</strong> – lower bound of the filter used to select ion data from Dataset</p></li>
+<li><p><strong>filter_f</strong> – upper bound of the filter used to select ion data from Dataset</p></li>
+<li><p><strong>dataset</strong> – Dataset object associated with the ion</p></li>
+<li><p><strong>filter_param</strong> – column of the Dataset’s dataframe to filter on to select ion’s data</p></li>
+<li><p><strong>center</strong> – ion’s (x,y) center</p></li>
+<li><p><strong>center_t</strong> – ion’s t center</p></li>
+<li><p><strong>mass</strong> – ion’s mass</p></li>
+<li><p><strong>charge</strong> – ion’s charge</p></li>
+<li><p><strong>shot_array_method</strong> – method for determining and ion’s array of shots for the
+covariance calculation. Default is ‘range’. Options: ‘range’, ‘unique’. ‘Range’
+should work unless the dataset is missing certain laser shots between the first and last.</p></li>
+<li><p><strong>use_for_mass_cal</strong> – If True, this ion can be used to do a m/z calibration
+in an IonCollection. Default = True</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.IonCollection.assign_dataset">
+<span class="sig-name descname"><span class="pre">assign_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#IonCollection.assign_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.IonCollection.assign_dataset" title="Link to this definition"></a></dt>
+<dd><p>Assign Dataset obect to each Ion in IonCollection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.IonCollection.calc_cal_mz_ions">
+<span class="sig-name descname"><span class="pre">calc_cal_mz_ions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#IonCollection.calc_cal_mz_ions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.IonCollection.calc_cal_mz_ions" title="Link to this definition"></a></dt>
+<dd><p>Calculates the calibrated ion m/z for each ion in the IonCollection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.IonCollection.mz_calibration">
+<span class="sig-name descname"><span class="pre">mz_calibration</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#IonCollection.mz_calibration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.IonCollection.mz_calibration" title="Link to this definition"></a></dt>
+<dd><p>Autoamtically perform m/z calibration based on the Ions in the collection which have specified
+center_t, mass and charge.</p>
+<p>Output first-order polynomial coefficients are stored as self.coeffs_sqmz_tof and self.coeffs_tof_sqmz
+The t0 is stored as self.cal_t0</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-PyCorrCPI.helpers_numba">
+<span id="pycorrcpi-helpers-numba-module"></span><h2>PyCorrCPI.helpers_numba module<a class="headerlink" href="#module-PyCorrCPI.helpers_numba" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.helpers_numba.calc_psum_abs">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.helpers_numba.</span></span><span class="sig-name descname"><span class="pre">calc_psum_abs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mag_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/helpers_numba.html#calc_psum_abs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.helpers_numba.calc_psum_abs" title="Link to this definition"></a></dt>
+<dd><p>Calculate the magnitude of the sum of vectors.
+Used for filtering on psum of a coincidence.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.helpers_numba.cross3D">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.helpers_numba.</span></span><span class="sig-name descname"><span class="pre">cross3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/helpers_numba.html#cross3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.helpers_numba.cross3D" title="Link to this definition"></a></dt>
+<dd><p>Calculate the cross product of two 3d vectors. Modifies results in place</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.helpers_numba.dot2D">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.helpers_numba.</span></span><span class="sig-name descname"><span class="pre">dot2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/helpers_numba.html#dot2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.helpers_numba.dot2D" title="Link to this definition"></a></dt>
+<dd><p>Calculate the dot product of two 2d vectors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.helpers_numba.dot3D">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.helpers_numba.</span></span><span class="sig-name descname"><span class="pre">dot3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/helpers_numba.html#dot3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.helpers_numba.dot3D" title="Link to this definition"></a></dt>
+<dd><p>Calculate the dot product of two 3d vectors.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.helpers_numba.find_first">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.helpers_numba.</span></span><span class="sig-name descname"><span class="pre">find_first</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/helpers_numba.html#find_first"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.helpers_numba.find_first" title="Link to this definition"></a></dt>
+<dd><p>return the index of the first occurence of item in vec
+:param item: item to search for
+:param vec: array to search in
+:return: two values - the first is boolean to indicate whether search was succesful or not.
+the second is the index of the first occurence.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.helpers_numba.find_last">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.helpers_numba.</span></span><span class="sig-name descname"><span class="pre">find_last</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/helpers_numba.html#find_last"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.helpers_numba.find_last" title="Link to this definition"></a></dt>
+<dd><p>return the index of the first occurence of item in vec
+:param item: item to search for
+:param vec: array to search in</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.helpers_numba.norm2D">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.helpers_numba.</span></span><span class="sig-name descname"><span class="pre">norm2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/helpers_numba.html#norm2D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.helpers_numba.norm2D" title="Link to this definition"></a></dt>
+<dd><p>Calculate the norm of a 2d vector.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.helpers_numba.norm3D">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.helpers_numba.</span></span><span class="sig-name descname"><span class="pre">norm3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/helpers_numba.html#norm3D"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.helpers_numba.norm3D" title="Link to this definition"></a></dt>
+<dd><p>Calculate the norm of a 3d vector.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.helpers_numba.rotation_matrix">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.helpers_numba.</span></span><span class="sig-name descname"><span class="pre">rotation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rot_matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/helpers_numba.html#rotation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.helpers_numba.rotation_matrix" title="Link to this definition"></a></dt>
+<dd><p>Return the rotation matrix associated with counterclockwise rotation about
+the given axis by theta radians. Modifies rot_matrix in place.</p>
+</dd></dl>
+
+</section>
+<section id="module-PyCorrCPI.imports">
+<span id="pycorrcpi-imports-module"></span><h2>PyCorrCPI.imports module<a class="headerlink" href="#module-PyCorrCPI.imports" title="Link to this heading"></a></h2>
+</section>
+<section id="module-PyCorrCPI.output_functions">
+<span id="pycorrcpi-output-functions-module"></span><h2>PyCorrCPI.output_functions module<a class="headerlink" href="#module-PyCorrCPI.output_functions" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.output_functions.beta_psum_KER">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.output_functions.</span></span><span class="sig-name descname"><span class="pre">beta_psum_KER</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mag_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/output_functions.html#beta_psum_KER"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.output_functions.beta_psum_KER" title="Link to this definition"></a></dt>
+<dd><p>Represent covariance as a function of the relative recoil angle between them,
+the sums of their absolute momentun, and the sums of their KEs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vec_list</strong> – list of 3D momentum vectors of each ion</p></li>
+<li><p><strong>mag_list</strong> – list of momentum magnitudes of each ion</p></li>
+<li><p><strong>mass_list</strong> – list of masses of each ion</p></li>
+<li><p><strong>dim_list</strong> – list of the size of the output covariance dimensions [n_x,n_y,n_z]</p></li>
+<li><p><strong>bin_list</strong> – binning factor used for computing the covariance histograms [b_x,b_y,b_z]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.output_functions.output_format_Newton_2fold">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.output_functions.</span></span><span class="sig-name descname"><span class="pre">output_format_Newton_2fold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mag_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/output_functions.html#output_format_Newton_2fold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.output_functions.output_format_Newton_2fold" title="Link to this definition"></a></dt>
+<dd><p>Represent covariance as 2fold Newton plot. Ion A is used as reference, and we plot the 3D momentum of
+Ion B relative to this. Note, third dimension is not used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vec_list</strong> – list of 3D momentum vectors of each ion</p></li>
+<li><p><strong>mag_list</strong> – list of momentum magnitudes of each ion</p></li>
+<li><p><strong>mass_list</strong> – list of masses of each ion</p></li>
+<li><p><strong>dim_list</strong> – list of the size of the output covariance dimensions [n_x,n_y,n_z]</p></li>
+<li><p><strong>bin_list</strong> – binning factor used for computing the covariance histograms [b_x,b_y,b_z]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.output_functions.output_format_Newton_3fold">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.output_functions.</span></span><span class="sig-name descname"><span class="pre">output_format_Newton_3fold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mag_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/output_functions.html#output_format_Newton_3fold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.output_functions.output_format_Newton_3fold" title="Link to this definition"></a></dt>
+<dd><p>Represent covariance as 3fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.
+Ion C is plotted in this frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vec_list</strong> – list of 3D momentum vectors of each ion</p></li>
+<li><p><strong>mag_list</strong> – list of momentum magnitudes of each ion</p></li>
+<li><p><strong>mass_list</strong> – list of masses of each ion</p></li>
+<li><p><strong>dim_list</strong> – list of the size of the output covariance dimensions [n_x,n_y,n_z]</p></li>
+<li><p><strong>bin_list</strong> – binning factor used for computing the covariance histograms [b_x,b_y,b_z]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.output_functions.output_format_Newton_4fold">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.output_functions.</span></span><span class="sig-name descname"><span class="pre">output_format_Newton_4fold</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mag_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/output_functions.html#output_format_Newton_4fold"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.output_functions.output_format_Newton_4fold" title="Link to this definition"></a></dt>
+<dd><p>Represent covariance as 4fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.
+Ion C and D are plotted in this frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vec_list</strong> – list of 3D momentum vectors of each ion</p></li>
+<li><p><strong>mag_list</strong> – list of momentum magnitudes of each ion</p></li>
+<li><p><strong>mass_list</strong> – list of masses of each ion</p></li>
+<li><p><strong>dim_list</strong> – list of the size of the output covariance dimensions [n_x,n_y,n_z]</p></li>
+<li><p><strong>bin_list</strong> – binning factor used for computing the covariance histograms [b_x,b_y,b_z]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.output_functions.output_format_TfAcAc">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.output_functions.</span></span><span class="sig-name descname"><span class="pre">output_format_TfAcAc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vec_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mag_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mass_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/output_functions.html#output_format_TfAcAc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.output_functions.output_format_TfAcAc" title="Link to this definition"></a></dt>
+<dd><p>Fourfold Newton plot where the sum of A and B make a reference vector and plane.
+The momentum of C is restricted to have px&lt;0 in this frame. D is plotted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vec_list</strong> – list of 3D momentum vectors of each ion</p></li>
+<li><p><strong>mag_list</strong> – list of momentum magnitudes of each ion</p></li>
+<li><p><strong>mass_list</strong> – list of masses of each ion</p></li>
+<li><p><strong>dim_list</strong> – list of the size of the output covariance dimensions [n_x,n_y,n_z]</p></li>
+<li><p><strong>bin_list</strong> – binning factor used for computing the covariance histograms [b_x,b_y,b_z]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-PyCorrCPI">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-PyCorrCPI" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="PyCorrCPI" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Felix Allum.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyCorrCPI.data &mdash; PyCorrCPI 0.0.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=8c5712d9"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            PyCorrCPI
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">PyCorrCPI</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">PyCorrCPI</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">PyCorrCPI.data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for PyCorrCPI.data</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.imports</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.helpers_numba</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">.covariance</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+
+
+<div class="viewcode-block" id="Ion">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion">[docs]</a>
+<span class="k">class</span> <span class="nc">Ion</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class used to define the parameters to extract data from different ions from a dataset</span>
+
+<span class="sd">    :param label: (str) name used to label the ion</span>
+<span class="sd">    :param filter_i: lower bound of the filter used to select ion data from Dataset</span>
+<span class="sd">    :param filter_f: upper bound of the filter used to select ion data from Dataset</span>
+<span class="sd">    :param dataset: Dataset object associated with the ion</span>
+<span class="sd">    :param filter_param: column of the Dataset&#39;s dataframe to filter on to select ion&#39;s data</span>
+<span class="sd">    :param center: ion&#39;s (x,y) center</span>
+<span class="sd">    :param center_t: ion&#39;s t center</span>
+<span class="sd">    :param mass: ion&#39;s mass</span>
+<span class="sd">    :param charge: ion&#39;s charge</span>
+<span class="sd">    :param shot_array_method: method for determining and ion&#39;s array of shots for the </span>
+<span class="sd">        covariance calculation. Default is &#39;range&#39;. Options: &#39;range&#39;, &#39;unique&#39;. &#39;Range&#39;</span>
+<span class="sd">        should work unless the dataset is missing certain laser shots between the first and last.</span>
+<span class="sd">    :param use_for_mass_cal: If True, this ion can be used to do a m/z calibration</span>
+<span class="sd">        in an IonCollection. Default = True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">filter_i</span><span class="p">,</span> <span class="n">filter_f</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filter_param</span><span class="o">=</span><span class="s1">&#39;t&#39;</span><span class="p">,</span>
+        <span class="n">center</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">center_t</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mass</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">charge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shot_array_method</span><span class="o">=</span><span class="s1">&#39;range&#39;</span><span class="p">,</span>
+        <span class="n">use_for_mass_calib</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">label</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_i</span> <span class="o">=</span> <span class="n">filter_i</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_f</span> <span class="o">=</span> <span class="n">filter_f</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_param</span><span class="o">=</span><span class="n">filter_param</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shot_array_method</span> <span class="o">=</span> <span class="n">shot_array_method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="o">=</span><span class="n">mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_for_mass_calib</span><span class="o">=</span><span class="n">use_for_mass_calib</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="o">=</span><span class="n">charge</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Unable to determine ion mass-to-charge ratio&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="o">=</span><span class="n">center</span>
+
+        <span class="k">if</span> <span class="n">center_t</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">center_t</span> <span class="o">=</span> <span class="n">center_t</span>
+
+        <span class="c1"># else:</span>
+        <span class="c1">#     self.center_t = (self.Ti+self.Tf)/2</span>
+
+        <span class="k">if</span> <span class="n">dataset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">assign_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+
+
+            
+<div class="viewcode-block" id="Ion.assign_dataset">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.assign_dataset">[docs]</a>
+    <span class="k">def</span> <span class="nf">assign_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign Dataset object to the ion&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grab_data</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_shot_array</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Ion.print_details">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.print_details">[docs]</a>
+    <span class="k">def</span> <span class="nf">print_details</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print out attributes of the object excluding large arrays/dataframes&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;data_df&#39;</span><span class="p">,</span><span class="s1">&#39;data_array&#39;</span><span class="p">,</span> <span class="s1">&#39;shot_array&#39;</span><span class="p">]:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&#39;:</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ion.grab_data">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.grab_data">[docs]</a>
+    <span class="k">def</span> <span class="nf">grab_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">dataset</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Gets data corresponding to ion from dataset based on the inputted filter&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">sep_by_custom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_i</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_f</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_param</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;filter_param is not found in dataframe!&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ion.dataframe_to_arr">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.dataframe_to_arr">[docs]</a>
+    <span class="k">def</span> <span class="nf">dataframe_to_arr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Converts necessary dataframe columns for covariance calculation to an array&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[[</span><span class="s2">&quot;px&quot;</span><span class="p">,</span> <span class="s2">&quot;py&quot;</span><span class="p">,</span> <span class="s2">&quot;pz&quot;</span><span class="p">,</span> <span class="s2">&quot;shot&quot;</span><span class="p">,</span> <span class="s2">&quot;pmag&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[[</span><span class="s2">&quot;px_AU&quot;</span><span class="p">,</span> <span class="s2">&quot;py_AU&quot;</span><span class="p">,</span> <span class="s2">&quot;pz_AU&quot;</span><span class="p">,</span> <span class="s2">&quot;shot&quot;</span><span class="p">,</span> <span class="s2">&quot;pmag_AU&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Ion.get_shot_array">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.get_shot_array">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_shot_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Find array of shots in dataset which contain this ion&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot_array_method</span><span class="o">==</span><span class="s1">&#39;range&#39;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="o">.</span><span class="n">shot</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="o">.</span><span class="n">shot</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="o">.</span><span class="n">shot</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot_array_method</span><span class="o">==</span><span class="s1">&#39;unique&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="o">.</span><span class="n">shot</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid shot_array_method inputted!&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ion.get_idx_dict">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.get_idx_dict">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_idx_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shot_array_total</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create dictionary of indices of rows in dataset corresponding to this ion. Needed for covariance&quot;&quot;&quot;</span>
+        <span class="n">idx_dict</span> <span class="o">=</span> <span class="n">Dict</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="n">key_type</span><span class="o">=</span><span class="n">float_single</span><span class="p">,</span>
+                <span class="n">value_type</span><span class="o">=</span><span class="n">float_array</span><span class="p">)</span>
+
+        <span class="n">calculate_indexes</span><span class="p">(</span><span class="n">idx_dict</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="p">,</span><span class="n">shot_array_total</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">data_array</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">idx_dict</span><span class="o">=</span><span class="n">idx_dict</span></div>
+
+
+<div class="viewcode-block" id="Ion.calc_mz_cal">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.calc_mz_cal">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_mz_cal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs_tof_sqmz</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculated expected m/z of central ToF from calibration toefficients&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cal_mz</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center_t</span><span class="o">*</span><span class="n">coeffs_tof_sqmz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">coeffs_tof_sqmz</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span></div>
+
+
+<div class="viewcode-block" id="Ion.calc_t_absolute">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.calc_t_absolute">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_t_absolute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t0</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate absolute t by subtracting t0 (start of mass spectrum)&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">t0</span><span class="o">=</span><span class="n">t0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t_absolute&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">t0</span></div>
+
+
+<div class="viewcode-block" id="Ion.calc_t_centered">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.calc_t_centered">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_t_centered</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate t relative to t_center. Used in converting to 3D momentum.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t_centered&#39;</span><span class="p">]</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">center_t</span></div>
+
+
+        
+<div class="viewcode-block" id="Ion.manual_center">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.manual_center">[docs]</a>
+    <span class="k">def</span> <span class="nf">manual_center</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Manually center data in x,y using a user-given center.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;xcorr_manual&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;ycorr_manual&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Can&#39;t manually center - center not given&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Ion.apply_jet_correction">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.apply_jet_correction">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_jet_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jet_offset</span><span class="p">,</span> <span class="n">jet_velocity</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Center data using jet offsets and velocity in x and y. If this isn&#39;t working, it may be a sign error&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jet_offset</span><span class="o">=</span><span class="n">jet_offset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jet_velocity</span><span class="o">=</span><span class="n">jet_velocity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;xcorr_jet&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">jet_offset</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t_absolute&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">jet_velocity</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;ycorr_jet&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span><span class="o">-</span><span class="n">jet_offset</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t_absolute&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">jet_velocity</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Ion.adjust_jet_correction">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.adjust_jet_correction">[docs]</a>
+    <span class="k">def</span> <span class="nf">adjust_jet_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">jet_adjust</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Take centers produced from the jet correction and further adjust these manually&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">jet_adjust</span> <span class="o">=</span> <span class="n">jet_adjust</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;xcorr_jet_adjust&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;xcorr_jet&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">jet_adjust</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;ycorr_jet_adjust&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;ycorr_jet&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">jet_adjust</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+
+
+<div class="viewcode-block" id="Ion.correct_centers">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.correct_centers">[docs]</a>
+    <span class="k">def</span> <span class="nf">correct_centers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Re-center data in x and y.</span>
+
+<span class="sd">        :param method: Options: [&#39;jet&#39;, &#39;manual&#39;,&#39;jet_adjust&#39;]</span>
+<span class="sd">            &#39;jet&#39; - center by subtracting jet offsets/velocities obtained by previous calibration</span>
+<span class="sd">            &#39;manual&#39; - center by subtracting manual user defined centers</span>
+<span class="sd">            &#39;jet_adjust&#39; - center by subtracting jet offsets/velicocities, and then further adjust</span>
+<span class="sd">            by user-defined parameters</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;jet&#39;</span><span class="p">,</span> <span class="s1">&#39;manual&#39;</span><span class="p">,</span> <span class="s1">&#39;jet_adjust&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;jet&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;x_centered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;xcorr_jet&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;y_centered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;ycorr_jet&#39;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;manual&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;x_centered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;xcorr_manual&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;y_centered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;ycorr_manual&#39;</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">method</span><span class="o">==</span><span class="s1">&#39;jet_adjust&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;x_centered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;xcorr_jet_adjust&#39;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;y_centered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;ycorr_jet_adjust&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using default centers&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;x_centered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;y_centered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">centered</span><span class="o">=</span><span class="kc">True</span></div>
+
+
+
+<div class="viewcode-block" id="Ion.apply_momentum_calibration">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Ion.apply_momentum_calibration">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_momentum_calibration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">C_xy</span><span class="p">,</span> <span class="n">C_z</span><span class="p">,</span> <span class="n">C_total</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">center_method</span><span class="o">=</span><span class="s1">&#39;manual&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert (centered data to 3D momenta). For now this assumes that images are round</span>
+<span class="sd">        (i.e. that scaling parameter in x and y are the same). This function automatically</span>
+<span class="sd">        converts the ion&#39;s dataframe to array for future covariance calculation.</span>
+
+<span class="sd">        :param C_xy: linear scaling factor from x/t or y/t to velocity</span>
+<span class="sd">        :param C_z: linear scaling factor from (t-tcenter)*charge/mass to velocity</span>
+<span class="sd">        :param center_method: method used to adjust x/y centers prior to calibration. See</span>
+<span class="sd">            correct_centers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">C_xy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">C_xy</span> <span class="o">=</span> <span class="n">C_xy</span>
+        <span class="k">if</span> <span class="n">C_z</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">C_z</span> <span class="o">=</span> <span class="n">C_z</span>
+        
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">correct_centers</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">center_method</span><span class="p">)</span>
+  
+        
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t_absolute&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">t0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t_relative&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span> <span class="s1">&#39;t&#39;</span><span class="p">]</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">center_t</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vx&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">C_xy</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;x_centered&#39;</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t_absolute&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">C_xy</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;y_centered&#39;</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t_absolute&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">C_z</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">charge</span><span class="o">*</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t_centered&#39;</span><span class="p">]))</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">mass</span>
+
+        <span class="k">if</span> <span class="n">C_total</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vx&#39;</span><span class="p">]</span><span class="o">*=</span><span class="n">C_total</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vy&#39;</span><span class="p">]</span><span class="o">*=</span><span class="n">C_total</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vz&#39;</span><span class="p">]</span><span class="o">*=</span><span class="n">C_total</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;px&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vx&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;py&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vy&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;pz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vz&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;pmag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;px&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;py&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;pz&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vmag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vx&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vy&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;vz&#39;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">cal_mom</span><span class="o">=</span><span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataframe_to_arr</span><span class="p">()</span></div>
+</div>
+
+        
+
+
+
+<div class="viewcode-block" id="IonCollection">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.IonCollection">[docs]</a>
+<span class="k">class</span> <span class="nc">IonCollection</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for groups of Ions, which can be used for mass calibrations, jet calibrations etc.</span>
+<span class="sd">    Can iterate over the Ion objects in an IonCollection</span>
+
+<span class="sd">    :param filter_param: filter_param used for defining Ions in the group</span>
+<span class="sd">    :param allow_auto_mass_charge: not implemented currently</span>
+<span class="sd">    :param shot_array_method: shot_array_method used for defining Ions in the group</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_param</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_auto_mass_charge</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">shot_array_method</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filter_param</span> <span class="o">=</span> <span class="n">filter_param</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_auto_mass_charge</span> <span class="o">=</span> <span class="n">allow_auto_mass_charge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shot_array_method</span> <span class="o">=</span> <span class="n">shot_array_method</span>
+
+        <span class="n">optional_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_param</span><span class="p">:</span>
+            <span class="n">optional_kwargs</span><span class="p">[</span><span class="s2">&quot;filter_param&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_param</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_auto_mass_charge</span><span class="p">:</span>
+            <span class="n">optional_kwargs</span><span class="p">[</span><span class="s2">&quot;allow_auto_mass_charge&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">allow_auto_mass_charge</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot_array_method</span><span class="p">:</span>
+            <span class="n">optional_kwargs</span><span class="p">[</span><span class="s2">&quot;shot_array_method&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot_array_method</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ion_class</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="n">Ion</span><span class="p">,</span> <span class="o">**</span><span class="n">optional_kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="IonCollection.mz_calibration">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.IonCollection.mz_calibration">[docs]</a>
+    <span class="k">def</span> <span class="nf">mz_calibration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Autoamtically perform m/z calibration based on the Ions in the collection which have specified</span>
+<span class="sd">        center_t, mass and charge. </span>
+
+<span class="sd">        Output first-order polynomial coefficients are stored as self.coeffs_sqmz_tof and self.coeffs_tof_sqmz</span>
+<span class="sd">        The t0 is stored as self.cal_t0&quot;&quot;&quot;</span>
+        <span class="n">tof_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">mz_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">use_for_mass_calib</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">center_t</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">mass</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">charge</span><span class="p">):</span>
+                    <span class="n">tof_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">center_t</span><span class="p">)</span>
+                    <span class="n">mz_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">mass</span><span class="o">/</span><span class="n">ion</span><span class="o">.</span><span class="n">charge</span><span class="p">)</span>
+
+        <span class="n">mz_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">mz_list</span><span class="p">)</span>
+        <span class="n">tof_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">tof_list</span><span class="p">)</span>
+
+
+        <span class="c1"># Using np.polyfit to do the linear fitting</span>
+        <span class="n">coeffs_sqmz_tof</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mz_arr</span><span class="p">[</span><span class="n">mz_arr</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]),</span> <span class="n">tof_arr</span><span class="p">[</span><span class="n">mz_arr</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Using IPython.Display to print LaTeX</span>
+        <span class="n">display</span><span class="p">(</span><span class="n">Math</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;t = </span><span class="si">%.2f</span><span class="s2">\sqrt{\frac</span><span class="si">{m}{z}</span><span class="s2">} + </span><span class="si">%.2f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">coeffs_sqmz_tof</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coeffs_sqmz_tof</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+
+        <span class="n">coeffs_tof_sqmz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="n">tof_arr</span><span class="p">[</span><span class="n">mz_arr</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mz_arr</span><span class="p">[</span><span class="n">mz_arr</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">]),</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">display</span><span class="p">(</span><span class="n">Math</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;\sqrt{\frac</span><span class="si">{m}{z}</span><span class="s2">} = </span><span class="si">%.4f</span><span class="s2">t + </span><span class="si">%.4f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">coeffs_tof_sqmz</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coeffs_tof_sqmz</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">cal_t0</span> <span class="o">=</span> <span class="n">coeffs_sqmz_tof</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">coeffs_sqmz_tof</span> <span class="o">=</span> <span class="n">coeffs_sqmz_tof</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coeffs_tof_sqmz</span> <span class="o">=</span> <span class="n">coeffs_tof_sqmz</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">calc_cal_mz_ions</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="IonCollection.calc_cal_mz_ions">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.IonCollection.calc_cal_mz_ions">[docs]</a>
+    <span class="k">def</span> <span class="nf">calc_cal_mz_ions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculates the calibrated ion m/z for each ion in the IonCollection.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">ion</span><span class="o">.</span><span class="n">calc_mz_cal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coeffs_tof_sqmz</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+    
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">([</span><span class="n">ion</span><span class="o">.</span><span class="n">label</span> <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">])</span>
+    
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Collection with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2"> ions:</span><span class="se">\n</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+    
+    
+<div class="viewcode-block" id="IonCollection.add_ion">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.IonCollection.add_ion">[docs]</a>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">Ion</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">add_ion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create Ion and append it to IonCollection&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_class</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span></div>
+
+        
+<div class="viewcode-block" id="IonCollection.assign_dataset">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.IonCollection.assign_dataset">[docs]</a>
+    <span class="k">def</span> <span class="nf">assign_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign Dataset obect to each Ion in IonCollection.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="n">ion</span><span class="o">.</span><span class="n">assign_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span></div>
+</div>
+
+
+
+
+
+
+<div class="viewcode-block" id="Dataset">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Dataset">[docs]</a>
+<span class="k">class</span> <span class="nc">Dataset</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class used for handling datasets of charged particle imaging data, based around a single</span>
+<span class="sd">    Pandas Dataframe.</span>
+
+<span class="sd">    :param data_df: the Pandas dataframe</span>
+<span class="sd">    :param shot_array_method: method used for calculating total array of shots in the dataset</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_df</span><span class="p">,</span> <span class="n">shot_array_method</span> <span class="o">=</span> <span class="s1">&#39;range&#39;</span><span class="p">):</span>
+        <span class="c1"># print(data_df)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span> <span class="o">=</span> <span class="n">data_df</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cal_mom</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shot_array_method</span> <span class="o">=</span> <span class="n">shot_array_method</span>
+
+        
+        <span class="c1"># assert &#39;x&#39; in self.columns, &quot;Input dataframe is missing &#39;x&#39;&quot;</span>
+        <span class="c1"># assert &#39;y&#39; in self.columns, &quot;Input dataframe is missing &#39;y&#39;&quot;</span>
+        <span class="c1"># assert &#39;t&#39; in self.columns, &quot;Input dataframe is missing &#39;t&#39;&quot;</span>
+        <span class="k">assert</span> <span class="s1">&#39;shot&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="s2">&quot;Input dataframe is missing &#39;shot&#39;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_shot_array</span><span class="p">()</span>
+        
+<div class="viewcode-block" id="Dataset.sep_by_custom">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Dataset.sep_by_custom">[docs]</a>
+    <span class="k">def</span> <span class="nf">sep_by_custom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lim1</span><span class="p">,</span> <span class="n">lim2</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Separate data_df by some parameter.</span>
+
+<span class="sd">        :param lim1: lower limit to filter on</span>
+<span class="sd">        :param lim2: upper limit to filter on</span>
+<span class="sd">        :param param: data_df column name to filter on</span>
+
+<span class="sd">        :return: filtered dataframe</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_df_filt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">lim1</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="n">param</span><span class="p">]</span><span class="o">&lt;</span><span class="n">lim2</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">data_df_filt</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Dataset.sep_by_tof">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Dataset.sep_by_tof">[docs]</a>
+    <span class="k">def</span> <span class="nf">sep_by_tof</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Ti</span><span class="p">,</span> <span class="n">Tf</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Separate data_df by t between Ti and Tf.</span>
+
+<span class="sd">        :return: filtered_dataframe</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_df_filt</span> <span class="o">=</span> <span class="n">sep_by_custom</span><span class="p">(</span><span class="n">Ti</span><span class="p">,</span><span class="n">Tf</span><span class="p">,</span><span class="s1">&#39;t&#39;</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">data_df_filt</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Dataset.get_shot_array">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Dataset.get_shot_array">[docs]</a>
+    <span class="k">def</span> <span class="nf">get_shot_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get array of shots within the dataset, and store in self.shot_array&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot_array_method</span><span class="o">==</span><span class="s1">&#39;range&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="o">.</span><span class="n">shot</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="o">.</span><span class="n">shot</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">shot_array_method</span><span class="o">==</span><span class="s1">&#39;unique&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="o">.</span><span class="n">shot</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Invalid shot_array_method inputted!&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Dataset.apply_mz_calibration">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.data.Dataset.apply_mz_calibration">[docs]</a>
+    <span class="k">def</span> <span class="nf">apply_mz_calibration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coeffs_tof_sqmz</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Apply m/z calibration for all data in data_df.</span>
+
+<span class="sd">        :param coeffs_tof_sqmz: calibration coefficients from t to sqrt(m/z)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;cal_mz&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_df</span><span class="p">[</span><span class="s1">&#39;t&#39;</span><span class="p">]</span><span class="o">*</span><span class="n">coeffs_tof_sqmz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">coeffs_tof_sqmz</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">**</span><span class="mi">2</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Felix Allum.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

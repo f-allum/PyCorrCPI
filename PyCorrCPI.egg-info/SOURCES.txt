@@ -1,7 +1,6 @@
 LICENSE
 README.md
 setup.py
-PyCorrCPI/VMI_data.py
 PyCorrCPI/__init__.py
 PyCorrCPI/covariance.py
 PyCorrCPI/data.py

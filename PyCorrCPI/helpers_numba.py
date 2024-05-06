@@ -4,7 +4,9 @@ from .imports import *
 @njit
 def find_first(item, vec):
     """return the index of the first occurence of item in vec
-    returns two values - the first is boolean to indicate whether search was succesful or not.
+    :param item: item to search for
+    :param vec: array to search in
+    :return: two values - the first is boolean to indicate whether search was succesful or not.
     the second is the index of the first occurence."""
     for i in range(len(vec)):
         ## maximum indexes to search before giving up. in principle could cause issues
@@ -17,7 +19,10 @@ def find_first(item, vec):
 
 @njit
 def find_last(item, vec):
-    """return the index of the first occurence of item in vec"""
+    """return the index of the first occurence of item in vec
+    :param item: item to search for
+    :param vec: array to search in
+    """
     for i in range(len(vec)):
         if item != vec[i]:
             return i-1
@@ -25,7 +30,6 @@ def find_last(item, vec):
 
 
 
-# Here are the 'fast' numba functions for calculating coincidences
 
 @njit
 def dot3D(vec1, vec2):
@@ -49,7 +53,7 @@ def norm3D(vec):
 
 @njit
 def cross3D(vec1, vec2, result):
-    """ Calculate the cross product of two 3d vectors. """
+    """ Calculate the cross product of two 3d vectors. Modifies results in place """
     a1, a2, a3 = double(vec1[0]), double(vec1[1]), double(vec1[2])
     b1, b2, b3 = double(vec2[0]), double(vec2[1]), double(vec2[2])
     result[0] = a2 * b3 - a3 * b2
@@ -60,7 +64,7 @@ def cross3D(vec1, vec2, result):
 def rotation_matrix(axis, theta, rot_matrix):
     """
     Return the rotation matrix associated with counterclockwise rotation about
-    the given axis by theta radians.
+    the given axis by theta radians. Modifies rot_matrix in place.
     """
     axis = axis / np.sqrt(dot3D(axis, axis))
     a = np.cos(theta / 2.0)
