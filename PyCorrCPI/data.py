@@ -81,7 +81,7 @@ class Ion:
     def get_shot_array(self):
         """Find array of shots in dataset which contain this ion"""
         if self.shot_array_method=='range':
-            print(np.min(self.data_df.shot))
+            # print(np.min(self.data_df.shot))
             self.shot_array = np.arange(np.min(self.data_df.shot), np.max(self.data_df.shot))
         elif self.shot_array_method=='unique':
             self.shot_array = np.array(np.unique(self.data_df.shot))
