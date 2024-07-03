@@ -137,6 +137,44 @@ def output_format_Newton_3fold(vec_list, mag_list, mass_list, bin_list, dim_list
     # return(([B_bin_x,C_bin_x],[B_bin_y,C_bin_y],[B_bin_z,C_bin_z]))
     return(([C_bin_x],[C_bin_y],[C_bin_z]))
 
+
+@njit
+def output_format_Newton_2fold_3rdbody(vec_list, mag_list, mass_list, bin_list, dim_list):
+    """Represent covariance as 2fold Newton plot. Ion A is used as reference, and we plot the 3D momentum of 
+    Ion B relative to this. Note, third dimension is not used.
+
+    :param vec_list: list of 3D momentum vectors of each ion
+    :param mag_list: list of momentum magnitudes of each ion
+    :param mass_list: list of masses of each ion
+    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
+    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]"""
+    A_vec,B_vec = vec_list
+    A_mag,B_mag = mag_list
+    x_bin,y_bin,z_bin = bin_list
+    x_pixels,y_pixels, z_pixels = dim_list
+
+    ## use momn conservation to find 'missing' momentum
+    C_vec = -(A_vec+B_vec)
+    C_mag = norm3D(C_vec)
+    
+    angle1 = np.arccos(dot3D(A_vec,B_vec)/(A_mag*B_mag))
+    angle2 = np.arccos(dot3D(A_vec,C_vec)/(A_mag*C_mag))
+    Bproj_par = B_mag*np.cos(angle1)
+    Bproj_perp = B_mag*np.sin(angle1)
+    Cproj_par = C_mag*np.cos(angle2)
+    Cproj_perp = -C_mag*np.sin(angle2)  
+    Aproj_par = A_mag
+    Aproj_perp=0
+    
+    Aproj_par = int(Aproj_par/x_bin+0.5+x_pixels/2)
+    Bproj_par = int(Bproj_par/x_bin+0.5+x_pixels/2)
+    Cproj_par = int(Cproj_par/x_bin+0.5+x_pixels/2)
+    Cproj_perp = int(Cproj_perp/y_bin+0.5+y_pixels/2)
+    Aproj_perp = int(Aproj_perp/y_bin+0.5+y_pixels/2)
+    Bproj_perp = int(Bproj_perp/y_bin+0.5+y_pixels/2)
+    
+    return([Bproj_perp, Cproj_perp],[Bproj_par, Cproj_par], [0,0])
+
 @njit
 def output_format_Newton_4fold(vec_list, mag_list, mass_list, bin_list, dim_list):
     """Represent covariance as 4fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.

@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PyCorrCPI.output_functions &mdash; PyCorrCPI 0.0.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=92fd9be5" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
 
   
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=8c5712d9"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -75,9 +75,7 @@
 <span class="kn">from</span> <span class="nn">.helpers_numba</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="o">*</span>
 
-<div class="viewcode-block" id="beta_psum_KER">
-<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.beta_psum_KER">[docs]</a>
-<span class="nd">@njit</span>
+<div class="viewcode-block" id="beta_psum_KER"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.beta_psum_KER">[docs]</a><span class="nd">@njit</span>
 <span class="k">def</span> <span class="nf">beta_psum_KER</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span> <span class="n">mag_list</span><span class="p">,</span> <span class="n">mass_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represent covariance as a function of the relative recoil angle between them,</span>
 <span class="sd">    the sums of their absolute momentun, and the sums of their KEs. </span>
@@ -110,10 +108,7 @@
     <span class="k">return</span><span class="p">([</span><span class="n">beta_binned</span><span class="p">],[</span><span class="n">pmag_sum_binned</span><span class="p">],</span> <span class="p">[</span><span class="n">KE_sum_binned</span><span class="p">])</span></div>
 
 
-
-<div class="viewcode-block" id="output_format_Newton_2fold">
-<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_2fold">[docs]</a>
-<span class="nd">@njit</span>
+<div class="viewcode-block" id="output_format_Newton_2fold"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_2fold">[docs]</a><span class="nd">@njit</span>
 <span class="k">def</span> <span class="nf">output_format_Newton_2fold</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span> <span class="n">mag_list</span><span class="p">,</span> <span class="n">mass_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represent covariance as 2fold Newton plot. Ion A is used as reference, and we plot the 3D momentum of </span>
 <span class="sd">    Ion B relative to this. Note, third dimension is not used.</span>
@@ -150,10 +145,7 @@
     
     <span class="k">return</span><span class="p">([</span><span class="n">Bproj_perp</span><span class="p">],[</span><span class="n">Bproj_par</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span></div>
 
-
-<div class="viewcode-block" id="output_format_Newton_3fold">
-<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_3fold">[docs]</a>
-<span class="nd">@njit</span>
+<div class="viewcode-block" id="output_format_Newton_3fold"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_3fold">[docs]</a><span class="nd">@njit</span>
 <span class="k">def</span> <span class="nf">output_format_Newton_3fold</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span> <span class="n">mag_list</span><span class="p">,</span> <span class="n">mass_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represent covariance as 3fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.</span>
 <span class="sd">    Ion C is plotted in this frame.</span>
@@ -219,9 +211,44 @@
     <span class="k">return</span><span class="p">(([</span><span class="n">C_bin_x</span><span class="p">],[</span><span class="n">C_bin_y</span><span class="p">],[</span><span class="n">C_bin_z</span><span class="p">]))</span></div>
 
 
-<div class="viewcode-block" id="output_format_Newton_4fold">
-<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_4fold">[docs]</a>
-<span class="nd">@njit</span>
+<div class="viewcode-block" id="output_format_Newton_2fold_3rdbody"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_2fold_3rdbody">[docs]</a><span class="nd">@njit</span>
+<span class="k">def</span> <span class="nf">output_format_Newton_2fold_3rdbody</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span> <span class="n">mag_list</span><span class="p">,</span> <span class="n">mass_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represent covariance as 2fold Newton plot. Ion A is used as reference, and we plot the 3D momentum of </span>
+<span class="sd">    Ion B relative to this. Note, third dimension is not used.</span>
+
+<span class="sd">    :param vec_list: list of 3D momentum vectors of each ion</span>
+<span class="sd">    :param mag_list: list of momentum magnitudes of each ion</span>
+<span class="sd">    :param mass_list: list of masses of each ion</span>
+<span class="sd">    :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]</span>
+<span class="sd">    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]&quot;&quot;&quot;</span>
+    <span class="n">A_vec</span><span class="p">,</span><span class="n">B_vec</span> <span class="o">=</span> <span class="n">vec_list</span>
+    <span class="n">A_mag</span><span class="p">,</span><span class="n">B_mag</span> <span class="o">=</span> <span class="n">mag_list</span>
+    <span class="n">x_bin</span><span class="p">,</span><span class="n">y_bin</span><span class="p">,</span><span class="n">z_bin</span> <span class="o">=</span> <span class="n">bin_list</span>
+    <span class="n">x_pixels</span><span class="p">,</span><span class="n">y_pixels</span><span class="p">,</span> <span class="n">z_pixels</span> <span class="o">=</span> <span class="n">dim_list</span>
+
+    <span class="c1">## use momn conservation to find &#39;missing&#39; momentum</span>
+    <span class="n">C_vec</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">A_vec</span><span class="o">+</span><span class="n">B_vec</span><span class="p">)</span>
+    <span class="n">C_mag</span> <span class="o">=</span> <span class="n">norm3D</span><span class="p">(</span><span class="n">C_vec</span><span class="p">)</span>
+    
+    <span class="n">angle1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec</span><span class="p">,</span><span class="n">B_vec</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">A_mag</span><span class="o">*</span><span class="n">B_mag</span><span class="p">))</span>
+    <span class="n">angle2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec</span><span class="p">,</span><span class="n">C_vec</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">A_mag</span><span class="o">*</span><span class="n">C_mag</span><span class="p">))</span>
+    <span class="n">Bproj_par</span> <span class="o">=</span> <span class="n">B_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle1</span><span class="p">)</span>
+    <span class="n">Bproj_perp</span> <span class="o">=</span> <span class="n">B_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle1</span><span class="p">)</span>
+    <span class="n">Cproj_par</span> <span class="o">=</span> <span class="n">C_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle2</span><span class="p">)</span>
+    <span class="n">Cproj_perp</span> <span class="o">=</span> <span class="o">-</span><span class="n">C_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle2</span><span class="p">)</span>  
+    <span class="n">Aproj_par</span> <span class="o">=</span> <span class="n">A_mag</span>
+    <span class="n">Aproj_perp</span><span class="o">=</span><span class="mi">0</span>
+    
+    <span class="n">Aproj_par</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Aproj_par</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Bproj_par</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Bproj_par</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Cproj_par</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Cproj_par</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Cproj_perp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Cproj_perp</span><span class="o">/</span><span class="n">y_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">y_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Aproj_perp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Aproj_perp</span><span class="o">/</span><span class="n">y_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">y_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">Bproj_perp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Bproj_perp</span><span class="o">/</span><span class="n">y_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">y_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    
+    <span class="k">return</span><span class="p">([</span><span class="n">Bproj_perp</span><span class="p">,</span> <span class="n">Cproj_perp</span><span class="p">],[</span><span class="n">Bproj_par</span><span class="p">,</span> <span class="n">Cproj_par</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="output_format_Newton_4fold"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_4fold">[docs]</a><span class="nd">@njit</span>
 <span class="k">def</span> <span class="nf">output_format_Newton_4fold</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span> <span class="n">mag_list</span><span class="p">,</span> <span class="n">mass_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represent covariance as 4fold Newton plot. Ion A defines a reference vector (y), with A and B defining (xy) plane.</span>
 <span class="sd">    Ion C and D are plotted in this frame.</span>
@@ -287,10 +314,7 @@
     <span class="k">return</span><span class="p">(([</span><span class="n">C_bin_x</span><span class="p">,</span> <span class="n">D_bin_x</span><span class="p">],[</span><span class="n">C_bin_y</span><span class="p">,</span> <span class="n">D_bin_y</span><span class="p">],[</span><span class="n">C_bin_z</span><span class="p">,</span> <span class="n">D_bin_z</span><span class="p">]))</span></div>
 
 
-
-<div class="viewcode-block" id="output_format_TfAcAc">
-<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.output_format_TfAcAc">[docs]</a>
-<span class="nd">@njit</span><span class="p">()</span>
+<div class="viewcode-block" id="output_format_TfAcAc"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.output_format_TfAcAc">[docs]</a><span class="nd">@njit</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">output_format_TfAcAc</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span> <span class="n">mag_list</span><span class="p">,</span> <span class="n">mass_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Fourfold Newton plot where the sum of A and B make a reference vector and plane.</span>
 <span class="sd">    The momentum of C is restricted to have px&lt;0 in this frame. D is plotted.</span>
@@ -360,7 +384,6 @@
     <span class="n">D_bin_z</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">D_vec_rot2</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">z_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">z_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
 
     <span class="k">return</span><span class="p">(([</span><span class="n">D_bin_x</span><span class="p">],[</span><span class="n">D_bin_y</span><span class="p">],[</span><span class="n">D_bin_z</span><span class="p">]))</span></div>
-
 
 
 

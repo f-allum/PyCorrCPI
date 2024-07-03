@@ -82,7 +82,7 @@ class Ion:
         """Find array of shots in dataset which contain this ion"""
         if self.shot_array_method=='range':
             # print(np.min(self.data_df.shot))
-            self.shot_array = np.arange(np.min(self.data_df.shot), np.max(self.data_df.shot))
+            self.shot_array = np.arange(np.min(self.data_df.shot), np.max(self.data_df.shot)+1)
         elif self.shot_array_method=='unique':
             self.shot_array = np.array(np.unique(self.data_df.shot))
         else:
@@ -346,7 +346,7 @@ class Dataset:
     def get_shot_array(self):
         """Get array of shots within the dataset, and store in self.shot_array"""
         if self.shot_array_method=='range':
-            self.shot_array = np.arange(np.min(self.data_df.shot), np.max(self.data_df.shot))
+            self.shot_array = np.arange(np.min(self.data_df.shot), np.max(self.data_df.shot)+1)
         elif self.shot_array_method=='unique':
             self.shot_array = np.array(np.unique(self.data_df.shot))
         else:
@@ -358,3 +358,20 @@ class Dataset:
         :param coeffs_tof_sqmz: calibration coefficients from t to sqrt(m/z)
         """
         self.data_df['cal_mz'] = (self.data_df['t']*coeffs_tof_sqmz[0] + coeffs_tof_sqmz[1])**2
+
+
+    def generate_shot_df(self):
+
+        # self.unique_shots = np.unique(self.data_df.shot)
+        # shot_df_list=[]
+        # for shot in self.shot_array:
+        #     if shot in self.unique_shots:
+        #         index = self.data_df.shot.searchsorted(shot, side='left')
+        #         df_slice = self.data_df.iloc[[index]]
+        #         shot_df_list.append(df_slice)
+        # self.shot_df=pd.concat(shot_df_list)
+
+        self.shot_df=(self.data_df).groupby("shot", as_index=False).first()
+
+        # print(self.shot_df[0:5])
+

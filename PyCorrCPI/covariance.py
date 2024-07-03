@@ -55,7 +55,9 @@ def calc_covariance(dataset, ion_list, dim_list, bin_list,
                        filter_function=False,
                        filter_max=np.inf,
                        max_shot=None,
-                       only_coincidence=False):
+                       only_coincidence=False,
+                       contingent=False,
+                       contingent_filters=None):
     """Function for initializing an instance of the Covariance class
 
     :param ion_list: list of n ions to be used in the nfold covariance calculation
@@ -81,25 +83,59 @@ def calc_covariance(dataset, ion_list, dim_list, bin_list,
     :param n_EijEkl: number of times to calculate the <AB><CD> type terms in four-fold covariance
     :param n_EijkEl: number of times to calculate the <ABC><D> type terms in four-fold covariance
     :param n_EiEjEkl: number of times to calculate the <A><B><CD> type terms in four-fold covariance
+    :param contingent: is the covariance calculation contingent? default=False
+    :param contingent_filter: filter object used in the calculation if contingent. default=None
     """
 
 
-    covariance_output = Covariance(dataset, ion_list, dim_list, bin_list,
-                       store_coincs=store_coincs,
-                       update_dataset=update_dataset,
-                       verbose=verbose,
-                       remove_autovariance=remove_autovariance,
-                       custom_function=custom_function,
-                       n_EiEj=n_EiEj,
-                       n_EiEjEk=n_EiEjEk, n_EijEk=n_EijEk,
-                       n_EiEjEkEl=n_EiEjEkEl, n_EijEkl=n_EijEkl, n_EijkEl=n_EijkEl, n_EiEjEkl=n_EiEjEkl,
-                       filter_function=filter_function,
-                       filter_max=filter_max,
-                       max_shot=max_shot,
-                       only_coincidence=only_coincidence)
+    if not contingent:
+        covariance_output = Covariance(dataset, ion_list, dim_list, bin_list,
+                           store_coincs=store_coincs,
+                           update_dataset=update_dataset,
+                           verbose=verbose,
+                           remove_autovariance=remove_autovariance,
+                           custom_function=custom_function,
+                           n_EiEj=n_EiEj,
+                           n_EiEjEk=n_EiEjEk, n_EijEk=n_EijEk,
+                           n_EiEjEkEl=n_EiEjEkEl, n_EijEkl=n_EijEkl, n_EijkEl=n_EijkEl, n_EiEjEkl=n_EiEjEkl,
+                           filter_function=filter_function,
+                           filter_max=filter_max,
+                           max_shot=max_shot,
+                           only_coincidence=only_coincidence,
+                           contingent=contingent)
 
-    covariance_output.calc_covariance()
-    return(covariance_output)
+        covariance_output.calc_covariance()
+
+        return(covariance_output)
+
+    else:
+        cont_covariance_output=ContCovariance(contingent_filters)
+
+        for contingent_filter in contingent_filters:
+            covariance_output = Covariance(dataset, ion_list, dim_list, bin_list,
+                               store_coincs=store_coincs,
+                               update_dataset=update_dataset,
+                               verbose=verbose,
+                               remove_autovariance=remove_autovariance,
+                               custom_function=custom_function,
+                               n_EiEj=n_EiEj,
+                               n_EiEjEk=n_EiEjEk, n_EijEk=n_EijEk,
+                               n_EiEjEkEl=n_EiEjEkEl, n_EijEkl=n_EijEkl, n_EijkEl=n_EijkEl, n_EiEjEkl=n_EiEjEkl,
+                               filter_function=filter_function,
+                               filter_max=filter_max,
+                               max_shot=max_shot,
+                               only_coincidence=only_coincidence,
+                               contingent=contingent,
+                               contingent_filter=contingent_filter)
+
+            covariance_output.calc_covariance()
+
+            cont_covariance_output.add_covariance(covariance_output)
+
+        cont_covariance_output.calc_cont_covar()
+        return(cont_covariance_output)
+
+
 
 
 
@@ -569,6 +605,8 @@ class Covariance:
     :param n_EijEkl: number of times to calculate the <AB><CD> type terms in four-fold covariance
     :param n_EijkEl: number of times to calculate the <ABC><D> type terms in four-fold covariance
     :param n_EiEjEkl: number of times to calculate the <A><B><CD> type terms in four-fold covariance
+    :param contingent: is the covariance calculation contingent? default=False
+    :param contingent_filter: filter object used in the calculation if contingent. default=None
     
     """
 
@@ -584,7 +622,10 @@ class Covariance:
                        n_EiEjEkEl=1, n_EijEkl=1, n_EijkEl=1, n_EiEjEkl=1,
                        filter_function=False,
                        filter_max=np.inf,
-                       only_coincidence=False):
+                       only_coincidence=False,
+                       contingent=False,
+                       contingent_filter=None
+                       ):
         
         self.dataset=dataset
         self.shot_array=self.dataset.shot_array
@@ -609,6 +650,35 @@ class Covariance:
         self.filter_function=filter_function
         self.filter_max=filter_max
         self.only_coincidence=only_coincidence
+        self.contingent=contingent
+        self.contingent_filter=contingent_filter
+
+
+    def apply_contingent_filter(self):
+        """To do contingent covariance, all we do is filter on the shot array used in the covariance calculation"""
+
+        # Firstly, (if necessary) generate a datasetdataframe which contains just the first entry for each shot
+
+        try:
+            shot_df = self.dataset.shot_df
+        except:
+            self.dataset.generate_shot_df()
+            shot_df = self.dataset.shot_df
+
+        # Convert this dataframe into a dict
+
+        self.contingent_filter_dict = dict(zip(shot_df.shot, shot_df[self.contingent_filter.filter_param]))
+
+        new_shot_list = []
+
+        for index, value in self.contingent_filter_dict.items():
+            if (value>self.contingent_filter.filter_min)&(value<=self.contingent_filter.filter_max):
+                new_shot_list.append(index)
+        self.shot_array=np.array(new_shot_list)
+        self.n_shots=len(self.shot_array)
+
+        if self.verbose:
+            print("After filtering %s between %s and %s: %s shots" % (self.contingent_filter.filter_param, self.contingent_filter.filter_min, self.contingent_filter.filter_max, self.n_shots))
 
 
     def check(self):
@@ -719,6 +789,7 @@ class Covariance:
         self.ion_array_list=[]
         self.ion_mass_list=[]
         for ion in self.ion_list:
+
             try:
                 self.idx_dict_list.append(ion.idx_dict)
                 if self.verbose:
@@ -750,7 +821,6 @@ class Covariance:
                             self.autovariance_array[autovariance_counter,:] = [i,j]
                             autovariance_counter+=1
         self.autovariance_array = self.autovariance_array[0:autovariance_counter,:]
-        print(self.autovariance_array)
 
     def setup_filter(self):
         """Assign the filter function used in the covariance calculation."""
@@ -840,6 +910,8 @@ class Covariance:
         """General function which calls all the necessary setup/checks before covariance calculation,
         and then proceeds with the general logic."""
         self.start_time = time.time()
+        if self.contingent:
+            self.apply_contingent_filter()
         self.check()
         self.setup_output()
         self.setup_output_function()
@@ -899,7 +971,7 @@ class Covariance:
                 colors_centered_on_zero=True):
         """Plot 2D histogram of calculated covariance
 
-        :param proj_list: list of axes to project over in teh plotting
+        :param proj_list: list of axes to project over in the plotting
         :param param_dict: param_dict used to neaten the plot
         :param term: which term of output array to plot. Default is -1 (covariance)
         :param label_list: list of labels of each axes of output array. Default is ['p$_x$','p$_y$','p$_z$']
@@ -969,5 +1041,65 @@ class Covariance:
             ax.set_title(title_string,fontsize=28)
             neaten_plot(ax,param_dict)
             plt.show()
+
+
+class ContCovarianceFilter:
+
+    """Class for containing filters used in contingent calculation
+
+    :param filter_param: the name (string) of the parameter being filtered on in the dataframes
+    :param filter_min: minimum value this parameter can take
+    :param filter_max: maximum value this parameter can take
+
+    """
+
+
+    def __init__(self, filter_param,
+                filter_min,
+                filter_max):
+
+        self.filter_param=filter_param
+        self.filter_min=filter_min
+        self.filter_max=filter_max
+
+class ContCovariance:
+
+    """
+    Class for contingent covariance calculations. 
+    Contains information for filtering data on the contingent paramter (e.g. FEL pulse energy), and collects the individual covariance objects.
+
+    :param filter_list: list of filters used to calculate the contingent covariance
+    :param covariances: list of covariances which are summed to make the contingent
+    """
+
+    def __init__(self, cont_filter_list,
+                covariances=[]):
+        self.cont_filter_list=cont_filter_list
+        self.covariances=covariances
+
+    def __iter__(self, *args, **kwargs):
+        return self.covariances.__iter__(*args, **kwargs)
+
+    def calc_cont_covar(self):
+        """Sum up each indivdual covariance output to get the contingent output"""
+        for i, covar in enumerate(self.covariances):
+            if i==0:
+                self.output_array=covar.output_array
+            else:
+                self.output_array+=covar.output_array
+
+    def add_covariance(self, covariance):
+        """Append a covariance object to the collection"""
+        self.covariances.append(covariance)
+
+
+
+
+
+
+
+
+
+
 
 
