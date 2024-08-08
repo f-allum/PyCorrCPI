@@ -43,6 +43,16 @@ def neaten_plot(ax, param_dict):
         ax.spines[axis].set_linewidth(param_dict['spinewidth'])
 
 
+def generate_contingent_covariance(covariance_output_list, contingent_filters, example_covariance):
+
+    cont_covariance_output = ContCovariance(contingent_filters, covariance_output_list)
+
+    cont_covariance_output.get_details(example_covariance)
+    cont_covariance_output.calc_cont_covar()
+
+    return(cont_covariance_output)
+
+
 def calc_covariance(dataset, ion_list, dim_list, bin_list,
                        store_coincs=False,
                        update_dataset=True,
@@ -109,7 +119,9 @@ def calc_covariance(dataset, ion_list, dim_list, bin_list,
         return(covariance_output)
 
     else:
-        cont_covariance_output=ContCovariance(contingent_filters)
+        # cont_covariance_output=ContCovariance(contingent_filters)
+
+        covariance_output_list = []
 
         for contingent_filter in contingent_filters:
             covariance_output = Covariance(dataset, ion_list, dim_list, bin_list,
@@ -130,9 +142,16 @@ def calc_covariance(dataset, ion_list, dim_list, bin_list,
 
             covariance_output.calc_covariance()
 
-            cont_covariance_output.add_covariance(covariance_output)
+            # cont_covariance_output.add_covariance(covariance_output)
 
-        cont_covariance_output.calc_cont_covar()
+            covariance_output_list.append(covariance_output.output_array)
+
+        cont_covariance_output = generate_contingent_covariance(covariance_output_list, contingent_filters, covariance_output)
+
+        del covariance_output
+        # cont_covariance_output.calc_cont_covar()
+
+
         return(cont_covariance_output)
 
 
@@ -263,6 +282,8 @@ def calc_Cab(output_array, output_function,
 
     len_autovariance_array=len(autovariance_array)
 
+    print(x_pixels,y_pixels,z_pixels)
+
     ## now thanks to the shot dictionaries we can easily iterate over all sets of events in a laser shot
     for A_shot,B_shot in zip(A_shot_array,B_shot_array):
         
@@ -315,11 +336,12 @@ def calc_Cab(output_array, output_function,
 
                 for x_out,y_out,z_out in zip(x_out_list,y_out_list,z_out_list):
                     ## if in bounds add to array
-                    if 0 <= z_out < x_pixels:
+                    if 0 <= x_out < x_pixels:
                         if 0 <= y_out < y_pixels:
                             if 0 <= z_out < z_pixels:
                                 coinc_counter+=1
                                 output_array[term_counter,x_out, y_out, z_out] += addval
+
 
     # print(coinc_counter)
 
@@ -579,6 +601,7 @@ def calc_Cabcd(output_array, output_function,
                                         output_array[term_counter,x_out, y_out, z_out] += addval
 
 
+
 class Covariance:
     """Class for storing covariance outputs and performing covariance calculation
 
@@ -728,7 +751,7 @@ class Covariance:
         if self.nfold==2:
             self.shift_val_list = [[0],
                       [1]]
-            self.term_name_list = ['<AB>', '<AB>']
+            self.term_name_list = ['<AB>', '<A><B>']
             if self.only_coincidence:
                 self.ncalc_list = [1,0]
             else:
@@ -1062,7 +1085,7 @@ class ContCovarianceFilter:
         self.filter_min=filter_min
         self.filter_max=filter_max
 
-class ContCovariance:
+class ContCovariance(Covariance):
 
     """
     Class for contingent covariance calculations. 
@@ -1072,26 +1095,32 @@ class ContCovariance:
     :param covariances: list of covariances which are summed to make the contingent
     """
 
-    def __init__(self, cont_filter_list,
-                covariances=[]):
+    def __init__(self, cont_filter_list, covariance_outputs):
         self.cont_filter_list=cont_filter_list
-        self.covariances=covariances
+        self.covariance_outputs=covariance_outputs
+
+    def get_details(self, example_covariance):
+        for k,v in vars(example_covariance).items():
+            if k not in ['dataset', 'contingent_filter']:
+                try:
+                    setattr(self, k, v)
+                except:
+                    pass   # non-pickelable stuff wasn't needed
 
     def __iter__(self, *args, **kwargs):
-        return self.covariances.__iter__(*args, **kwargs)
+        return self.covariance_outputs.__iter__(*args, **kwargs)
 
     def calc_cont_covar(self):
         """Sum up each indivdual covariance output to get the contingent output"""
-        for i, covar in enumerate(self.covariances):
+        for i, output_array in enumerate(self.covariance_outputs):
             if i==0:
-                self.output_array=covar.output_array
+                self.output_array=output_array
             else:
-                self.output_array+=covar.output_array
+                self.output_array+=output_array
 
-    def add_covariance(self, covariance):
+    def add_covariance_outputs(self, covariance):
         """Append a covariance object to the collection"""
-        self.covariances.append(covariance)
-
+        self.covariance_outputs.append(covariance_output)
 
 
 
