@@ -71,7 +71,7 @@ def rotation_matrix(axis, theta, rot_matrix):
     b, c, d = -axis * np.sin(theta / 2.0)
     aa, bb, cc, dd = a * a, b * b, c * c, d * d
     bc, ad, ac, ab, bd, cd = b * c, a * d, a * c, a * b, b * d, c * d
-    
+
 
     rot_matrix[0,0]=aa + bb - cc - dd
     rot_matrix[0,1]=2 * (bc + ad)
@@ -82,7 +82,7 @@ def rotation_matrix(axis, theta, rot_matrix):
     rot_matrix[2,0]=2 * (bd + ac)
     rot_matrix[2,1]=2 * (cd - ab)
     rot_matrix[2,2]=aa + dd - bb - cc
-        
+
 
 @njit
 def calc_psum_abs(vec_list,mag_list,mass_list):
