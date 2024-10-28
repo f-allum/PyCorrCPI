@@ -40,6 +40,7 @@ class Ion:
         self.jet_offset = jet_offset
         self.jet_velocity = jet_velocity
         self.jet_adjust = jet_adjust
+        self.cal_mz = None
 
         try:
             self.mz = self.mass/self.charge
@@ -75,6 +76,11 @@ class Ion:
         return cls(label, filter_i, filter_f, **_config)
     
     def get_configuration_dict(self):
+        """
+        get a dictionary with all relevant configuration (except dataset)
+        to reproduce this class instance with Ion.from_configuration_dict
+        constructor
+        """
         cnf = dict(
             label=self.label,
             filter_i=self.filter_i,
@@ -260,10 +266,15 @@ class IonCollection:
     :param shot_array_method: shot_array_method used for defining Ions in the group
     """
     def __init__(self, filter_param=None, allow_auto_mass_charge=False, shot_array_method=None):
-        self.data = []
+        self.data = list()
+        self.coeffs_sqmz_tof = None
+        self.coeffs_tof_sqmz = None
+        self.cal_t0 = None
+        
         self.filter_param = filter_param
         self.allow_auto_mass_charge = allow_auto_mass_charge
         self.shot_array_method = shot_array_method
+        
 
         optional_kwargs = {}
         if self.filter_param:
@@ -330,7 +341,6 @@ class IonCollection:
     def __repr__(self):
         return f"Collection with {len(self.data)} ions:\n{str(self)}"
 
-
     @wraps(Ion)
     def add_ion(self, *args, **kwargs):
         """Create Ion and append it to IonCollection"""
@@ -340,9 +350,63 @@ class IonCollection:
         """Assign Dataset obect to each Ion in IonCollection."""
         for ion in self.data:
             ion.assign_dataset(dataset)
-
-
-
+    
+    @classmethod
+    def from_configuration_dict(cls, configuration_dict):
+        """
+        constructs IonCollection (incl. Ions) from configuration dictionary
+        """
+        cnf = configuration_dict["IonCollection"].copy()
+        # extract properties that are not part of __init__ kwargs
+        post_cnf = {k: cnf.pop(k) for k in cnf if k in ['coeffs_sqmz_tof', 'coeffs_tof_sqmz', 'cal_t0']}
+        ic = cls(**cnf)
+        # apply previously extracted properties
+        for key in post_cnf:
+            setattr(ic, key, post_cnf[key])
+        for ion_conf in configuration_dict["Ions"]:
+            ic.data.append(Ion.from_configuration_dict(ion_conf))
+        if ic.coeffs_tof_sqmz is not None: 
+            self.calc_cal_mz_ions()
+        return ic
+        
+    def get_configuration_dict(self):
+        """
+        get a dictionary with all relevant configuration (except datasets)
+        to reproduce this class instance (with all its ions) with
+        IonCollection.from_configuration_dict constructor
+        """
+        full_config = dict()
+        full_config["IonCollection"] = dict(
+                                            filter_param=self.filter_param, 
+                                            allow_auto_mass_charge=self.allow_auto_mass_charge, 
+                                            shot_array_method=self.shot_array_method,
+                                            coeffs_sqmz_tof=self.coeffs_sqmz_tof
+                                            coeffs_tof_sqmz=self.coeffs_tof_sqmz
+                                            cal_t0=self.cal_t0
+                                           )  # WIP
+        full_config["Ions"] = [ion.get_configuration_dict() for ion in self.data]
+        return full_config
+    
+    @classmethod
+    def from_configuration_file(cls, file_path: str):
+        """
+        constructs IonCollection (incl. Ions) from configuration file
+        """
+        with open(file_path, "r") as f:
+            cnf = json.load(f)
+        return cls.from_configuration_dict(cnf)
+    
+    def export_configuration(self, file_path: str):
+        """
+        exports configuration into a json file, 
+        IonCollection can be reconstructed with `from_configuration_file`
+        constructor
+        """
+        cnf = self.get_configuration_dict()
+        if not output_path.endswith(".json"):
+            output_path = f"{output_path}.json"
+        with open(output_path, "w") as f:
+            json.dump(cnf, f)
 
 
 class Dataset:
@@ -403,6 +467,7 @@ class Dataset:
         self.data_df['cal_mz'] = (self.data_df['t']*coeffs_tof_sqmz[0] + coeffs_tof_sqmz[1])**2
 
 
+    
     def generate_shot_df(self):
 
         # self.unique_shots = np.unique(self.data_df.shot)
