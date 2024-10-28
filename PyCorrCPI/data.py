@@ -27,7 +27,8 @@ class Ion:
     """
     def __init__(self, label, filter_i, filter_f, dataset=None, filter_param='t',
         center=None, center_t=None, mass=None, charge=None, shot_array_method='range',
-        use_for_mass_calib=True, t0=None, jet_offset=None, jet_velocity=None, jet_adjust=(0,0)):
+        use_for_mass_calib=True, t0=None, jet_offset=None, jet_velocity=None, jet_adjust=(0,0), 
+        C_xy=None, C_z=None, C_total=None):
         self.label = label
         self.filter_i = filter_i
         self.filter_f = filter_f
@@ -41,6 +42,10 @@ class Ion:
         self.jet_velocity = jet_velocity
         self.jet_adjust = jet_adjust
         self.cal_mz = None
+        self.C_xy = C_xy
+        self.C_z = C_z
+        self.C_total = C_total
+        
 
         try:
             self.mz = self.mass/self.charge
@@ -95,6 +100,9 @@ class Ion:
             jet_offset=self.jet_offset,
             jet_velocity=self.jet_velocity,
             jet_adjust=self.jet_adjust,
+            C_xy=self.C_xy,
+            C_z=self.C_z,
+            C_total=self.C_total,
         )
         return {k: cnf[k] for k in cnf if cnf[k] is not None}
             
@@ -212,7 +220,7 @@ class Ion:
         self.centered=True
 
 
-    def apply_momentum_calibration(self, C_xy, C_z, C_total=None, center_method='manual'):
+    def apply_momentum_calibration(self, C_xy=None, C_z=None, C_total=None, center_method='manual'):
         """Convert (centered data to 3D momenta). For now this assumes that images are round
         (i.e. that scaling parameter in x and y are the same). This function automatically
         converts the ion's dataframe to array for future covariance calculation.
@@ -227,7 +235,9 @@ class Ion:
         if C_z:
             self.C_z = C_z
 
-
+        if C_total:
+            self.C_total = C_total
+        
         self.correct_centers(method=center_method)
 
 
@@ -235,14 +245,14 @@ class Ion:
         self.data_df['t_absolute'] = self.data_df['t']-self.t0
         self.data_df['t_relative'] = self.data_df[ 't']-self.center_t
 
-        self.data_df['vx'] = C_xy*(self.data_df['x_centered']/self.data_df['t_absolute'])
-        self.data_df['vy'] = C_xy*(self.data_df['y_centered']/self.data_df['t_absolute'])
-        self.data_df['vz'] = (C_z*self.charge*(self.data_df['t_centered']))/self.mass
+        self.data_df['vx'] = self.C_xy*(self.data_df['x_centered']/self.data_df['t_absolute'])
+        self.data_df['vy'] = self.C_xy*(self.data_df['y_centered']/self.data_df['t_absolute'])
+        self.data_df['vz'] = (self.C_z*self.charge*(self.data_df['t_centered']))/self.mass
 
-        if C_total:
-            self.data_df['vx']*=C_total
-            self.data_df['vy']*=C_total
-            self.data_df['vz']*=C_total
+        if self.C_total:
+            self.data_df['vx']*=self.C_total
+            self.data_df['vy']*=self.C_total
+            self.data_df['vz']*=self.C_total
 
         self.data_df['px'] = self.data_df['vx'] * self.mass
         self.data_df['py'] = self.data_df['vy'] * self.mass
