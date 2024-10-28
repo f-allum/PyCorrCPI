@@ -20,10 +20,14 @@ class Ion:
         should work unless the dataset is missing certain laser shots between the first and last.
     :param use_for_mass_cal: If True, this ion can be used to do a m/z calibration
         in an IonCollection. Default = True
+    :param t0: absolute time zero
+    :param jet_offset: tuple(x_offset, y_offset) x and y position of jet at t0
+    :param jet_velocity: tuple(x_velocity, y_velocity) velocity of jet in px/t_unit 
+    :param jet_adjust: tuple(x_adjust, y_adjust) adjustment for each coordinate relative to jet_correction result 
     """
     def __init__(self, label, filter_i, filter_f, dataset=None, filter_param='t',
         center=None, center_t=None, mass=None, charge=None, shot_array_method='range',
-        use_for_mass_calib=True):
+        use_for_mass_calib=True, t0=None, jet_offset=None, jet_velocity=None, jet_adjust=(0,0)):
         self.label = label
         self.filter_i = filter_i
         self.filter_f = filter_f
@@ -32,6 +36,10 @@ class Ion:
         self.mass=mass
         self.use_for_mass_calib=use_for_mass_calib
         self.charge=charge
+        self.t0 = t0
+        self.jet_offset = jet_offset
+        self.jet_velocity = jet_velocity
+        self.jet_adjust = jet_adjust
 
         try:
             self.mz = self.mass/self.charge
@@ -48,9 +56,42 @@ class Ion:
 
         if dataset:
             self.assign_dataset(dataset)
-
-
-
+  
+    @classmethod
+    def from_configuration_dict(cls, configuration_dict: dict):
+        """
+        construct `Ion` instance from configuration dictionary
+        
+        Example:
+        cnf_dict = dict(label="test", filter_i=5, filter_f=10)
+        Ion.from_configuration_dict(cnf_dict)
+        """
+        _config = configuration_dict.copy()
+        label, filter_i, filter_f = (
+            _config.pop("label"),
+            _config.pop("filter_i"),
+            _config.pop("filter_f"),
+        )
+        return cls(label, filter_i, filter_f, **_config)
+    
+    def get_configuration_dict(self):
+        cnf = dict(
+            label=self.label,
+            filter_i=self.filter_i,
+            filter_f=self.filter_f,
+            filter_param=self.filter_param,
+            shot_array_method=self.shot_array_method,
+            mass=self.mass,
+            use_for_mass_calib=self.use_for_mass_calib,
+            center=self.center,
+            center_t=self.center_t,
+            t0=self.t0,
+            jet_offset=self.jet_offset,
+            jet_velocity=self.jet_velocity,
+            jet_adjust=self.jet_adjust,
+        )
+        return {k: cnf[k] for k in cnf if cnf[k] is not None}
+            
     def assign_dataset(self, dataset):
         """Assign Dataset object to the ion"""
         self.grab_data(dataset)
@@ -97,9 +138,12 @@ class Ion:
         """Calculated expected m/z of central ToF from calibration toefficients"""
         self.cal_mz = (self.center_t*coeffs_tof_sqmz[0] + coeffs_tof_sqmz[1])**2
 
-    def calc_t_absolute(self, t0):
+    def calc_t_absolute(self, t0=None):
         """Calculate absolute t by subtracting t0 (start of mass spectrum)"""
-        self.t0=t0
+        if t0 is not None:
+            self.t0=t0
+        if self.t0 is None:
+            raise ValueError("Must provide t0 if self.t0 is None.")
         self.data_df['t_absolute']=self.data_df['t']-self.t0
 
     def calc_t_centered(self):
@@ -115,20 +159,25 @@ class Ion:
         else:
             print("Can't manually center - center not given")
 
-    def apply_jet_correction(self, jet_offset, jet_velocity):
+    def apply_jet_correction(self, jet_offset=None, jet_velocity=None):
         """Center data using jet offsets and velocity in x and y. If this isn't working, it may be a sign error"""
-        self.jet_offset=jet_offset
-        self.jet_velocity=jet_velocity
+        if jet_offset is not None:
+            self.jet_offset=jet_offset
+        if jet_velocity is not None:
+            self.jet_velocity=jet_velocity
+        if self.jet_velocity is None or self.jet_offset is None:
+            raise ValueError("Must provide jet_velocity/jet_offset if self.jet_velocity/self.jet_offset is None.")
         self.data_df['xcorr_jet'] = (self.data_df['x']-jet_offset[0])-(self.data_df['t_absolute']*jet_velocity[0])
         self.data_df['ycorr_jet'] = (self.data_df['y']-jet_offset[1])-(self.data_df['t_absolute']*jet_velocity[1])
 
-    def adjust_jet_correction(self, jet_adjust):
+    def adjust_jet_correction(self, jet_adjust=None):
         """Take centers produced from the jet correction and further adjust these manually"""
-        self.jet_adjust = jet_adjust
+        if jet_adjust is not None:
+            self.jet_adjust=jet_adjust
+        if self.jet_adjust is None:
+            raise ValueError("Must provide jet_adjust if self.jet_adjust is None.")
         self.data_df['xcorr_jet_adjust'] = self.data_df['xcorr_jet']+jet_adjust[0]
         self.data_df['ycorr_jet_adjust'] = self.data_df['ycorr_jet']+jet_adjust[1]
-
-
 
     def correct_centers(self, method=None):
         """Re-center data in x and y.
