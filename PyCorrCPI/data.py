@@ -1,6 +1,8 @@
-from .covariance import *
-from .helpers_numba import *
+import json
+
 from .imports import *
+from .helpers_numba import *
+from .covariance import *
 
 
 class Ion:
@@ -93,6 +95,7 @@ class Ion:
             filter_param=self.filter_param,
             shot_array_method=self.shot_array_method,
             mass=self.mass,
+            charge=self.charge,
             use_for_mass_calib=self.use_for_mass_calib,
             center=self.center,
             center_t=self.center_t,
@@ -181,8 +184,8 @@ class Ion:
             self.jet_velocity=jet_velocity
         if self.jet_velocity is None or self.jet_offset is None:
             raise ValueError("Must provide jet_velocity/jet_offset if self.jet_velocity/self.jet_offset is None.")
-        self.data_df['xcorr_jet'] = (self.data_df['x']-jet_offset[0])-(self.data_df['t_absolute']*jet_velocity[0])
-        self.data_df['ycorr_jet'] = (self.data_df['y']-jet_offset[1])-(self.data_df['t_absolute']*jet_velocity[1])
+        self.data_df['xcorr_jet'] = (self.data_df['x']-self.jet_offset[0])-(self.data_df['t_absolute']*self.jet_velocity[0])
+        self.data_df['ycorr_jet'] = (self.data_df['y']-self.jet_offset[1])-(self.data_df['t_absolute']*self.jet_velocity[1])
 
     def adjust_jet_correction(self, jet_adjust=None):
         """Take centers produced from the jet correction and further adjust these manually"""
@@ -190,6 +193,8 @@ class Ion:
             self.jet_adjust=jet_adjust
         if self.jet_adjust is None:
             raise ValueError("Must provide jet_adjust if self.jet_adjust is None.")
+        else:
+            jet_adjust = self.jet_adjust
         self.data_df['xcorr_jet_adjust'] = self.data_df['xcorr_jet']+jet_adjust[0]
         self.data_df['ycorr_jet_adjust'] = self.data_df['ycorr_jet']+jet_adjust[1]
 
@@ -263,8 +268,6 @@ class Ion:
 
         self.cal_mom=True
         self.dataframe_to_arr()
-
-
 
 
 class IonCollection:
@@ -367,8 +370,9 @@ class IonCollection:
         constructs IonCollection (incl. Ions) from configuration dictionary
         """
         cnf = configuration_dict["IonCollection"].copy()
+        _cnf = cnf.copy()
         # extract properties that are not part of __init__ kwargs
-        post_cnf = {k: cnf.pop(k) for k in cnf if k in ['coeffs_sqmz_tof', 'coeffs_tof_sqmz', 'cal_t0']}
+        post_cnf = {k: cnf.pop(k) for k in _cnf if k in ['coeffs_sqmz_tof', 'coeffs_tof_sqmz', 'cal_t0']}
         ic = cls(**cnf)
         # apply previously extracted properties
         for key in post_cnf:
@@ -390,8 +394,8 @@ class IonCollection:
                                             filter_param=self.filter_param, 
                                             allow_auto_mass_charge=self.allow_auto_mass_charge, 
                                             shot_array_method=self.shot_array_method,
-                                            coeffs_sqmz_tof=self.coeffs_sqmz_tof
-                                            coeffs_tof_sqmz=self.coeffs_tof_sqmz
+                                            coeffs_sqmz_tof=self.coeffs_sqmz_tof,
+                                            coeffs_tof_sqmz=self.coeffs_tof_sqmz,
                                             cal_t0=self.cal_t0
                                            )  # WIP
         full_config["Ions"] = [ion.get_configuration_dict() for ion in self.data]
@@ -413,9 +417,9 @@ class IonCollection:
         constructor
         """
         cnf = self.get_configuration_dict()
-        if not output_path.endswith(".json"):
-            output_path = f"{output_path}.json"
-        with open(output_path, "w") as f:
+        if not file_path.endswith(".json"):
+            file_path = f"{file_path}.json"
+        with open(file_path, "w") as f:
             json.dump(cnf, f)
 
 
