@@ -1115,6 +1115,7 @@ class Covariance:
         cmap="bwr",
         axis_centered_on_zero=True,
         colors_centered_on_zero=True,
+        **kwargs
     ):
         """Plot 2D histogram of calculated covariance
 
@@ -1180,7 +1181,9 @@ class Covariance:
                 interpolation="none",
                 origin="lower",
                 aspect="auto",
+                **kwargs
             )
+
             ax.set_xlabel(label_x)
             ax.set_ylabel(label_y)
 
