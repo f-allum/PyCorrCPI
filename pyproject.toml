@@ -21,6 +21,8 @@ dependencies = [
 [project.urls]
 homepage = "https://github.com/f-allum/PyCCorrCPI/"
 download = "https://github.com/f-allum/PyCorrCPI/archive/refs/tags/v0.0.7.tar.gz"
+[tool.setuptools]
+py-modules = ["PyCorrCPI"]
 
 # Ruff configuration
 [tool.ruff]
