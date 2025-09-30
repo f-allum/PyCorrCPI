@@ -171,8 +171,8 @@ class Ion:
     def manual_center(self):
         """Manually center data in x,y using a user-given center."""
         if self.center:
-            self.data_df['xcorr_manual'] = self.data_df['x']-center[0]
-            self.data_df['ycorr_manual'] = self.data_df['y']-center[1]
+            self.data_df['xcorr_manual'] = self.data_df['x']-self.center[0]
+            self.data_df['ycorr_manual'] = self.data_df['y']-self.center[1]
         else:
             print("Can't manually center - center not given")
 
@@ -188,7 +188,13 @@ class Ion:
         self.data_df['ycorr_jet'] = (self.data_df['y']-self.jet_offset[1])-(self.data_df['t_absolute']*self.jet_velocity[1])
 
     def adjust_jet_correction(self, jet_adjust=None):
-        """Take centers produced from the jet correction and further adjust these manually"""
+        """Take centers produced from the jet correction and further adjust these manually
+        Parameters
+        ==========
+        jet_adjust (tuple,list, None): 
+            jet_adjust[0] additional offset along x, 
+            jet_adjust[1] additional offset along y
+        """
         if jet_adjust is not None:
             self.jet_adjust=jet_adjust
         if self.jet_adjust is None:
@@ -248,7 +254,7 @@ class Ion:
 
 
         self.data_df['t_absolute'] = self.data_df['t']-self.t0
-        self.data_df['t_relative'] = self.data_df[ 't']-self.center_t
+        self.data_df['t_relative'] = self.data_df['t']-self.center_t
 
         self.data_df['vx'] = self.C_xy*(self.data_df['x_centered']/self.data_df['t_absolute'])
         self.data_df['vy'] = self.C_xy*(self.data_df['y_centered']/self.data_df['t_absolute'])
