@@ -11,8 +11,8 @@ authors = [
 ]
 keywords = ["Coincidence", "Covariance", "Cumulant", "Velocity-map Imaging"]
 dependencies = [
-    "numpy>=2.0.0",
-    "matplotlib>=3.0.0",
+    "numpy",
+    "matplotlib",
     "pandas>=2.0.0",
     "numba>=0.59.0",
     'typing; python_version < "3.8"',
@@ -21,6 +21,8 @@ dependencies = [
 [project.urls]
 homepage = "https://github.com/f-allum/PyCCorrCPI/"
 download = "https://github.com/f-allum/PyCorrCPI/archive/refs/tags/v0.0.7.tar.gz"
+[tool.setuptools]
+py-modules = ["PyCorrCPI"]
 
 # Ruff configuration
 [tool.ruff]

@@ -1,6 +1,8 @@
-from .covariance import *
-from .helpers_numba import *
+import json
+
 from .imports import *
+from .helpers_numba import *
+from .covariance import *
 
 
 class Ion:
@@ -20,10 +22,15 @@ class Ion:
         should work unless the dataset is missing certain laser shots between the first and last.
     :param use_for_mass_cal: If True, this ion can be used to do a m/z calibration
         in an IonCollection. Default = True
+    :param t0: absolute time zero
+    :param jet_offset: tuple(x_offset, y_offset) x and y position of jet at t0
+    :param jet_velocity: tuple(x_velocity, y_velocity) velocity of jet in px/t_unit 
+    :param jet_adjust: tuple(x_adjust, y_adjust) adjustment for each coordinate relative to jet_correction result 
     """
     def __init__(self, label, filter_i, filter_f, dataset=None, filter_param='t',
         center=None, center_t=None, mass=None, charge=None, shot_array_method='range',
-        use_for_mass_calib=True):
+        use_for_mass_calib=True, t0=None, jet_offset=None, jet_velocity=None, jet_adjust=(0,0), 
+        C_xy=None, C_z=None, C_total=None):
         self.label = label
         self.filter_i = filter_i
         self.filter_f = filter_f
@@ -32,6 +39,15 @@ class Ion:
         self.mass=mass
         self.use_for_mass_calib=use_for_mass_calib
         self.charge=charge
+        self.t0 = t0
+        self.jet_offset = jet_offset
+        self.jet_velocity = jet_velocity
+        self.jet_adjust = jet_adjust
+        self.cal_mz = None
+        self.C_xy = C_xy
+        self.C_z = C_z
+        self.C_total = C_total
+        
 
         try:
             self.mz = self.mass/self.charge
@@ -48,9 +64,51 @@ class Ion:
 
         if dataset:
             self.assign_dataset(dataset)
-
-
-
+  
+    @classmethod
+    def from_configuration_dict(cls, configuration_dict: dict):
+        """
+        construct `Ion` instance from configuration dictionary
+        
+        Example:
+        cnf_dict = dict(label="test", filter_i=5, filter_f=10)
+        Ion.from_configuration_dict(cnf_dict)
+        """
+        _config = configuration_dict.copy()
+        label, filter_i, filter_f = (
+            _config.pop("label"),
+            _config.pop("filter_i"),
+            _config.pop("filter_f"),
+        )
+        return cls(label, filter_i, filter_f, **_config)
+    
+    def get_configuration_dict(self):
+        """
+        get a dictionary with all relevant configuration (except dataset)
+        to reproduce this class instance with Ion.from_configuration_dict
+        constructor
+        """
+        cnf = dict(
+            label=self.label,
+            filter_i=self.filter_i,
+            filter_f=self.filter_f,
+            filter_param=self.filter_param,
+            shot_array_method=self.shot_array_method,
+            mass=self.mass,
+            charge=self.charge,
+            use_for_mass_calib=self.use_for_mass_calib,
+            center=self.center,
+            center_t=self.center_t,
+            t0=self.t0,
+            jet_offset=self.jet_offset,
+            jet_velocity=self.jet_velocity,
+            jet_adjust=self.jet_adjust,
+            C_xy=self.C_xy,
+            C_z=self.C_z,
+            C_total=self.C_total,
+        )
+        return {k: cnf[k] for k in cnf if cnf[k] is not None}
+            
     def assign_dataset(self, dataset):
         """Assign Dataset object to the ion"""
         self.grab_data(dataset)
@@ -97,9 +155,12 @@ class Ion:
         """Calculated expected m/z of central ToF from calibration toefficients"""
         self.cal_mz = (self.center_t*coeffs_tof_sqmz[0] + coeffs_tof_sqmz[1])**2
 
-    def calc_t_absolute(self, t0):
+    def calc_t_absolute(self, t0=None):
         """Calculate absolute t by subtracting t0 (start of mass spectrum)"""
-        self.t0=t0
+        if t0 is not None:
+            self.t0=t0
+        if self.t0 is None:
+            raise ValueError("Must provide t0 if self.t0 is None.")
         self.data_df['t_absolute']=self.data_df['t']-self.t0
 
     def calc_t_centered(self):
@@ -110,25 +171,38 @@ class Ion:
     def manual_center(self):
         """Manually center data in x,y using a user-given center."""
         if self.center:
-            self.data_df['xcorr_manual'] = self.data_df['x']-center[0]
-            self.data_df['ycorr_manual'] = self.data_df['y']-center[1]
+            self.data_df['xcorr_manual'] = self.data_df['x']-self.center[0]
+            self.data_df['ycorr_manual'] = self.data_df['y']-self.center[1]
         else:
             print("Can't manually center - center not given")
 
-    def apply_jet_correction(self, jet_offset, jet_velocity):
+    def apply_jet_correction(self, jet_offset=None, jet_velocity=None):
         """Center data using jet offsets and velocity in x and y. If this isn't working, it may be a sign error"""
-        self.jet_offset=jet_offset
-        self.jet_velocity=jet_velocity
-        self.data_df['xcorr_jet'] = (self.data_df['x']-jet_offset[0])-(self.data_df['t_absolute']*jet_velocity[0])
-        self.data_df['ycorr_jet'] = (self.data_df['y']-jet_offset[1])-(self.data_df['t_absolute']*jet_velocity[1])
+        if jet_offset is not None:
+            self.jet_offset=jet_offset
+        if jet_velocity is not None:
+            self.jet_velocity=jet_velocity
+        if self.jet_velocity is None or self.jet_offset is None:
+            raise ValueError("Must provide jet_velocity/jet_offset if self.jet_velocity/self.jet_offset is None.")
+        self.data_df['xcorr_jet'] = (self.data_df['x']-self.jet_offset[0])-(self.data_df['t_absolute']*self.jet_velocity[0])
+        self.data_df['ycorr_jet'] = (self.data_df['y']-self.jet_offset[1])-(self.data_df['t_absolute']*self.jet_velocity[1])
 
-    def adjust_jet_correction(self, jet_adjust):
-        """Take centers produced from the jet correction and further adjust these manually"""
-        self.jet_adjust = jet_adjust
+    def adjust_jet_correction(self, jet_adjust=None):
+        """Take centers produced from the jet correction and further adjust these manually
+        Parameters
+        ==========
+        jet_adjust (tuple,list, None): 
+            jet_adjust[0] additional offset along x, 
+            jet_adjust[1] additional offset along y
+        """
+        if jet_adjust is not None:
+            self.jet_adjust=jet_adjust
+        if self.jet_adjust is None:
+            raise ValueError("Must provide jet_adjust if self.jet_adjust is None.")
+        else:
+            jet_adjust = self.jet_adjust
         self.data_df['xcorr_jet_adjust'] = self.data_df['xcorr_jet']+jet_adjust[0]
         self.data_df['ycorr_jet_adjust'] = self.data_df['ycorr_jet']+jet_adjust[1]
-
-
 
     def correct_centers(self, method=None):
         """Re-center data in x and y.
@@ -157,7 +231,7 @@ class Ion:
         self.centered=True
 
 
-    def apply_momentum_calibration(self, C_xy, C_z, C_total=None, center_method='manual'):
+    def apply_momentum_calibration(self, C_xy=None, C_z=None, C_total=None, center_method='manual'):
         """Convert (centered data to 3D momenta). For now this assumes that images are round
         (i.e. that scaling parameter in x and y are the same). This function automatically
         converts the ion's dataframe to array for future covariance calculation.
@@ -172,22 +246,24 @@ class Ion:
         if C_z:
             self.C_z = C_z
 
-
+        if C_total:
+            self.C_total = C_total
+        
         self.correct_centers(method=center_method)
 
 
 
         self.data_df['t_absolute'] = self.data_df['t']-self.t0
-        self.data_df['t_relative'] = self.data_df[ 't']-self.center_t
+        self.data_df['t_relative'] = self.data_df['t']-self.center_t
 
-        self.data_df['vx'] = C_xy*(self.data_df['x_centered']/self.data_df['t_absolute'])
-        self.data_df['vy'] = C_xy*(self.data_df['y_centered']/self.data_df['t_absolute'])
-        self.data_df['vz'] = (C_z*self.charge*(self.data_df['t_centered']))/self.mass
+        self.data_df['vx'] = self.C_xy*(self.data_df['x_centered']/self.data_df['t_absolute'])
+        self.data_df['vy'] = self.C_xy*(self.data_df['y_centered']/self.data_df['t_absolute'])
+        self.data_df['vz'] = (self.C_z*self.charge*(self.data_df['t_centered']))/self.mass
 
-        if C_total:
-            self.data_df['vx']*=C_total
-            self.data_df['vy']*=C_total
-            self.data_df['vz']*=C_total
+        if self.C_total:
+            self.data_df['vx']*=self.C_total
+            self.data_df['vy']*=self.C_total
+            self.data_df['vz']*=self.C_total
 
         self.data_df['px'] = self.data_df['vx'] * self.mass
         self.data_df['py'] = self.data_df['vy'] * self.mass
@@ -200,8 +276,6 @@ class Ion:
         self.dataframe_to_arr()
 
 
-
-
 class IonCollection:
     """Class for groups of Ions, which can be used for mass calibrations, jet calibrations etc.
     Can iterate over the Ion objects in an IonCollection
@@ -211,10 +285,15 @@ class IonCollection:
     :param shot_array_method: shot_array_method used for defining Ions in the group
     """
     def __init__(self, filter_param=None, allow_auto_mass_charge=False, shot_array_method=None):
-        self.data = []
+        self.data = list()
+        self.coeffs_sqmz_tof = None
+        self.coeffs_tof_sqmz = None
+        self.cal_t0 = None
+        
         self.filter_param = filter_param
         self.allow_auto_mass_charge = allow_auto_mass_charge
         self.shot_array_method = shot_array_method
+        
 
         optional_kwargs = {}
         if self.filter_param:
@@ -281,7 +360,6 @@ class IonCollection:
     def __repr__(self):
         return f"Collection with {len(self.data)} ions:\n{str(self)}"
 
-
     @wraps(Ion)
     def add_ion(self, *args, **kwargs):
         """Create Ion and append it to IonCollection"""
@@ -291,9 +369,64 @@ class IonCollection:
         """Assign Dataset obect to each Ion in IonCollection."""
         for ion in self.data:
             ion.assign_dataset(dataset)
-
-
-
+    
+    @classmethod
+    def from_configuration_dict(cls, configuration_dict):
+        """
+        constructs IonCollection (incl. Ions) from configuration dictionary
+        """
+        cnf = configuration_dict["IonCollection"].copy()
+        _cnf = cnf.copy()
+        # extract properties that are not part of __init__ kwargs
+        post_cnf = {k: cnf.pop(k) for k in _cnf if k in ['coeffs_sqmz_tof', 'coeffs_tof_sqmz', 'cal_t0']}
+        ic = cls(**cnf)
+        # apply previously extracted properties
+        for key in post_cnf:
+            setattr(ic, key, post_cnf[key])
+        for ion_conf in configuration_dict["Ions"]:
+            ic.data.append(Ion.from_configuration_dict(ion_conf))
+        if ic.coeffs_tof_sqmz is not None: 
+            self.calc_cal_mz_ions()
+        return ic
+        
+    def get_configuration_dict(self):
+        """
+        get a dictionary with all relevant configuration (except datasets)
+        to reproduce this class instance (with all its ions) with
+        IonCollection.from_configuration_dict constructor
+        """
+        full_config = dict()
+        full_config["IonCollection"] = dict(
+                                            filter_param=self.filter_param, 
+                                            allow_auto_mass_charge=self.allow_auto_mass_charge, 
+                                            shot_array_method=self.shot_array_method,
+                                            coeffs_sqmz_tof=self.coeffs_sqmz_tof,
+                                            coeffs_tof_sqmz=self.coeffs_tof_sqmz,
+                                            cal_t0=self.cal_t0
+                                           )  # WIP
+        full_config["Ions"] = [ion.get_configuration_dict() for ion in self.data]
+        return full_config
+    
+    @classmethod
+    def from_configuration_file(cls, file_path: str):
+        """
+        constructs IonCollection (incl. Ions) from configuration file
+        """
+        with open(file_path, "r") as f:
+            cnf = json.load(f)
+        return cls.from_configuration_dict(cnf)
+    
+    def export_configuration(self, file_path: str):
+        """
+        exports configuration into a json file, 
+        IonCollection can be reconstructed with `from_configuration_file`
+        constructor
+        """
+        cnf = self.get_configuration_dict()
+        if not file_path.endswith(".json"):
+            file_path = f"{file_path}.json"
+        with open(file_path, "w") as f:
+            json.dump(cnf, f)
 
 
 class Dataset:
@@ -354,6 +487,7 @@ class Dataset:
         self.data_df['cal_mz'] = (self.data_df['t']*coeffs_tof_sqmz[0] + coeffs_tof_sqmz[1])**2
 
 
+    
     def generate_shot_df(self):
 
         # self.unique_shots = np.unique(self.data_df.shot)

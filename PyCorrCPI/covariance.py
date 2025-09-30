@@ -335,7 +335,7 @@ def calc_Cab(
 
     len_autovariance_array = len(autovariance_array)
 
-    print(x_pixels, y_pixels, z_pixels)
+    # print(x_pixels, y_pixels, z_pixels)
 
     ## now thanks to the shot dictionaries we can easily iterate over all sets of events in a laser shot
     for A_shot, B_shot in zip(A_shot_array, B_shot_array):
@@ -928,7 +928,7 @@ class Covariance:
 
     def setup_filter(self):
         """Assign the filter function used in the covariance calculation."""
-        if self.filter_function is not None:
+        if self.filter_function:
             self.use_filter_function = 1
             if isinstance(self.filter_function, str) and self.filter_function == "psum":
                 # If the string is "psum", assign the corresponding function
@@ -1115,6 +1115,7 @@ class Covariance:
         cmap="bwr",
         axis_centered_on_zero=True,
         colors_centered_on_zero=True,
+        **kwargs
     ):
         """Plot 2D histogram of calculated covariance
 
@@ -1180,7 +1181,9 @@ class Covariance:
                 interpolation="none",
                 origin="lower",
                 aspect="auto",
+                **kwargs
             )
+
             ax.set_xlabel(label_x)
             ax.set_ylabel(label_y)
 
