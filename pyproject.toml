@@ -4,23 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyCorrCPI"
-version = "0.1.0"
+version = "0.1.1"
 description = "PyCorrCPI - correlation analysis for charged-particle imaging experiments"
 authors = [
     {name = "Felix Allum", email = "felix.allum@desy.de"}
 ]
 keywords = ["Coincidence", "Covariance", "Cumulant", "Velocity-map Imaging"]
 dependencies = [
-    "numpy>=2.0.0",
-    "matplotlib>=3.0.0",
-    "pandas>=2.0.0",
-    "numba>=0.59.0",
+    "numpy>=1.0.0",
+    "matplotlib>=1.0.0",
+    "pandas>=1.0.0",
+    "numba>=0.42.0",
     'typing; python_version < "3.8"',
 ]
 # Optional: URLs section for the project
 [project.urls]
 homepage = "https://github.com/f-allum/PyCCorrCPI/"
-download = "https://github.com/f-allum/PyCorrCPI/archive/refs/tags/v0.1.0.tar.gz"
+download = "https://github.com/f-allum/PyCorrCPI/archive/refs/tags/v0.1.1.tar.gz"
 
 # Ruff configuration
 [tool.ruff]
