@@ -1,22 +1,20 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PyCorrCPI.covariance &mdash; PyCorrCPI 0.0.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+  <title>PyCorrCPI.covariance &mdash; PyCorrCPI 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/underscore.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="../../_static/doctools.js"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -71,10 +69,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PyCorrCPI.covariance</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">.imports</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.helpers_numba</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.data</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.output_functions</span> <span class="kn">import</span> <span class="o">*</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.imports</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.helpers_numba</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.data</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.output_functions</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 
 <span class="c1">## Constants</span>
@@ -107,7 +105,9 @@
               <span class="s1">&#39;axislabelsize&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">}</span>
 
 
-<div class="viewcode-block" id="neaten_plot"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.neaten_plot">[docs]</a><span class="k">def</span> <span class="nf">neaten_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">):</span>
+<div class="viewcode-block" id="neaten_plot">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.neaten_plot">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">neaten_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Funfction used to neaten up covariance plots&quot;&quot;&quot;</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;ticklabelsize&#39;</span><span class="p">],</span><span class="n">length</span><span class="o">=</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;ticklength&#39;</span><span class="p">],</span><span class="n">width</span><span class="o">=</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;tickwidth&#39;</span><span class="p">])</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;axislabelsize&#39;</span><span class="p">])</span>
@@ -116,7 +116,23 @@
         <span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="n">param_dict</span><span class="p">[</span><span class="s1">&#39;spinewidth&#39;</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="calc_covariance"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_covariance">[docs]</a><span class="k">def</span> <span class="nf">calc_covariance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ion_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span>
+
+<div class="viewcode-block" id="generate_contingent_covariance">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.generate_contingent_covariance">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_contingent_covariance</span><span class="p">(</span><span class="n">covariance_output_list</span><span class="p">,</span> <span class="n">contingent_filters</span><span class="p">,</span> <span class="n">example_covariance</span><span class="p">):</span>
+
+    <span class="n">cont_covariance_output</span> <span class="o">=</span> <span class="n">ContCovariance</span><span class="p">(</span><span class="n">contingent_filters</span><span class="p">,</span> <span class="n">covariance_output_list</span><span class="p">)</span>
+
+    <span class="n">cont_covariance_output</span><span class="o">.</span><span class="n">get_details</span><span class="p">(</span><span class="n">example_covariance</span><span class="p">)</span>
+    <span class="n">cont_covariance_output</span><span class="o">.</span><span class="n">calc_cont_covar</span><span class="p">()</span>
+
+    <span class="k">return</span><span class="p">(</span><span class="n">cont_covariance_output</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="calc_covariance">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_covariance">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_covariance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ion_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span>
                        <span class="n">store_coincs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                        <span class="n">update_dataset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -182,7 +198,9 @@
         <span class="k">return</span><span class="p">(</span><span class="n">covariance_output</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">cont_covariance_output</span><span class="o">=</span><span class="n">ContCovariance</span><span class="p">(</span><span class="n">contingent_filters</span><span class="p">)</span>
+        <span class="c1"># cont_covariance_output=ContCovariance(contingent_filters)</span>
+
+        <span class="n">covariance_output_list</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="k">for</span> <span class="n">contingent_filter</span> <span class="ow">in</span> <span class="n">contingent_filters</span><span class="p">:</span>
             <span class="n">covariance_output</span> <span class="o">=</span> <span class="n">Covariance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">ion_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span>
@@ -203,17 +221,27 @@
 
             <span class="n">covariance_output</span><span class="o">.</span><span class="n">calc_covariance</span><span class="p">()</span>
 
-            <span class="n">cont_covariance_output</span><span class="o">.</span><span class="n">add_covariance</span><span class="p">(</span><span class="n">covariance_output</span><span class="p">)</span>
+            <span class="c1"># cont_covariance_output.add_covariance(covariance_output)</span>
 
-        <span class="n">cont_covariance_output</span><span class="o">.</span><span class="n">calc_cont_covar</span><span class="p">()</span>
+            <span class="n">covariance_output_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">covariance_output</span><span class="o">.</span><span class="n">output_array</span><span class="p">)</span>
+
+        <span class="n">cont_covariance_output</span> <span class="o">=</span> <span class="n">generate_contingent_covariance</span><span class="p">(</span><span class="n">covariance_output_list</span><span class="p">,</span> <span class="n">contingent_filters</span><span class="p">,</span> <span class="n">covariance_output</span><span class="p">)</span>
+
+        <span class="k">del</span> <span class="n">covariance_output</span>
+        <span class="c1"># cont_covariance_output.calc_cont_covar()</span>
+
+
         <span class="k">return</span><span class="p">(</span><span class="n">cont_covariance_output</span><span class="p">)</span></div>
 
 
 
 
 
-<div class="viewcode-block" id="calculate_indexes"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calculate_indexes">[docs]</a><span class="nd">@njit</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">calculate_indexes</span><span class="p">(</span><span class="n">A_idx_dict</span><span class="p">,</span><span class="n">shot_array_A</span><span class="p">,</span><span class="n">shot_array</span><span class="p">,</span><span class="n">A_arr</span><span class="p">):</span>
+
+<div class="viewcode-block" id="calculate_indexes">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calculate_indexes">[docs]</a>
+<span class="nd">@njit</span><span class="p">()</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_indexes</span><span class="p">(</span><span class="n">A_idx_dict</span><span class="p">,</span><span class="n">shot_array_A</span><span class="p">,</span><span class="n">shot_array</span><span class="p">,</span><span class="n">A_arr</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Finds the first and last index in an ion data array corresponding to each laser shot</span>
 <span class="sd">    that will be used in the covariance calculation. Precalculating this dictionary speeds up</span>
 <span class="sd">    the calculation, particularly for higher fold covariances and/or if recalculating terms</span>
@@ -242,10 +270,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># No ion A in this shot</span>
             <span class="n">A_idx_dict</span><span class="p">[</span><span class="n">shot</span><span class="p">]</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">([</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span></div>
+
             
 
-<div class="viewcode-block" id="compute_2fold_covariance_term_iterate"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.compute_2fold_covariance_term_iterate">[docs]</a><span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">compute_2fold_covariance_term_iterate</span><span class="p">(</span><span class="n">output_arr</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
+<div class="viewcode-block" id="compute_2fold_covariance_term_iterate">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.compute_2fold_covariance_term_iterate">[docs]</a>
+<span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_2fold_covariance_term_iterate</span><span class="p">(</span><span class="n">output_arr</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;calculate 2fold covariance from its consistuent terms&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
@@ -253,8 +284,11 @@
                 <span class="n">output_arr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">=</span> <span class="n">output_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span> <span class="o">-</span> <span class="n">output_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span>
     <span class="k">return</span><span class="p">(</span><span class="n">output_arr</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="compute_3fold_covariance_term_iterate"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.compute_3fold_covariance_term_iterate">[docs]</a><span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">compute_3fold_covariance_term_iterate</span><span class="p">(</span><span class="n">output_arr</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
+
+<div class="viewcode-block" id="compute_3fold_covariance_term_iterate">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.compute_3fold_covariance_term_iterate">[docs]</a>
+<span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_3fold_covariance_term_iterate</span><span class="p">(</span><span class="n">output_arr</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;calculate 3fold covariance from its consistuent terms&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
@@ -264,8 +298,11 @@
                 <span class="mi">2</span><span class="o">*</span><span class="n">output_arr</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">]</span>
     <span class="k">return</span><span class="p">(</span><span class="n">output_arr</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="compute_4fold_covariance_term_iterate"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.compute_4fold_covariance_term_iterate">[docs]</a><span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">compute_4fold_covariance_term_iterate</span><span class="p">(</span><span class="n">output_arr</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
+
+<div class="viewcode-block" id="compute_4fold_covariance_term_iterate">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.compute_4fold_covariance_term_iterate">[docs]</a>
+<span class="nd">@njit</span><span class="p">(</span><span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">fastmath</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_4fold_covariance_term_iterate</span><span class="p">(</span><span class="n">output_arr</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;calculate 4fold covariance from its consistuent terms&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
         <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">prange</span><span class="p">(</span><span class="n">dim_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
@@ -280,8 +317,11 @@
 
 
 
-<div class="viewcode-block" id="calc_Cab"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_Cab">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">calc_Cab</span><span class="p">(</span><span class="n">output_array</span><span class="p">,</span> <span class="n">output_function</span><span class="p">,</span>
+
+<div class="viewcode-block" id="calc_Cab">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_Cab">[docs]</a>
+<span class="nd">@njit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_Cab</span><span class="p">(</span><span class="n">output_array</span><span class="p">,</span> <span class="n">output_function</span><span class="p">,</span>
                     <span class="n">shot_array</span><span class="p">,</span>
                     <span class="n">ion_array_list</span><span class="p">,</span> 
                     <span class="n">idx_dict_list</span><span class="p">,</span>
@@ -336,6 +376,8 @@
 
     <span class="n">len_autovariance_array</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">autovariance_array</span><span class="p">)</span>
 
+    <span class="nb">print</span><span class="p">(</span><span class="n">x_pixels</span><span class="p">,</span><span class="n">y_pixels</span><span class="p">,</span><span class="n">z_pixels</span><span class="p">)</span>
+
     <span class="c1">## now thanks to the shot dictionaries we can easily iterate over all sets of events in a laser shot</span>
     <span class="k">for</span> <span class="n">A_shot</span><span class="p">,</span><span class="n">B_shot</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">A_shot_array</span><span class="p">,</span><span class="n">B_shot_array</span><span class="p">):</span>
         
@@ -388,16 +430,20 @@
 
                 <span class="k">for</span> <span class="n">x_out</span><span class="p">,</span><span class="n">y_out</span><span class="p">,</span><span class="n">z_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">x_out_list</span><span class="p">,</span><span class="n">y_out_list</span><span class="p">,</span><span class="n">z_out_list</span><span class="p">):</span>
                     <span class="c1">## if in bounds add to array</span>
-                    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">z_out</span> <span class="o">&lt;</span> <span class="n">x_pixels</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">x_out</span> <span class="o">&lt;</span> <span class="n">x_pixels</span><span class="p">:</span>
                         <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">y_out</span> <span class="o">&lt;</span> <span class="n">y_pixels</span><span class="p">:</span>
                             <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">z_out</span> <span class="o">&lt;</span> <span class="n">z_pixels</span><span class="p">:</span>
                                 <span class="n">coinc_counter</span><span class="o">+=</span><span class="mi">1</span>
                                 <span class="n">output_array</span><span class="p">[</span><span class="n">term_counter</span><span class="p">,</span><span class="n">x_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">z_out</span><span class="p">]</span> <span class="o">+=</span> <span class="n">addval</span></div>
 
+
+
     <span class="c1"># print(coinc_counter)</span>
 
-<div class="viewcode-block" id="calc_Cabc"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_Cabc">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">calc_Cabc</span><span class="p">(</span><span class="n">output_array</span><span class="p">,</span> <span class="n">output_function</span><span class="p">,</span>
+<div class="viewcode-block" id="calc_Cabc">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_Cabc">[docs]</a>
+<span class="nd">@njit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_Cabc</span><span class="p">(</span><span class="n">output_array</span><span class="p">,</span> <span class="n">output_function</span><span class="p">,</span>
                     <span class="n">shot_array</span><span class="p">,</span>
                     <span class="n">ion_array_list</span><span class="p">,</span> 
                     <span class="n">idx_dict_list</span><span class="p">,</span>
@@ -519,8 +565,11 @@
                                     <span class="n">coinc_counter</span><span class="o">+=</span><span class="mi">1</span>
                                     <span class="n">output_array</span><span class="p">[</span><span class="n">term_counter</span><span class="p">,</span><span class="n">x_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">z_out</span><span class="p">]</span> <span class="o">+=</span> <span class="n">addval</span></div>
 
-<div class="viewcode-block" id="calc_Cabcd"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_Cabcd">[docs]</a><span class="nd">@njit</span>
-<span class="k">def</span> <span class="nf">calc_Cabcd</span><span class="p">(</span><span class="n">output_array</span><span class="p">,</span> <span class="n">output_function</span><span class="p">,</span>
+
+<div class="viewcode-block" id="calc_Cabcd">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.calc_Cabcd">[docs]</a>
+<span class="nd">@njit</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_Cabcd</span><span class="p">(</span><span class="n">output_array</span><span class="p">,</span> <span class="n">output_function</span><span class="p">,</span>
                     <span class="n">shot_array</span><span class="p">,</span>
                     <span class="n">ion_array_list</span><span class="p">,</span> 
                     <span class="n">idx_dict_list</span><span class="p">,</span>
@@ -652,7 +701,11 @@
                                         <span class="n">output_array</span><span class="p">[</span><span class="n">term_counter</span><span class="p">,</span><span class="n">x_out</span><span class="p">,</span> <span class="n">y_out</span><span class="p">,</span> <span class="n">z_out</span><span class="p">]</span> <span class="o">+=</span> <span class="n">addval</span></div>
 
 
-<div class="viewcode-block" id="Covariance"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance">[docs]</a><span class="k">class</span> <span class="nc">Covariance</span><span class="p">:</span>
+
+
+<div class="viewcode-block" id="Covariance">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Covariance</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for storing covariance outputs and performing covariance calculation</span>
 
 <span class="sd">    :param ion_list: list of n ions to be used in the nfold covariance calculation</span>
@@ -683,7 +736,7 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ion_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">ion_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span>
                        <span class="n">store_coincs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                        <span class="n">update_dataset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -727,7 +780,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">contingent_filter</span><span class="o">=</span><span class="n">contingent_filter</span>
 
 
-<div class="viewcode-block" id="Covariance.apply_contingent_filter"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.apply_contingent_filter">[docs]</a>    <span class="k">def</span> <span class="nf">apply_contingent_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Covariance.apply_contingent_filter">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.apply_contingent_filter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">apply_contingent_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;To do contingent covariance, all we do is filter on the shot array used in the covariance calculation&quot;&quot;&quot;</span>
 
         <span class="c1"># Firstly, (if necessary) generate a datasetdataframe which contains just the first entry for each shot</span>
@@ -754,7 +809,10 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;After filtering </span><span class="si">%s</span><span class="s2"> between </span><span class="si">%s</span><span class="s2"> and </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2"> shots&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">contingent_filter</span><span class="o">.</span><span class="n">filter_param</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contingent_filter</span><span class="o">.</span><span class="n">filter_min</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">contingent_filter</span><span class="o">.</span><span class="n">filter_max</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_shots</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Covariance.check"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.check">[docs]</a>    <span class="k">def</span> <span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.check">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.check">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Run various checks before moving onto covariance calculation&quot;&quot;&quot;</span>
 
         <span class="k">try</span><span class="p">:</span>
@@ -769,7 +827,10 @@
         <span class="k">if</span> <span class="n">ndims</span><span class="o">&gt;</span><span class="mi">4</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Output with greater than 4 dimensions is not supported&#39;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Covariance.setup_output"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_output">[docs]</a>    <span class="k">def</span> <span class="nf">setup_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.setup_output">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_output">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_output</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Create the output array which stores results of covariance calculation&quot;&quot;&quot;</span>
         <span class="n">pixels_x</span><span class="p">,</span><span class="n">pixels_y</span><span class="p">,</span><span class="n">pixels_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span>
         <span class="c1">## determine how many ions to be correlated, and their identity</span>
@@ -791,9 +852,12 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Correlating </span><span class="si">%s</span><span class="s2"> ions&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="p">)</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ions to correlate: &quot;</span> <span class="o">+</span> <span class="s2">&quot; ,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> &#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">label</span><span class="p">,)</span> <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">]))</span></div>
+
     
     
-<div class="viewcode-block" id="Covariance.setup_terms"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_terms">[docs]</a>    <span class="k">def</span> <span class="nf">setup_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Covariance.setup_terms">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_terms">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_terms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Setup the number of times each term is to be calculated, and the shot-shifting which must be used.&quot;&quot;&quot;</span>
 
         <span class="c1">## setup shift_val_list, term_name_list, ncalc_list</span>
@@ -801,7 +865,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shift_val_list</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">],</span>
                       <span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">term_name_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&lt;AB&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;AB&gt;&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">term_name_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&lt;AB&gt;&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;A&gt;&lt;B&gt;&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">only_coincidence</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">ncalc_list</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
@@ -856,7 +920,10 @@
                              <span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkl</span><span class="p">,</span>
                              <span class="bp">self</span><span class="o">.</span><span class="n">n_EiEjEkEl</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="Covariance.get_from_ions"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.get_from_ions">[docs]</a>    <span class="k">def</span> <span class="nf">get_from_ions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.get_from_ions">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.get_from_ions">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_from_ions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the idx_dict, ion_array and ion_mass from each ion used in calculation&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">idx_dict_list</span><span class="o">=</span><span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ion_array_list</span><span class="o">=</span><span class="p">[]</span>
@@ -879,7 +946,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ion_array_list</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">typed</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_array_list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ion_mass_list</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">typed</span><span class="o">.</span><span class="n">List</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ion_mass_list</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Covariance.setup_autovariance_correction"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_autovariance_correction">[docs]</a>    <span class="k">def</span> <span class="nf">setup_autovariance_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.setup_autovariance_correction">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_autovariance_correction">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_autovariance_correction</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Identify potential autovariance issues to be corrected for.&quot;&quot;&quot;</span>
         <span class="n">autovariance_counter</span><span class="o">=</span><span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">30</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
@@ -895,7 +965,10 @@
                             <span class="n">autovariance_counter</span><span class="o">+=</span><span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">autovariance_counter</span><span class="p">,:]</span></div>
 
-<div class="viewcode-block" id="Covariance.setup_filter"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_filter">[docs]</a>    <span class="k">def</span> <span class="nf">setup_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.setup_filter">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_filter">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_filter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign the filter function used in the covariance calculation.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">use_filter_function</span><span class="o">=</span><span class="mi">1</span>
@@ -905,7 +978,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">use_filter_function</span><span class="o">=</span><span class="mi">0</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="o">=</span><span class="n">calc_psum_abs</span></div>
 
-<div class="viewcode-block" id="Covariance.setup_output_function"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_output_function">[docs]</a>    <span class="k">def</span> <span class="nf">setup_output_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.setup_output_function">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_output_function">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">setup_output_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Assign the output function used in the covariance calculation.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">custom_function</span><span class="p">:</span>
             <span class="c1">## see if string is key in dictionary first</span>
@@ -925,13 +1001,19 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid output function&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Covariance.clip_max_shot"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.clip_max_shot">[docs]</a>    <span class="k">def</span> <span class="nf">clip_max_shot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.clip_max_shot">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.clip_max_shot">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clip_max_shot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Cut data based on max_shot.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_shot</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">shot_array</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">max_shot</span><span class="p">]</span></div>
 
+
         
-<div class="viewcode-block" id="Covariance.compute_covariance_term"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.compute_covariance_term">[docs]</a>    <span class="k">def</span> <span class="nf">compute_covariance_term</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Covariance.compute_covariance_term">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.compute_covariance_term">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_covariance_term</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Calculate the 2/3/4fold covariance fromthe individual terms.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">2</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="o">=</span><span class="n">compute_2fold_covariance_term_iterate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">)</span>
@@ -940,7 +1022,10 @@
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">nfold</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="o">=</span><span class="n">compute_4fold_covariance_term_iterate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim_list</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Covariance.calc_2fold_coinc"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_2fold_coinc">[docs]</a>    <span class="k">def</span> <span class="nf">calc_2fold_coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.calc_2fold_coinc">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_2fold_coinc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_2fold_coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the numba function for twofold coincidences&quot;&quot;&quot;</span>
 
         <span class="n">calc_Cab</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="p">,</span>
@@ -951,7 +1036,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span><span class="p">,</span> 
                 <span class="bp">self</span><span class="o">.</span><span class="n">use_filter_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_max</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Covariance.calc_3fold_coinc"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_3fold_coinc">[docs]</a>    <span class="k">def</span> <span class="nf">calc_3fold_coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.calc_3fold_coinc">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_3fold_coinc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_3fold_coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the numba function for twofold coincidences&quot;&quot;&quot;</span>
 
         <span class="n">calc_Cabc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="p">,</span>
@@ -962,7 +1050,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span><span class="p">,</span> 
                 <span class="bp">self</span><span class="o">.</span><span class="n">use_filter_function</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_max</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Covariance.calc_4fold_coinc"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_4fold_coinc">[docs]</a>    <span class="k">def</span> <span class="nf">calc_4fold_coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.calc_4fold_coinc">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_4fold_coinc">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_4fold_coinc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Call the numba function for twofold coincidences&quot;&quot;&quot;</span>
 
         <span class="n">calc_Cabcd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_function</span><span class="p">,</span>
@@ -973,13 +1064,19 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">autovariance_array</span><span class="p">,</span> 
                 <span class="bp">self</span><span class="o">.</span><span class="n">use_filter_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_function</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filter_max</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Covariance.check_data_array"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.check_data_array">[docs]</a>    <span class="k">def</span> <span class="nf">check_data_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.check_data_array">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.check_data_array">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_data_array</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check that each ion has a data_array, if not then create it.&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">ion</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ion</span><span class="p">,</span> <span class="s1">&#39;data_array&#39;</span><span class="p">):</span>
                 <span class="n">ion</span><span class="o">.</span><span class="n">dataframe_to_arr</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Covariance.calc_covariance"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_covariance">[docs]</a>    <span class="k">def</span> <span class="nf">calc_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Covariance.calc_covariance">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_covariance">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;General function which calls all the necessary setup/checks before covariance calculation,</span>
 <span class="sd">        and then proceeds with the general logic.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -1038,7 +1135,10 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Return at </span><span class="si">%s</span><span class="s2"> seconds&quot;</span> <span class="o">%</span> <span class="nb">round</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_time</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Covariance.plot_2DHist"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.plot_2DHist">[docs]</a>    <span class="k">def</span> <span class="nf">plot_2DHist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proj_list</span><span class="p">,</span> <span class="n">param_dict</span><span class="o">=</span><span class="n">param_dict</span><span class="p">,</span> <span class="n">term</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> 
+
+<div class="viewcode-block" id="Covariance.plot_2DHist">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.Covariance.plot_2DHist">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_2DHist</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proj_list</span><span class="p">,</span> <span class="n">param_dict</span><span class="o">=</span><span class="n">param_dict</span><span class="p">,</span> <span class="n">term</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> 
                 <span class="n">label_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;p$_x$&#39;</span><span class="p">,</span><span class="s1">&#39;p$_y$&#39;</span><span class="p">,</span><span class="s1">&#39;p$_z$&#39;</span><span class="p">],</span><span class="n">arrow</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">vfac</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;bwr&#39;</span><span class="p">,</span> <span class="n">axis_centered_on_zero</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">colors_centered_on_zero</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -1113,10 +1213,14 @@
             <span class="n">title_string</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ion</span><span class="o">.</span><span class="n">label</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">ion</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">ion_list</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title_string</span><span class="p">,</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">28</span><span class="p">)</span>
             <span class="n">neaten_plot</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span><span class="n">param_dict</span><span class="p">)</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+            <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+</div>
 
 
-<div class="viewcode-block" id="ContCovarianceFilter"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.ContCovarianceFilter">[docs]</a><span class="k">class</span> <span class="nc">ContCovarianceFilter</span><span class="p">:</span>
+
+<div class="viewcode-block" id="ContCovarianceFilter">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.ContCovarianceFilter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ContCovarianceFilter</span><span class="p">:</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for containing filters used in contingent calculation</span>
 
@@ -1127,7 +1231,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_param</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filter_param</span><span class="p">,</span>
                 <span class="n">filter_min</span><span class="p">,</span>
                 <span class="n">filter_max</span><span class="p">):</span>
 
@@ -1135,7 +1239,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">filter_min</span><span class="o">=</span><span class="n">filter_min</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">filter_max</span><span class="o">=</span><span class="n">filter_max</span></div>
 
-<div class="viewcode-block" id="ContCovariance"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance">[docs]</a><span class="k">class</span> <span class="nc">ContCovariance</span><span class="p">:</span>
+
+<div class="viewcode-block" id="ContCovariance">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ContCovariance</span><span class="p">(</span><span class="n">Covariance</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for contingent covariance calculations. </span>
@@ -1145,25 +1252,41 @@
 <span class="sd">    :param covariances: list of covariances which are summed to make the contingent</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cont_filter_list</span><span class="p">,</span>
-                <span class="n">covariances</span><span class="o">=</span><span class="p">[]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cont_filter_list</span><span class="p">,</span> <span class="n">covariance_outputs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cont_filter_list</span><span class="o">=</span><span class="n">cont_filter_list</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">covariances</span><span class="o">=</span><span class="n">covariances</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">covariance_outputs</span><span class="o">=</span><span class="n">covariance_outputs</span>
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">covariances</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="viewcode-block" id="ContCovariance.get_details">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance.get_details">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">example_covariance</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">example_covariance</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;dataset&#39;</span><span class="p">,</span> <span class="s1">&#39;contingent_filter&#39;</span><span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>   <span class="c1"># non-pickelable stuff wasn&#39;t needed</span></div>
 
-<div class="viewcode-block" id="ContCovariance.calc_cont_covar"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance.calc_cont_covar">[docs]</a>    <span class="k">def</span> <span class="nf">calc_cont_covar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">covariance_outputs</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ContCovariance.calc_cont_covar">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance.calc_cont_covar">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_cont_covar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Sum up each indivdual covariance output to get the contingent output&quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">covar</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">covariances</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">output_array</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">covariance_outputs</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="o">=</span><span class="n">covar</span><span class="o">.</span><span class="n">output_array</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="o">=</span><span class="n">output_array</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="o">+=</span><span class="n">covar</span><span class="o">.</span><span class="n">output_array</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">output_array</span><span class="o">+=</span><span class="n">output_array</span></div>
 
-<div class="viewcode-block" id="ContCovariance.add_covariance"><a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance.add_covariance">[docs]</a>    <span class="k">def</span> <span class="nf">add_covariance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">covariance</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ContCovariance.add_covariance_outputs">
+<a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance.add_covariance_outputs">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_covariance_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">covariance</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Append a covariance object to the collection&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">covariances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">covariance</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">covariance_outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">covariance_output</span><span class="p">)</span></div>
+</div>
 
 
 
@@ -1185,7 +1308,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Felix Allum.</p>
+    <p>&#169; Copyright 2025, Felix Allum.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

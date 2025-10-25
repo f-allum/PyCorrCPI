@@ -7,9 +7,9 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'PyCorrCPI'
-copyright = '2024, Felix Allum'
+copyright = '2025, Felix Allum'
 author = 'Felix Allum'
-release = '0.0.4'
+release = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

@@ -1,23 +1,21 @@
+
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PyCorrCPI &mdash; PyCorrCPI 0.0.4 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
+  <title>PyCorrCPI &mdash; PyCorrCPI 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script src="_static/doctools.js"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -77,16 +75,107 @@
            <div itemprop="articleBody">
              
   <section id="pycorrcpi">
-<h1>PyCorrCPI<a class="headerlink" href="#pycorrcpi" title="Permalink to this heading"></a></h1>
+<h1>PyCorrCPI<a class="headerlink" href="#pycorrcpi" title="Link to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="PyCorrCPI.html">PyCorrCPI package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#module-PyCorrCPI.covariance">PyCorrCPI.covariance module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#module-PyCorrCPI.data">PyCorrCPI.data module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#module-PyCorrCPI.helpers_numba">PyCorrCPI.helpers_numba module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#module-PyCorrCPI.covariance">PyCorrCPI.covariance module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance"><code class="docutils literal notranslate"><span class="pre">ContCovariance</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance.add_covariance_outputs"><code class="docutils literal notranslate"><span class="pre">ContCovariance.add_covariance_outputs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance.calc_cont_covar"><code class="docutils literal notranslate"><span class="pre">ContCovariance.calc_cont_covar()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.ContCovariance.get_details"><code class="docutils literal notranslate"><span class="pre">ContCovariance.get_details()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.ContCovarianceFilter"><code class="docutils literal notranslate"><span class="pre">ContCovarianceFilter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance"><code class="docutils literal notranslate"><span class="pre">Covariance</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.apply_contingent_filter"><code class="docutils literal notranslate"><span class="pre">Covariance.apply_contingent_filter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_2fold_coinc"><code class="docutils literal notranslate"><span class="pre">Covariance.calc_2fold_coinc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_3fold_coinc"><code class="docutils literal notranslate"><span class="pre">Covariance.calc_3fold_coinc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_4fold_coinc"><code class="docutils literal notranslate"><span class="pre">Covariance.calc_4fold_coinc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.calc_covariance"><code class="docutils literal notranslate"><span class="pre">Covariance.calc_covariance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.check"><code class="docutils literal notranslate"><span class="pre">Covariance.check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.check_data_array"><code class="docutils literal notranslate"><span class="pre">Covariance.check_data_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.clip_max_shot"><code class="docutils literal notranslate"><span class="pre">Covariance.clip_max_shot()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.compute_covariance_term"><code class="docutils literal notranslate"><span class="pre">Covariance.compute_covariance_term()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.get_from_ions"><code class="docutils literal notranslate"><span class="pre">Covariance.get_from_ions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.plot_2DHist"><code class="docutils literal notranslate"><span class="pre">Covariance.plot_2DHist()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_autovariance_correction"><code class="docutils literal notranslate"><span class="pre">Covariance.setup_autovariance_correction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_filter"><code class="docutils literal notranslate"><span class="pre">Covariance.setup_filter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_output"><code class="docutils literal notranslate"><span class="pre">Covariance.setup_output()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_output_function"><code class="docutils literal notranslate"><span class="pre">Covariance.setup_output_function()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.Covariance.setup_terms"><code class="docutils literal notranslate"><span class="pre">Covariance.setup_terms()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.calc_Cab"><code class="docutils literal notranslate"><span class="pre">calc_Cab()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.calc_Cabc"><code class="docutils literal notranslate"><span class="pre">calc_Cabc()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.calc_Cabcd"><code class="docutils literal notranslate"><span class="pre">calc_Cabcd()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.calc_covariance"><code class="docutils literal notranslate"><span class="pre">calc_covariance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.calculate_indexes"><code class="docutils literal notranslate"><span class="pre">calculate_indexes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.compute_2fold_covariance_term_iterate"><code class="docutils literal notranslate"><span class="pre">compute_2fold_covariance_term_iterate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.compute_3fold_covariance_term_iterate"><code class="docutils literal notranslate"><span class="pre">compute_3fold_covariance_term_iterate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.compute_4fold_covariance_term_iterate"><code class="docutils literal notranslate"><span class="pre">compute_4fold_covariance_term_iterate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.generate_contingent_covariance"><code class="docutils literal notranslate"><span class="pre">generate_contingent_covariance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.covariance.neaten_plot"><code class="docutils literal notranslate"><span class="pre">neaten_plot()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#module-PyCorrCPI.data">PyCorrCPI.data module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Dataset"><code class="docutils literal notranslate"><span class="pre">Dataset</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Dataset.apply_mz_calibration"><code class="docutils literal notranslate"><span class="pre">Dataset.apply_mz_calibration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Dataset.generate_shot_df"><code class="docutils literal notranslate"><span class="pre">Dataset.generate_shot_df()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Dataset.get_shot_array"><code class="docutils literal notranslate"><span class="pre">Dataset.get_shot_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Dataset.sep_by_custom"><code class="docutils literal notranslate"><span class="pre">Dataset.sep_by_custom()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Dataset.sep_by_tof"><code class="docutils literal notranslate"><span class="pre">Dataset.sep_by_tof()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion"><code class="docutils literal notranslate"><span class="pre">Ion</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.adjust_jet_correction"><code class="docutils literal notranslate"><span class="pre">Ion.adjust_jet_correction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.apply_jet_correction"><code class="docutils literal notranslate"><span class="pre">Ion.apply_jet_correction()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.apply_momentum_calibration"><code class="docutils literal notranslate"><span class="pre">Ion.apply_momentum_calibration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.assign_dataset"><code class="docutils literal notranslate"><span class="pre">Ion.assign_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.calc_mz_cal"><code class="docutils literal notranslate"><span class="pre">Ion.calc_mz_cal()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.calc_t_absolute"><code class="docutils literal notranslate"><span class="pre">Ion.calc_t_absolute()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.calc_t_centered"><code class="docutils literal notranslate"><span class="pre">Ion.calc_t_centered()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.correct_centers"><code class="docutils literal notranslate"><span class="pre">Ion.correct_centers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.dataframe_to_arr"><code class="docutils literal notranslate"><span class="pre">Ion.dataframe_to_arr()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.get_idx_dict"><code class="docutils literal notranslate"><span class="pre">Ion.get_idx_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.get_shot_array"><code class="docutils literal notranslate"><span class="pre">Ion.get_shot_array()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.grab_data"><code class="docutils literal notranslate"><span class="pre">Ion.grab_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.manual_center"><code class="docutils literal notranslate"><span class="pre">Ion.manual_center()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.Ion.print_details"><code class="docutils literal notranslate"><span class="pre">Ion.print_details()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.IonCollection"><code class="docutils literal notranslate"><span class="pre">IonCollection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.IonCollection.add_ion"><code class="docutils literal notranslate"><span class="pre">IonCollection.add_ion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.IonCollection.assign_dataset"><code class="docutils literal notranslate"><span class="pre">IonCollection.assign_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.IonCollection.calc_cal_mz_ions"><code class="docutils literal notranslate"><span class="pre">IonCollection.calc_cal_mz_ions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.data.IonCollection.mz_calibration"><code class="docutils literal notranslate"><span class="pre">IonCollection.mz_calibration()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#module-PyCorrCPI.helpers_numba">PyCorrCPI.helpers_numba module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.helpers_numba.calc_psum_abs"><code class="docutils literal notranslate"><span class="pre">calc_psum_abs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.helpers_numba.cross3D"><code class="docutils literal notranslate"><span class="pre">cross3D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.helpers_numba.dot2D"><code class="docutils literal notranslate"><span class="pre">dot2D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.helpers_numba.dot3D"><code class="docutils literal notranslate"><span class="pre">dot3D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.helpers_numba.find_first"><code class="docutils literal notranslate"><span class="pre">find_first()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.helpers_numba.find_last"><code class="docutils literal notranslate"><span class="pre">find_last()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.helpers_numba.norm2D"><code class="docutils literal notranslate"><span class="pre">norm2D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.helpers_numba.norm3D"><code class="docutils literal notranslate"><span class="pre">norm3D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.helpers_numba.rotation_matrix"><code class="docutils literal notranslate"><span class="pre">rotation_matrix()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#module-PyCorrCPI.imports">PyCorrCPI.imports module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#module-PyCorrCPI.output_functions">PyCorrCPI.output_functions module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#module-PyCorrCPI.output_functions">PyCorrCPI.output_functions module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.output_functions.beta_psum_KER"><code class="docutils literal notranslate"><span class="pre">beta_psum_KER()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_2fold"><code class="docutils literal notranslate"><span class="pre">output_format_Newton_2fold()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_2fold_3rdbody"><code class="docutils literal notranslate"><span class="pre">output_format_Newton_2fold_3rdbody()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_3fold"><code class="docutils literal notranslate"><span class="pre">output_format_Newton_3fold()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.output_functions.output_format_Newton_4fold"><code class="docutils literal notranslate"><span class="pre">output_format_Newton_4fold()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="PyCorrCPI.html#PyCorrCPI.output_functions.output_format_TfAcAc"><code class="docutils literal notranslate"><span class="pre">output_format_TfAcAc()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="PyCorrCPI.html#module-PyCorrCPI">Module contents</a></li>
 </ul>
 </li>
@@ -105,7 +194,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2024, Felix Allum.</p>
+    <p>&#169; Copyright 2025, Felix Allum.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
