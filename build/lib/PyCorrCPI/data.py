@@ -1,8 +1,6 @@
-from .imports import *
-from .helpers_numba import *
 from .covariance import *
-
-
+from .helpers_numba import *
+from .imports import *
 
 
 class Ion:
@@ -52,7 +50,7 @@ class Ion:
             self.assign_dataset(dataset)
 
 
-            
+
     def assign_dataset(self, dataset):
         """Assign Dataset object to the ion"""
         self.grab_data(dataset)
@@ -81,8 +79,8 @@ class Ion:
     def get_shot_array(self):
         """Find array of shots in dataset which contain this ion"""
         if self.shot_array_method=='range':
-            print(np.min(self.data_df.shot))
-            self.shot_array = np.arange(np.min(self.data_df.shot), np.max(self.data_df.shot))
+            # print(np.min(self.data_df.shot))
+            self.shot_array = np.arange(np.min(self.data_df.shot), np.max(self.data_df.shot)+1)
         elif self.shot_array_method=='unique':
             self.shot_array = np.array(np.unique(self.data_df.shot))
         else:
@@ -90,9 +88,7 @@ class Ion:
 
     def get_idx_dict(self, shot_array_total):
         """Create dictionary of indices of rows in dataset corresponding to this ion. Needed for covariance"""
-        idx_dict = Dict.empty(
-                key_type=float_single,
-                value_type=float_array)
+        idx_dict = Dict.empty(key_type=float_single, value_type=float_array)
 
         calculate_indexes(idx_dict,self.shot_array,shot_array_total,self.data_array)
         self.idx_dict=idx_dict
@@ -110,7 +106,7 @@ class Ion:
         """Calculate t relative to t_center. Used in converting to 3D momentum."""
         self.data_df['t_centered']=self.data_df['t']-self.center_t
 
-        
+
     def manual_center(self):
         """Manually center data in x,y using a user-given center."""
         if self.center:
@@ -175,15 +171,15 @@ class Ion:
             self.C_xy = C_xy
         if C_z:
             self.C_z = C_z
-        
-            
+
+
         self.correct_centers(method=center_method)
-  
-        
-        
+
+
+
         self.data_df['t_absolute'] = self.data_df['t']-self.t0
         self.data_df['t_relative'] = self.data_df[ 't']-self.center_t
-        
+
         self.data_df['vx'] = C_xy*(self.data_df['x_centered']/self.data_df['t_absolute'])
         self.data_df['vy'] = C_xy*(self.data_df['y_centered']/self.data_df['t_absolute'])
         self.data_df['vz'] = (C_z*self.charge*(self.data_df['t_centered']))/self.mass
@@ -196,13 +192,13 @@ class Ion:
         self.data_df['px'] = self.data_df['vx'] * self.mass
         self.data_df['py'] = self.data_df['vy'] * self.mass
         self.data_df['pz'] = self.data_df['vz'] * self.mass
-        
+
         self.data_df['pmag'] = np.sqrt((self.data_df['px']**2+self.data_df['py']**2+self.data_df['pz']**2))
         self.data_df['vmag'] = np.sqrt((self.data_df['vx']**2+self.data_df['vy']**2+self.data_df['vz']**2))
-        
+
         self.cal_mom=True
         self.dataframe_to_arr()
-        
+
 
 
 
@@ -215,12 +211,12 @@ class IonCollection:
     :param shot_array_method: shot_array_method used for defining Ions in the group
     """
     def __init__(self, filter_param=None, allow_auto_mass_charge=False, shot_array_method=None):
-        self.data = list()
+        self.data = []
         self.filter_param = filter_param
         self.allow_auto_mass_charge = allow_auto_mass_charge
         self.shot_array_method = shot_array_method
 
-        optional_kwargs = dict()
+        optional_kwargs = {}
         if self.filter_param:
             optional_kwargs["filter_param"] = self.filter_param
         if self.allow_auto_mass_charge:
@@ -232,17 +228,16 @@ class IonCollection:
 
     def mz_calibration(self):
         """Autoamtically perform m/z calibration based on the Ions in the collection which have specified
-        center_t, mass and charge. 
+        center_t, mass and charge.
 
         Output first-order polynomial coefficients are stored as self.coeffs_sqmz_tof and self.coeffs_tof_sqmz
         The t0 is stored as self.cal_t0"""
         tof_list = []
         mz_list = []
         for ion in self.data:
-            if (ion.use_for_mass_calib):
-                if (ion.center_t) and (ion.mass) and (ion.charge):
-                    tof_list.append(ion.center_t)
-                    mz_list.append(ion.mass/ion.charge)
+            if ion.use_for_mass_calib and ((ion.center_t) and (ion.mass) and (ion.charge)):
+                tof_list.append(ion.center_t)
+                mz_list.append(ion.mass/ion.charge)
 
         mz_arr = np.array(mz_list)
         tof_arr = np.array(tof_list)
@@ -257,12 +252,12 @@ class IonCollection:
         coeffs_tof_sqmz = np.polyfit(tof_arr[mz_arr>0], np.sqrt(mz_arr[mz_arr>0]),1)
 
         display(Math(r"\sqrt{\frac{m}{z}} = %.4ft + %.4f" % (coeffs_tof_sqmz[0], coeffs_tof_sqmz[1])))
-        
+
         self.cal_t0 = coeffs_sqmz_tof[1]
-        
+
         self.coeffs_sqmz_tof = coeffs_sqmz_tof
         self.coeffs_tof_sqmz = coeffs_tof_sqmz
-        
+
         self.calc_cal_mz_ions()
 
 
@@ -273,25 +268,25 @@ class IonCollection:
 
     def __getitem__(self, index):
         return self.data[index]
-    
+
     def __iter__(self, *args, **kwargs):
         return self.data.__iter__(*args, **kwargs)
-    
+
     def __len__(self):
         return len(self.data)
-        
+
     def __str__(self):
         return str([ion.label for ion in self.data])
-    
+
     def __repr__(self):
         return f"Collection with {len(self.data)} ions:\n{str(self)}"
-    
-    
+
+
     @wraps(Ion)
     def add_ion(self, *args, **kwargs):
         """Create Ion and append it to IonCollection"""
         self.data.append(self.ion_class(*args, **kwargs))
-        
+
     def assign_dataset(self, dataset):
         """Assign Dataset obect to each Ion in IonCollection."""
         for ion in self.data:
@@ -315,14 +310,14 @@ class Dataset:
         self.cal_mom = False
         self.shot_array_method = shot_array_method
 
-        
+
         # assert 'x' in self.columns, "Input dataframe is missing 'x'"
         # assert 'y' in self.columns, "Input dataframe is missing 'y'"
         # assert 't' in self.columns, "Input dataframe is missing 't'"
         assert 'shot' in self.columns, "Input dataframe is missing 'shot'"
 
         self.get_shot_array()
-        
+
     def sep_by_custom(self, lim1, lim2, param):
         """Separate data_df by some parameter.
 
@@ -340,13 +335,12 @@ class Dataset:
 
         :return: filtered_dataframe
         """
-        data_df_filt = sep_by_custom(Ti,Tf,'t')
-        return(data_df_filt)
+        return sep_by_custom(Ti,Tf,'t')
 
     def get_shot_array(self):
         """Get array of shots within the dataset, and store in self.shot_array"""
         if self.shot_array_method=='range':
-            self.shot_array = np.arange(np.min(self.data_df.shot), np.max(self.data_df.shot))
+            self.shot_array = np.arange(np.min(self.data_df.shot), np.max(self.data_df.shot)+1)
         elif self.shot_array_method=='unique':
             self.shot_array = np.array(np.unique(self.data_df.shot))
         else:
@@ -358,3 +352,20 @@ class Dataset:
         :param coeffs_tof_sqmz: calibration coefficients from t to sqrt(m/z)
         """
         self.data_df['cal_mz'] = (self.data_df['t']*coeffs_tof_sqmz[0] + coeffs_tof_sqmz[1])**2
+
+
+    def generate_shot_df(self):
+
+        # self.unique_shots = np.unique(self.data_df.shot)
+        # shot_df_list=[]
+        # for shot in self.shot_array:
+        #     if shot in self.unique_shots:
+        #         index = self.data_df.shot.searchsorted(shot, side='left')
+        #         df_slice = self.data_df.iloc[[index]]
+        #         shot_df_list.append(df_slice)
+        # self.shot_df=pd.concat(shot_df_list)
+
+        self.shot_df=(self.data_df).groupby("shot", as_index=False).first()
+
+        # print(self.shot_df[0:5])
+
