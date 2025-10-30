@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PyCorrCPI package &mdash; PyCorrCPI 0.1.0 documentation</title>
+  <title>PyCorrCPI package &mdash; PyCorrCPI 0.1.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/documentation_options.js?v=360bc84d"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -50,10 +50,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.ContCovariance"><code class="docutils literal notranslate"><span class="pre">ContCovariance</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.ContCovarianceFilter"><code class="docutils literal notranslate"><span class="pre">ContCovarianceFilter</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.Covariance"><code class="docutils literal notranslate"><span class="pre">Covariance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.ExactCovariance"><code class="docutils literal notranslate"><span class="pre">ExactCovariance</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calc_Cab"><code class="docutils literal notranslate"><span class="pre">calc_Cab()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calc_Cabc"><code class="docutils literal notranslate"><span class="pre">calc_Cabc()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calc_Cabcd"><code class="docutils literal notranslate"><span class="pre">calc_Cabcd()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calc_covariance"><code class="docutils literal notranslate"><span class="pre">calc_covariance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calc_tof_tof_covar_exact"><code class="docutils literal notranslate"><span class="pre">calc_tof_tof_covar_exact()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calc_tof_tof_covariance"><code class="docutils literal notranslate"><span class="pre">calc_tof_tof_covariance()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.calculate_indexes"><code class="docutils literal notranslate"><span class="pre">calculate_indexes()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.compute_2fold_covariance_term_iterate"><code class="docutils literal notranslate"><span class="pre">compute_2fold_covariance_term_iterate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#PyCorrCPI.covariance.compute_3fold_covariance_term_iterate"><code class="docutils literal notranslate"><span class="pre">compute_3fold_covariance_term_iterate()</span></code></a></li>
@@ -277,7 +280,7 @@ and then proceeds with the general logic.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.plot_2DHist">
-<span class="sig-name descname"><span class="pre">plot_2DHist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proj_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'axislabelsize':</span> <span class="pre">20,</span> <span class="pre">'linewidth':</span> <span class="pre">2,</span> <span class="pre">'spinewidth':</span> <span class="pre">3,</span> <span class="pre">'ticklabelsize':</span> <span class="pre">16,</span> <span class="pre">'ticklength':</span> <span class="pre">6,</span> <span class="pre">'tickwidth':</span> <span class="pre">3}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['p$_x$',</span> <span class="pre">'p$_y$',</span> <span class="pre">'p$_z$']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vfac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bwr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis_centered_on_zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_centered_on_zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.plot_2DHist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.plot_2DHist" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_2DHist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">proj_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{'axislabelsize':</span> <span class="pre">20,</span> <span class="pre">'linewidth':</span> <span class="pre">2,</span> <span class="pre">'spinewidth':</span> <span class="pre">3,</span> <span class="pre">'ticklabelsize':</span> <span class="pre">16,</span> <span class="pre">'ticklength':</span> <span class="pre">6,</span> <span class="pre">'tickwidth':</span> <span class="pre">3}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">term</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arrow</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vfac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bwr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis_centered_on_zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors_centered_on_zero</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.plot_2DHist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.plot_2DHist" title="Link to this definition"></a></dt>
 <dd><p>Plot 2D histogram of calculated covariance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -326,6 +329,22 @@ If False, then vmin=0. Default=True</p></li>
 <dt class="sig sig-object py" id="PyCorrCPI.covariance.Covariance.setup_terms">
 <span class="sig-name descname"><span class="pre">setup_terms</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#Covariance.setup_terms"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.Covariance.setup_terms" title="Link to this definition"></a></dt>
 <dd><p>Setup the number of times each term is to be calculated, and the shot-shifting which must be used.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.ExactCovariance">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">ExactCovariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#ExactCovariance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.ExactCovariance" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for storing covariance outputs and performing covariance calculation
+Specifically for covariances that are calculated exactly (i.e. not using)
+the shot-shifting approximation approach). Most commonly, this includes
+tof-tof and similar covariances</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.ExactCovariance.calc_tof_tof_covar">
+<span class="sig-name descname"><span class="pre">calc_tof_tof_covar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#ExactCovariance.calc_tof_tof_covar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.ExactCovariance.calc_tof_tof_covar" title="Link to this definition"></a></dt>
+<dd><p>Calculate two-fold covariance</p>
 </dd></dl>
 
 </dd></dl>
@@ -426,7 +445,8 @@ shifting index.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="PyCorrCPI.covariance.calc_covariance">
 <span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">calc_covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ion_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store_coincs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update_dataset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remove_autovariance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEj</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEjEk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EijEk</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEjEkEl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EijEkl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EijkEl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_EiEjEkl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_shot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">only_coincidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contingent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contingent_filters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#calc_covariance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.calc_covariance" title="Link to this definition"></a></dt>
-<dd><p>Function for initializing an instance of the Covariance class</p>
+<dd><p>Function for initializing an instance of the Covariance class
+and producing a computed covariance</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -458,6 +478,19 @@ Default is np.inf to ignore filtering</p></li>
 </ul>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.calc_tof_tof_covar_exact">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">calc_tof_tof_covar_exact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_tof</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tof_shot_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shot_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_shots</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_fac</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#calc_tof_tof_covar_exact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.calc_tof_tof_covar_exact" title="Link to this definition"></a></dt>
+<dd><p>Numba function for tof-tof covariance calculation</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="PyCorrCPI.covariance.calc_tof_tof_covariance">
+<span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">calc_tof_tof_covariance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_tof</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#calc_tof_tof_covariance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.calc_tof_tof_covariance" title="Link to this definition"></a></dt>
+<dd><p>Function for initiliazing an instance of the ExactCovariance class
+and producing a computed tof-tof covariance</p>
 </dd></dl>
 
 <dl class="py function">
@@ -506,7 +539,7 @@ multiple times.
 <dl class="py function">
 <dt class="sig sig-object py" id="PyCorrCPI.covariance.neaten_plot">
 <span class="sig-prename descclassname"><span class="pre">PyCorrCPI.covariance.</span></span><span class="sig-name descname"><span class="pre">neaten_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/covariance.html#neaten_plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.covariance.neaten_plot" title="Link to this definition"></a></dt>
-<dd><p>Funfction used to neaten up covariance plots</p>
+<dd><p>Function used to neaten up covariance plots</p>
 </dd></dl>
 
 </section>
@@ -546,6 +579,13 @@ Pandas Dataframe.</p>
 <dt class="sig sig-object py" id="PyCorrCPI.data.Dataset.get_shot_array">
 <span class="sig-name descname"><span class="pre">get_shot_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Dataset.get_shot_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Dataset.get_shot_array" title="Link to this definition"></a></dt>
 <dd><p>Get array of shots within the dataset, and store in self.shot_array</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PyCorrCPI.data.Dataset.get_tof_shot_array">
+<span class="sig-name descname"><span class="pre">get_tof_shot_array</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/PyCorrCPI/data.html#Dataset.get_tof_shot_array"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#PyCorrCPI.data.Dataset.get_tof_shot_array" title="Link to this definition"></a></dt>
+<dd><p>Get 2D array of tof and shots, and store in self.tof_shot_array
+Used in calculating tof-tof covariances</p>
 </dd></dl>
 
 <dl class="py method">

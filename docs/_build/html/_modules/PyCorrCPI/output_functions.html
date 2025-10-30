@@ -5,14 +5,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PyCorrCPI.output_functions &mdash; PyCorrCPI 0.1.0 documentation</title>
+  <title>PyCorrCPI.output_functions &mdash; PyCorrCPI 0.1.3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/documentation_options.js?v=360bc84d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -69,16 +69,17 @@
            <div itemprop="articleBody">
              
   <h1>Source code for PyCorrCPI.output_functions</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.imports</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">.data</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.helpers_numba</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.data</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.imports</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
 
 <div class="viewcode-block" id="beta_psum_KER">
 <a class="viewcode-back" href="../../PyCorrCPI.html#PyCorrCPI.output_functions.beta_psum_KER">[docs]</a>
 <span class="nd">@njit</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">beta_psum_KER</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span> <span class="n">mag_list</span><span class="p">,</span> <span class="n">mass_list</span><span class="p">,</span> <span class="n">bin_list</span><span class="p">,</span> <span class="n">dim_list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represent covariance as a function of the relative recoil angle between them,</span>
-<span class="sd">    the sums of their absolute momentun, and the sums of their KEs. </span>
+<span class="sd">    the sums of their absolute momentun, and the sums of their KEs.</span>
 
 <span class="sd">    :param vec_list: list of 3D momentum vectors of each ion</span>
 <span class="sd">    :param mag_list: list of momentum magnitudes of each ion</span>
@@ -87,7 +88,7 @@
 <span class="sd">    :param bin_list: binning factor used for computing the covariance histograms [b_x,b_y,b_z]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">x_bin</span><span class="p">,</span><span class="n">y_bin</span><span class="p">,</span><span class="n">z_bin</span> <span class="o">=</span> <span class="n">bin_list</span>
-    
+
     <span class="n">pmag_sum</span><span class="o">=</span><span class="mi">0</span>
     <span class="n">KE_sum</span><span class="o">=</span><span class="mi">0</span>
     <span class="k">for</span> <span class="n">vec</span><span class="p">,</span> <span class="n">mag</span><span class="p">,</span> <span class="n">mass</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">vec_list</span><span class="p">,</span><span class="n">mag_list</span><span class="p">,</span><span class="n">mass_list</span><span class="p">):</span>
@@ -129,23 +130,23 @@
     <span class="c1">## use momn conservation to find &#39;missing&#39; momentum</span>
     <span class="n">C_vec</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">A_vec</span><span class="o">+</span><span class="n">B_vec</span><span class="p">)</span>
     <span class="n">C_mag</span> <span class="o">=</span> <span class="n">norm3D</span><span class="p">(</span><span class="n">C_vec</span><span class="p">)</span>
-    
+
     <span class="n">angle1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec</span><span class="p">,</span><span class="n">B_vec</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">A_mag</span><span class="o">*</span><span class="n">B_mag</span><span class="p">))</span>
     <span class="n">angle2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec</span><span class="p">,</span><span class="n">C_vec</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">A_mag</span><span class="o">*</span><span class="n">C_mag</span><span class="p">))</span>
     <span class="n">Bproj_par</span> <span class="o">=</span> <span class="n">B_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle1</span><span class="p">)</span>
     <span class="n">Bproj_perp</span> <span class="o">=</span> <span class="n">B_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle1</span><span class="p">)</span>
     <span class="n">Cproj_par</span> <span class="o">=</span> <span class="n">C_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle2</span><span class="p">)</span>
-    <span class="n">Cproj_perp</span> <span class="o">=</span> <span class="o">-</span><span class="n">C_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle2</span><span class="p">)</span>  
+    <span class="n">Cproj_perp</span> <span class="o">=</span> <span class="o">-</span><span class="n">C_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle2</span><span class="p">)</span>
     <span class="n">Aproj_par</span> <span class="o">=</span> <span class="n">A_mag</span>
     <span class="n">Aproj_perp</span><span class="o">=</span><span class="mi">0</span>
-    
+
     <span class="n">Aproj_par</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Aproj_par</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Bproj_par</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Bproj_par</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Cproj_par</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Cproj_par</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Cproj_perp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Cproj_perp</span><span class="o">/</span><span class="n">y_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">y_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Aproj_perp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Aproj_perp</span><span class="o">/</span><span class="n">y_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">y_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Bproj_perp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Bproj_perp</span><span class="o">/</span><span class="n">y_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">y_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-    
+
     <span class="k">return</span><span class="p">([</span><span class="n">Bproj_perp</span><span class="p">],[</span><span class="n">Bproj_par</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span></div>
 
 
@@ -166,7 +167,7 @@
     <span class="n">rot_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
       <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
       <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
-    
+
     <span class="n">normal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
     <span class="n">ax_rot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
 
@@ -177,7 +178,7 @@
 
     <span class="n">A_vec_norm</span> <span class="o">=</span> <span class="n">A_vec</span><span class="o">/</span><span class="n">A_mag</span>
     <span class="n">B_vec_norm</span> <span class="o">=</span> <span class="n">B_vec</span><span class="o">/</span><span class="n">B_mag</span>
-    
+
     <span class="c1">## find the vector normal to the A,B plane through cross product</span>
     <span class="n">cross3D</span><span class="p">(</span><span class="n">B_vec_norm</span><span class="p">,</span><span class="n">A_vec_norm</span><span class="p">,</span><span class="n">normal</span><span class="p">)</span>
     <span class="n">normal_vec_norm</span> <span class="o">=</span> <span class="n">normal</span><span class="o">/</span><span class="n">norm3D</span><span class="p">(</span><span class="n">normal</span><span class="p">)</span> <span class="c1">#this is unecessary as cross product was on normalized vectors(?)</span>
@@ -200,7 +201,7 @@
 
     <span class="n">C_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">C_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
     <span class="n">B_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">B_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
-    <span class="n">A_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>          
+    <span class="n">A_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
 
     <span class="c1">## bin the C momentum vector in this frame and return</span>
     <span class="n">C_bin_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">C_vec_rot2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
@@ -238,23 +239,23 @@
     <span class="c1">## use momn conservation to find &#39;missing&#39; momentum</span>
     <span class="n">C_vec</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="n">A_vec</span><span class="o">+</span><span class="n">B_vec</span><span class="p">)</span>
     <span class="n">C_mag</span> <span class="o">=</span> <span class="n">norm3D</span><span class="p">(</span><span class="n">C_vec</span><span class="p">)</span>
-    
+
     <span class="n">angle1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec</span><span class="p">,</span><span class="n">B_vec</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">A_mag</span><span class="o">*</span><span class="n">B_mag</span><span class="p">))</span>
     <span class="n">angle2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec</span><span class="p">,</span><span class="n">C_vec</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">A_mag</span><span class="o">*</span><span class="n">C_mag</span><span class="p">))</span>
     <span class="n">Bproj_par</span> <span class="o">=</span> <span class="n">B_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle1</span><span class="p">)</span>
     <span class="n">Bproj_perp</span> <span class="o">=</span> <span class="n">B_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle1</span><span class="p">)</span>
     <span class="n">Cproj_par</span> <span class="o">=</span> <span class="n">C_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle2</span><span class="p">)</span>
-    <span class="n">Cproj_perp</span> <span class="o">=</span> <span class="o">-</span><span class="n">C_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle2</span><span class="p">)</span>  
+    <span class="n">Cproj_perp</span> <span class="o">=</span> <span class="o">-</span><span class="n">C_mag</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle2</span><span class="p">)</span>
     <span class="n">Aproj_par</span> <span class="o">=</span> <span class="n">A_mag</span>
     <span class="n">Aproj_perp</span><span class="o">=</span><span class="mi">0</span>
-    
+
     <span class="n">Aproj_par</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Aproj_par</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Bproj_par</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Bproj_par</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Cproj_par</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Cproj_par</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Cproj_perp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Cproj_perp</span><span class="o">/</span><span class="n">y_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">y_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Aproj_perp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Aproj_perp</span><span class="o">/</span><span class="n">y_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">y_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
     <span class="n">Bproj_perp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Bproj_perp</span><span class="o">/</span><span class="n">y_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">y_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
-    
+
     <span class="k">return</span><span class="p">([</span><span class="n">Bproj_perp</span><span class="p">,</span> <span class="n">Cproj_perp</span><span class="p">],[</span><span class="n">Bproj_par</span><span class="p">,</span> <span class="n">Cproj_par</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span></div>
 
 
@@ -276,7 +277,7 @@
     <span class="n">rot_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
       <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
       <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
-    
+
     <span class="n">normal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
     <span class="n">ax_rot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
 
@@ -287,7 +288,7 @@
 
     <span class="n">A_vec_norm</span> <span class="o">=</span> <span class="n">A_vec</span><span class="o">/</span><span class="n">A_mag</span>
     <span class="n">B_vec_norm</span> <span class="o">=</span> <span class="n">B_vec</span><span class="o">/</span><span class="n">B_mag</span>
-    
+
     <span class="c1">## find the vector normal to the A,B plane through cross product</span>
     <span class="n">cross3D</span><span class="p">(</span><span class="n">B_vec_norm</span><span class="p">,</span><span class="n">A_vec_norm</span><span class="p">,</span><span class="n">normal</span><span class="p">)</span>
     <span class="n">normal_vec_norm</span> <span class="o">=</span> <span class="n">normal</span><span class="o">/</span><span class="n">norm3D</span><span class="p">(</span><span class="n">normal</span><span class="p">)</span> <span class="c1">#this is unecessary as cross product was on normalized vectors(?)</span>
@@ -312,7 +313,7 @@
     <span class="n">D_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">D_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
     <span class="n">C_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">C_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
     <span class="n">B_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">B_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
-    <span class="n">A_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>          
+    <span class="n">A_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
 
     <span class="c1">## bin the C momentum vector in this frame and return</span>
     <span class="n">C_bin_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">C_vec_rot2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="n">x_bin</span><span class="o">+</span><span class="mf">0.5</span><span class="o">+</span><span class="n">x_pixels</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
@@ -345,38 +346,38 @@
     <span class="n">rot_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
       <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">],</span>
       <span class="p">[</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">,</span><span class="mf">0.</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
-    
+
     <span class="n">normal</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
     <span class="n">ax_rot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
-    
+
     <span class="n">A_vec</span><span class="p">,</span><span class="n">B_vec</span><span class="p">,</span><span class="n">C_vec</span><span class="p">,</span><span class="n">D_vec</span> <span class="o">=</span> <span class="n">vec_list</span>
     <span class="n">A_mag</span><span class="p">,</span> <span class="n">B_mag</span><span class="p">,</span> <span class="n">C_mag</span><span class="p">,</span> <span class="n">D_mag</span><span class="o">=</span> <span class="n">mag_list</span>
     <span class="n">x_bin</span><span class="p">,</span><span class="n">y_bin</span><span class="p">,</span><span class="n">z_bin</span> <span class="o">=</span> <span class="n">bin_list</span>
     <span class="n">x_pixels</span><span class="p">,</span><span class="n">y_pixels</span><span class="p">,</span> <span class="n">z_pixels</span> <span class="o">=</span> <span class="n">dim_list</span>
-    
+
     <span class="n">A_vec_norm</span> <span class="o">=</span> <span class="n">A_vec</span><span class="o">/</span><span class="n">A_mag</span>
     <span class="n">B_vec_norm</span> <span class="o">=</span> <span class="n">B_vec</span><span class="o">/</span><span class="n">B_mag</span>
     <span class="n">ABsum_vec</span> <span class="o">=</span> <span class="n">A_vec</span><span class="o">+</span><span class="n">B_vec</span>
     <span class="n">ABsum_vec_norm</span> <span class="o">=</span> <span class="n">ABsum_vec</span><span class="o">/</span><span class="n">norm3D</span><span class="p">(</span><span class="n">ABsum_vec</span><span class="p">)</span>
-    
+
     <span class="n">cross3D</span><span class="p">(</span><span class="n">A_vec_norm</span><span class="p">,</span><span class="n">B_vec_norm</span><span class="p">,</span><span class="n">normal</span><span class="p">)</span>
 
     <span class="n">normal_vec_norm</span> <span class="o">=</span> <span class="n">normal</span><span class="o">/</span><span class="n">norm3D</span><span class="p">(</span><span class="n">normal</span><span class="p">)</span>
 
     <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">normal_vec_norm</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
     <span class="n">ax_rot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">normal_vec_norm</span><span class="p">,</span><span class="n">z_vec_norm</span><span class="p">)</span>
-    
+
     <span class="n">rotation_matrix</span><span class="p">(</span><span class="n">ax_rot</span><span class="p">,</span> <span class="o">-</span><span class="n">alpha</span><span class="p">,</span> <span class="n">rot_matrix</span><span class="p">)</span>
 
     <span class="n">A_vec_rot</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">A_vec</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
     <span class="n">B_vec_rot</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">B_vec</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
     <span class="n">C_vec_rot</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">C_vec</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
     <span class="n">D_vec_rot</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">D_vec</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
-    
+
     <span class="n">ABsum_vec_rot</span> <span class="o">=</span> <span class="n">A_vec_rot</span><span class="o">+</span><span class="n">B_vec_rot</span>
-    
+
     <span class="n">ABsum_vec_rot_norm</span> <span class="o">=</span> <span class="n">ABsum_vec_rot</span><span class="o">/</span><span class="n">norm3D</span><span class="p">(</span><span class="n">ABsum_vec_rot</span><span class="p">)</span>
-    
+
     <span class="n">beta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">ABsum_vec_rot_norm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">ABsum_vec_rot_norm</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
     <span class="n">rotation_matrix</span><span class="p">(</span><span class="n">z_vec_norm</span><span class="p">,</span> <span class="o">-</span><span class="n">beta</span><span class="p">,</span> <span class="n">rot_matrix</span><span class="p">)</span>
@@ -385,7 +386,7 @@
     <span class="n">B_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">B_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
     <span class="n">C_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">C_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
     <span class="n">D_vec_rot2</span> <span class="o">=</span> <span class="n">dot3D</span><span class="p">(</span><span class="n">D_vec_rot</span><span class="p">,</span><span class="n">rot_matrix</span><span class="p">)</span>
-    
+
     <span class="n">rotation_matrix</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">),</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">rot_matrix</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">C_vec_rot2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>

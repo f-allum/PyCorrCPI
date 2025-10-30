@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyCorrCPI"
-version = "0.1.2"
+version = "0.1.3"
 description = "PyCorrCPI - correlation analysis for charged-particle imaging experiments"
 authors = [
     {name = "Felix Allum", email = "felix.allum@desy.de"}
@@ -19,8 +19,8 @@ dependencies = [
 ]
 # Optional: URLs section for the project
 [project.urls]
-homepage = "https://github.com/f-allum/PyCCorrCPI/"
-download = "https://github.com/f-allum/PyCorrCPI/archive/refs/tags/v0.1.2.tar.gz"
+homepage = "https://github.com/f-allum/PyCorrCPI/"
+# download = "https://github.com/f-allum/PyCorrCPI/archive/refs/tags/v0.1.2.tar.gz"
 
 # Ruff configuration
 [tool.ruff]

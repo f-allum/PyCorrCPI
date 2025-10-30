@@ -58,6 +58,18 @@ def generate_contingent_covariance(covariance_output_list, contingent_filters, e
 
     return cont_covariance_output
 
+def calc_tof_tof_covariance(
+    dataset,
+    n_bins=2000,
+    max_tof=0
+    ):
+
+    """Function for initiliazing an instance of the ExactCovariance class
+    and producing a computed tof-tof covariance"""
+
+    tof_tof_covar = ExactCovariance(dataset)
+    tof_tof_covar.calc_tof_tof_covar(n_bins = n_bins, max_tof=max_tof)
+    return tof_tof_covar
 
 def calc_covariance(
     dataset,
@@ -84,6 +96,7 @@ def calc_covariance(
     contingent_filters=None,
 ):
     """Function for initializing an instance of the Covariance class
+    and producing a computed covariance
 
     :param ion_list: list of n ions to be used in the nfold covariance calculation
     :param dim_list: list of the size of the output covariance dimensions [n_x,n_y,n_z]
@@ -643,6 +656,96 @@ def calc_Cabcd(
                             if 0 <= x_out < x_pixels and 0 <= y_out < y_pixels and 0 <= z_out < z_pixels:
                                 coinc_counter += 1
                                 output_array[term_counter, x_out, y_out, z_out] += addval
+
+@njit
+def calc_tof_tof_covar_exact(output_array,
+    mean_tof,
+    tof_shot_array,
+    shot_array,
+    n_shots,
+    n_bins,
+    bin_fac):
+
+    """Numba function for tof-tof covariance calculation"""
+
+    n_shots_A = 0
+    no_A = np.shape(tof_shot_array)[0]
+    n_end_A = 0
+
+    for shot in shot_array:
+        for test in range(n_shots_A, no_A):
+            if (tof_shot_array[test,1] == shot):
+                n_shots_A = test
+                break
+
+        for test in range(n_shots_A, no_A):
+            if tof_shot_array[test,1] > shot:
+                n_end_A = test
+                break
+
+        for i in range(n_shots_A, n_end_A):
+            A_tof = int(tof_shot_array[i,0]/bin_fac + 0.5)
+            if A_tof<n_bins:
+                mean_tof[A_tof]+=1
+                for j in range(n_shots_A, n_end_A):
+                    B_tof = int(tof_shot_array[j,0]/bin_fac + 0.5)
+                    if i!=j:
+                        ### TODO: make this autovariance removal optional(?)
+                        if B_tof<n_bins:
+                            output_array[0, A_tof,B_tof]+=1
+
+    output_array[1,:,:] = np.outer(mean_tof, mean_tof)/n_shots**2
+    output_array[0,:,:] = output_array[0,:,:]/n_shots
+    output_array[2,:,:] = output_array[0,:,:] - output_array[1,:,:]
+
+
+
+
+class ExactCovariance:
+    """Class for storing covariance outputs and performing covariance calculation
+    Specifically for covariances that are calculated exactly (i.e. not using)
+    the shot-shifting approximation approach). Most commonly, this includes
+    tof-tof and similar covariances"""
+
+    def __init__(self,
+        dataset):
+
+        self.dataset=dataset
+
+    def calc_tof_tof_covar(self,
+        n_bins=1000,
+        max_tof=0):
+        """Calculate two-fold covariance"""
+
+        ### TODO: Style of this code should be made more consistent with other functions
+        ### This would inculde making, storing and (re)using a dict for the
+        ### shot indexes. For now this isn't a priority.
+
+        if not hasattr(self.dataset, 'tof_shot_arr'):
+            self.dataset.get_tof_shot_array()
+
+        if not max_tof:
+            self.max_tof = np.max(self.dataset.tof_shot_array[0,:])*1.1
+        else:
+            self.max_tof = max_tof
+        self.n_bins = n_bins
+        self.bin_fac = self.max_tof / self.n_bins
+
+        self.n_shots = len(self.dataset.shot_array)
+
+        self.output_array = np.zeros((3, self.n_bins, self.n_bins))
+        
+        ### Could precalculate this and reuse better (if careful with binning)
+        self.mean_tof = np.zeros((self.n_bins))
+
+        calc_tof_tof_covar_exact(self.output_array,
+                        self.mean_tof,
+                        self.dataset.tof_shot_array,
+                        self.dataset.shot_array,
+                        self.n_shots,
+                        self.n_bins,
+                        self.bin_fac)
+
 
 class Covariance:
     """Class for storing covariance outputs and performing covariance calculation

@@ -346,6 +346,12 @@ class Dataset:
         else:
             raise Exception("Invalid shot_array_method inputted!")
 
+    def get_tof_shot_array(self):
+        """Get 2D array of tof and shots, and store in self.tof_shot_array
+        Used in calculating tof-tof covariances"""
+        self.tof_shot_array = self.data_df[['tof', 'shot']].values
+
+
     def apply_mz_calibration(self, coeffs_tof_sqmz):
         """Apply m/z calibration for all data in data_df.
 
