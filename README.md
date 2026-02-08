@@ -1,5 +1,9 @@
 # PyCorrCPI
-PyCorrCPI - corelation analysis for charged-particle imaging experiments
+
+[![DOI](https://zenodo.org/badge/790864606.svg)](https://doi.org/10.5281/zenodo.18528641)
+
+
+PyCorrCPI - correlation analysis for charged-particle imaging experiments
 
 `pip install PyCorrCPI`
 
